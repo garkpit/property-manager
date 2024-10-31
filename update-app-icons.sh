@@ -42,7 +42,7 @@ cat << EOF > ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json
 }
 EOF
 
-echo "Created Contents.json for iOS"
+echo "Step 1 completed:Created Contents.json for iOS"
 
 # 2. Copy Android icons
 mkdir -p android/app/src/main/res/mipmap-mdpi
@@ -63,7 +63,7 @@ cp static/icon-96.png android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.pn
 cp static/icon-144.png android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
 cp static/icon-192.png android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-echo "Copied Android icons"
+echo "Step 2 completed: Copied Android icons"
 
 # 3. Copy iOS icons
 cp static/icon-1024.png ios/App/App/Assets.xcassets/AppIcon.appiconset/
@@ -72,7 +72,7 @@ cp static/icon-120.png ios/App/App/Assets.xcassets/AppIcon.appiconset/
 cp static/icon-167.png ios/App/App/Assets.xcassets/AppIcon.appiconset/
 cp static/icon-152.png ios/App/App/Assets.xcassets/AppIcon.appiconset/
 
-echo "Copied iOS icons"
+echo "Step 3 completed: Copied iOS icons"
 
-echo "App icon update complete!"
+echo "Step 4 completed: App icon update complete!"
 

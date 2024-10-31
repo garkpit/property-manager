@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # this script requires ImageMagick
 # brew install imagemagick
