@@ -24,7 +24,7 @@
   
 	<footer 
 	class="footer-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-t"
-	style="bottom: calc(max(var(--safe-area-inset-bottom, 0px) - 0.75rem, 0px))"
+	style="bottom: var(--safe-area-inset-bottom, 0px)"
 	>
 	  <div class="flex items-center space-x-2">
 		{#if bottomLeft}

@@ -48,7 +48,7 @@
 
 	<header 
     class="header-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-b"
-    style="top: calc(max(var(--safe-area-inset-top, 0px) - 0.75rem, 0px));"
+    style="top: var(--safe-area-inset-top, 0px);"
     >
 	  <!--<div class="flex items-center space-x-2">-->
         <div class="flex items-center space-x-2">
