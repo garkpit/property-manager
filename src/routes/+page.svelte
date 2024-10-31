@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js'
+	import DarkModeToggle from '$lib/components/DarkModeToggle.svelte'
 	function handleClick() {
 		const output = document.getElementById('output')
 		if (output) {
@@ -17,4 +18,7 @@
 		<Button onclick={handleClick}>Click me</Button>
 		<div id="output" class="h-6"></div>
 	</div>
+</div>
+<div class="fixed bottom-4 right-4">
+	<DarkModeToggle />
 </div>
