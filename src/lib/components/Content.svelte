@@ -1,6 +1,5 @@
 <script lang="ts">
 	let { children } = $props<{ children: () => unknown }>()
-	console.log('Content: children', children)
 </script>
 
 <main class="flex-grow overflow-y-auto h-[calc(100vh-var(--header-height))]">
