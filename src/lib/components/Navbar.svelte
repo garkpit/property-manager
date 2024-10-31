@@ -27,27 +27,29 @@
     // Move DOM-related logic into an effect
     const root = document.documentElement;
     const styles = getComputedStyle(root);
-    let hh = $state(styles.getPropertyValue('--header-height').trim());
+    //let hh = $state(styles.getPropertyValue('--header-height').trim());
 
     $effect(() => {
-        const updateInsets = () => {
-            hh = styles.getPropertyValue('--header-height').trim();
-        }
+        //const updateInsets = () => {
+        //    hh = styles.getPropertyValue('--header-height').trim();
+        //}
 
-        updateInsets();
-        setTimeout(updateInsets, 500);
-        setTimeout(updateInsets, 1000);
-        setTimeout(updateInsets, 3000);
+        //updateInsets();
+        //setTimeout(updateInsets, 500);
+        //setTimeout(updateInsets, 1000);
+        //setTimeout(updateInsets, 3000);
 
-        const observer = new MutationObserver(updateInsets);
-        observer.observe(root, { attributes: true, attributeFilter: ['style'] });
+        //const observer = new MutationObserver(updateInsets);
+        //observer.observe(root, { attributes: true, attributeFilter: ['style'] });
 
-        return () => observer.disconnect();
+        //return () => observer.disconnect();
     });
 </script>
 
-  
-	<header class="header-height bg-background fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 border-b">
+	<header 
+    class="header-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-b"
+    style="top: calc(max(var(--safe-area-inset-top, 0px) - 0.75rem, 0px));"
+    >
 	  <!--<div class="flex items-center space-x-2">-->
         <div class="flex items-center space-x-2">
             {@render topLeft?.(topLeftData)}

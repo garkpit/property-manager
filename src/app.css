@@ -3,14 +3,16 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root {    
     --safe-area-inset-top: env(safe-area-inset-top, 0px);
     --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-inset-left: env(safe-area-inset-left, 0px);
     --safe-area-inset-right: env(safe-area-inset-right, 0px);
 
-    --header-height: calc(3.5rem + var(--safe-area-inset-top));
-    --footer-height: calc(3.5rem + var(--safe-area-inset-bottom));
+    /*--header-height: calc(3.5rem + var(--safe-area-inset-top));*/
+    --header-height: 3.5rem;
+    /*--footer-height: calc(3.5rem + var(--safe-area-inset-bottom));*/
+    --footer-height: 3.5rem;
 
     .header-height {
         height: var(--header-height);
@@ -19,6 +21,7 @@
         height: var(--footer-height);
     }
 
+  
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96.1%;
