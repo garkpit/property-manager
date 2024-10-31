@@ -28,7 +28,6 @@
 		  {@render bottomLeft(bottomLeftData)}
 		{:else}
 		  <DarkModeToggle />
-		  <LanguageSelector />
 		{/if}
 	  </div>
   
@@ -43,6 +42,8 @@
 	  <div class="flex items-center space-x-2">
 		{#if bottomRight}
 		  {@render bottomRight(bottomRightData)}
+		{:else}
+		  <LanguageSelector />
 		{/if}
 	  </div>
 	</footer>
