@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js'
 	import DarkModeToggle from '$lib/components/DarkModeToggle.svelte'
+	import LanguageSelector from '$lib/components/LanguageSelector.svelte'
 	function handleClick() {
 		const output = document.getElementById('output')
 		if (output) {
@@ -21,4 +22,5 @@
 </div>
 <div class="fixed bottom-4 right-4">
 	<DarkModeToggle />
+	<LanguageSelector />
 </div>
