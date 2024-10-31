@@ -22,7 +22,6 @@
 	}>();
   </script>
   
-  <div class="flex flex-col h-screen">
 	<footer class="footer-height bg-background fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-4 border-t">
 	  <div class="flex items-center space-x-2">
 		{#if bottomLeft}
@@ -48,5 +47,4 @@
 	  </div>
 	</footer>
 	<Toaster richColors />
-  </div>
   

@@ -47,7 +47,6 @@
 </script>
 
   
-<div class="flex flex-col h-screen">
 	<header class="header-height bg-background fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 border-b">
 	  <!--<div class="flex items-center space-x-2">-->
         <div class="flex items-center space-x-2">
@@ -64,7 +63,6 @@
 
       <!--</div>-->
 	</header>
-  </div>
   
 
 

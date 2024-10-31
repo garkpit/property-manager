@@ -26,6 +26,7 @@
 
 <!-- <SidebarPage /> -->
 
+<div id="contentpage" class="flex flex-col h-fit">
 <Navbar>
     {#snippet topLeft()}
         TL
@@ -45,8 +46,9 @@
             Header height: <span id="header-height"></span><br/>
             Safe area top: <span id="safe-area-top"></span><br/>
             Footer height: <span id="footer-height"></span><br/>
-          </div>
+        </div>
     {/snippet}
 </Content>
 
 <StatusBar />
+</div>

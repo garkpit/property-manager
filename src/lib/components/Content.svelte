@@ -2,10 +2,10 @@
 	let { children } = $props<{ children: () => unknown }>()
 </script>
 
-<main class="flex-grow overflow-y-auto h-[calc(100vh-var(--header-height))]">
-  <div class="container mx-auto mt-14">
-    {@render children()}
-  </div>
+<main class="h-fit">
+    <div class="container mx-auto mt-14 mb-14">
+        {@render children()}
+    </div>
 </main>
 
 <style>
