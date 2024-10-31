@@ -1,4 +1,5 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
+
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
@@ -90,7 +91,7 @@ const config: Config = {
       		},
 		},
 	},
-	plugins: [tailwindcssAnimate],
+	plugins: [tailwindcssAnimate, require('tailwindcss-safe-area-capacitor')],
 };
 
 export default config;
