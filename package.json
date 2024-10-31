@@ -3,11 +3,15 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host 0.0.0.0",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"ios": "npm run build && npx cap sync && npx cap update ios && npx cap copy ios && npx cap run ios",
+		"ios-reload": "cap run ios -l --external --port=5173",
+		"android": "npm run build && npx cap sync && npx cap update android && npx cap copy android && npx cap run android",
+		"android-reload": "cap run android -l --external --port=5173"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
