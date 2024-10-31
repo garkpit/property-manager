@@ -27,3 +27,7 @@ vite.config.ts.timestamp-*
 static/icon-*.png
 static/apple-touch-icon.png
 static/favicon*
+
+# Capacitor
+capacitor.config.ts
+
