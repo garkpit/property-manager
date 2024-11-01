@@ -6,9 +6,11 @@
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import { Menu } from 'lucide-svelte';
     import { Button } from "$lib/components/ui/button";
+
+    let isDrawerOpen = $state(true); // Initialize with desired default state
 </script>
 
-<Sidebar.Provider>
+<Sidebar.Provider bind:open={isDrawerOpen}>
     <LeftDrawer />
 
     <div id="contentpage" class="flex flex-col h-fit">
