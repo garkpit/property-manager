@@ -5,7 +5,19 @@
     import LeftDrawer from '$lib/components/LeftDrawer.svelte'
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 
-    let isDrawerOpen = $state(true); // Initialize with desired default state
+    let isDrawerOpen = $state(typeof window !== 'undefined' && window.innerWidth >= 768 ? true : false);
+
+    // Add a window resize listener to update the drawer state
+    $effect(() => {
+        if (typeof window !== 'undefined') {
+            const handleResize = () => {
+                isDrawerOpen = window.innerWidth >= 768;
+            };
+            
+            window.addEventListener('resize', handleResize);
+            return () => window.removeEventListener('resize', handleResize);
+        }
+    });
 </script>
 
 <Sidebar.Provider bind:open={isDrawerOpen}>
@@ -28,6 +40,11 @@
         <Content>
             {#snippet children()}
                 <h1>welcome to the dashboard</h1>
+                {#if isDrawerOpen}
+                    Panel is Open
+                {:else}
+                    Panel is Closed
+                {/if}
             {/snippet}
         </Content>
 
