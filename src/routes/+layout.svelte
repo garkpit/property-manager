@@ -8,7 +8,6 @@
 
 	$effect(() => {
 		// initializeUser()
-		console.log('enable safe area')
 		SafeArea.enable({
 			config: {
 				customColorsForSystemBars: true,
@@ -18,7 +17,6 @@
 				navigationBarContent: 'light',
 			},
 		})
-		console.log('safe area enabled', SafeArea)
 		// Try to get the locale from localStorage
 		const storedLocale = localStorage.getItem('locale')
 		if (storedLocale) {
