@@ -1,15 +1,20 @@
 <script lang="ts">
-	import { component } from './../../../.svelte-kit/output/server/nodes/1.js';
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import SearchForm from "$lib/components/search-form.svelte";
 	import * as Collapsible from "$lib/components/ui/collapsible/index.js";
 	import GalleryVerticalEnd from "lucide-svelte/icons/gallery-vertical-end";
+    import NavUser from "$lib/components/nav-user.svelte";
 	import Minus from "lucide-svelte/icons/minus";
 	import Plus from "lucide-svelte/icons/plus";
 	import type { ComponentProps } from "svelte";
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 	const data = {
+        user: {
+			name: "shadcn",
+			email: "m@example.com",
+			avatar: "/avatars/shadcn.jpg",
+		},
 		versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
 		navMain: [
 			{
@@ -142,7 +147,7 @@
 
 </script>
 
-<Sidebar.Root class="pt-[var(--header-height)]">
+<Sidebar.Root class="pt-[var(--header-height)] pb-[var(--footer-height)]">
 	<Sidebar.Header>
 		<Sidebar.Menu>
 			<Sidebar.MenuItem>
@@ -208,5 +213,8 @@
 			</Sidebar.Menu>
 		</Sidebar.Group>
 	</Sidebar.Content>
+	<Sidebar.Footer>
+		<NavUser user={data.user} />
+	</Sidebar.Footer>    
 	<Sidebar.Rail />
 </Sidebar.Root>
