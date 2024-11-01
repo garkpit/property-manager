@@ -41,6 +41,7 @@
 				title: "Getting Started",
 				url: "#",
 				icon: BookOpen,
+				isOpen: false,
 				items: [
 					{
 						title: "Installation",
@@ -56,6 +57,7 @@
 				title: "Building Your Application",
 				url: "#",
 				icon: Box,
+				isOpen: false,
 				items: [
 					{
 						title: "About",
@@ -115,6 +117,7 @@
 				title: "API Reference",
 				url: "#",
 				icon: Code,
+				isOpen: false,
 				items: [
 					{
 						title: "Components",
@@ -146,6 +149,7 @@
 				title: "Architecture",
 				url: "#",
 				icon: Settings,
+				isOpen: false,
 				items: [
 					{
 						title: "Accessibility",
@@ -229,7 +233,7 @@
 														<a 
 															href={item.url} 
 															{...props}
-															on:click={() => sidebarState.setActiveItem(item.title)}
+															onclick={() => sidebarState.setActiveItem(item.title)}
 														>
 															{item.title}
 														</a>
