@@ -1,11 +1,33 @@
-# svelte5-template
+# Svelte 5 Template
+An opinionated development template designed to create large-scale business apps quickly and deploy them as a static website, iOS App, Android App, Windows Desktop App, MacOS Desktop App, and Linux Desktop App.
+
+### Design Philosophy
+- client-side code only
+    - reduces complexity
+    - eliminates middle tier code for faster development
+    - increases scalability (no middle tier bottleneck)
+- svelte 5
+    - easy development enviroment
+    - fast, small, compiled application
+    - easy and free to deploy as a static site
+- shadcn-svelte
+    - great-looking UI
+    - flexible
+    - large community
+- modular, organized code base
+    - designed for large-scale, complex business projects
+    - authentication
+    - data access layer
+    - simple, reusable components
+
+## Tecnologies
 
 - [Svelte 5](https://svelte.dev/docs/svelte/overview)
 - [SvelteKit](https://svelte.dev/docs/kit/introduction)
 - [Tailwindcss](https://tailwindcss.com/docs/installation)
 - [Shadcn-svelte](https://next.shadcn-svelte.com/docs)
 
-# Developer Aids
+## Developer Aids
 
 - Global constants such as `__APP_VERSION__` declared in [package.json](/package.json) See: [app.d.ts](./src/app.d.ts)
 - [Internationalization](./src/lib/i18n/index.ts)
@@ -21,7 +43,7 @@
     - [make-icons.sh](./make-icons.sh) creates all icons from a base icon svg file [icon.svg](./static/icon.svg)
     - [update-app-icons.sh](./update-app-icons.sh) copies icons needed for `ios` and `android` app versions
 
-# Development Targets
+## Development Targets
 
 - Web Dev: `npm run dev` or `./dev.sh`
 - iOS: `npm run ios`
@@ -31,10 +53,10 @@
 - Android with instant reload `npm run android-reload`
     - requires `npm run dev` server running on port 5172
 
-# Deploy Targets
+## Deploy Targets
 
 - Static Web Site: `npm run build`
 
-# Implementation Notes
+## Implementation Notes
 
 - All client-side code
