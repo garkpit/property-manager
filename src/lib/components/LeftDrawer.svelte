@@ -182,7 +182,13 @@
 		<Sidebar.Group>
 			<Sidebar.Menu>
 				{#each data.navMain as mainItem, index (mainItem.title)}
-					<Collapsible.Root open={index === 1} class="group/collapsible">
+					<Collapsible.Root 
+						open={index === 1} 
+						class="group/collapsible"
+						onOpenChange={(isOpen) => {
+							console.log(`Menu "${mainItem.title}" ${isOpen ? 'opened' : 'closed'}`);
+						}}
+					>
 						<Sidebar.MenuItem>
 							<Collapsible.Trigger>
 								{#snippet child({ props })}
