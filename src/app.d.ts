@@ -23,5 +23,6 @@ declare const __APP_PROFILE_TABLE__: string;
 declare const __APP_PROFILE_KEY__: string;
 declare const __APP_THEME_COLOR__: string;
 declare const __APP_BACKGROUND_COLOR__: string;
+declare const __APP_IDENTIFIER__: string;
 
 export {};

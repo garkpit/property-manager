@@ -7,7 +7,7 @@
 
 # Developer Aids
 
-- Global variables such as `__APP_VERSION__` declared in [package.json](/package.json) See: [app.d.ts](./src/app.d.ts)
+- Global constants such as `__APP_VERSION__` declared in [package.json](/package.json) See: [app.d.ts](./src/app.d.ts)
 
 # Development Targets
 

@@ -1,6 +1,7 @@
 {
 	"name": "svelte5-template",
 	"version": "0.0.1",
+	"identifier": "com.example.svelte5template",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --host 0.0.0.0",
