@@ -187,9 +187,11 @@
 							<Collapsible.Trigger>
 								{#snippet child({ props })}
 									<Sidebar.MenuButton {...props}>
+                                        {#if mainItem.icon}
 										<mainItem.icon 
 											class="mr-2 h-4 w-4" 
 										/>
+                                        {/if}
 										{mainItem.title}
 										<Plus
 											class="ml-auto group-data-[state=open]/collapsible:hidden"
