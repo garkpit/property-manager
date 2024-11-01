@@ -2,6 +2,7 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { cn } from "$lib/utils.js";
 	import PanelLeft from "lucide-svelte/icons/panel-left";
+	import PanelLeftClose from "lucide-svelte/icons/panel-left-close";
 	import type { ComponentProps } from "svelte";
 	import { useSidebar } from "./context.svelte.js";
 
@@ -15,6 +16,7 @@
 	} = $props();
 
 	const sidebar = useSidebar();
+	let isOpen = $derived(sidebar.open);
 </script>
 
 <Button
@@ -27,8 +29,13 @@
 	variant="ghost"
 	size="icon"
 	class={cn("h-7 w-7", className)}
+	aria-expanded={isOpen}
 	{...restProps}
 >
-	<PanelLeft />
+	{#if isOpen}
+		<PanelLeftClose />
+	{:else}
+		<PanelLeft />
+	{/if}
 	<span class="sr-only">Toggle Sidebar</span>
 </Button>
