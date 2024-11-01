@@ -4,8 +4,6 @@
     import Navbar from '@/components/Navbar.svelte'
     import LeftDrawer from '$lib/components/LeftDrawer.svelte'
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-    import { Menu } from 'lucide-svelte';
-    import { Button } from "$lib/components/ui/button";
 
     let isDrawerOpen = $state(true); // Initialize with desired default state
 </script>
@@ -17,11 +15,6 @@
         <Navbar>
             {#snippet topLeft()}
                 <Sidebar.Trigger>
-                    {#snippet child({ props })}
-                        <Button variant="ghost" size="icon" {...props}>
-                            <Menu class="h-5 w-5" />
-                        </Button>
-                    {/snippet}
                 </Sidebar.Trigger>
             {/snippet}
             {#snippet title()}
