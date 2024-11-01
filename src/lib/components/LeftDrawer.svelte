@@ -194,6 +194,7 @@
 	<Sidebar.Content>
 		<Sidebar.Group>
 			<Sidebar.Menu>
+                <SearchForm />
 				{#each data.navMain as mainItem, index (mainItem.title)}
 					<Collapsible.Root 
 						open={sidebarState.openMenus.includes(mainItem.title)}
