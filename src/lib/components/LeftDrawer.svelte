@@ -9,6 +9,7 @@
 	import Plus from "lucide-svelte/icons/plus";
 	import type { ComponentProps } from "svelte";
 	import { AudioWaveform, Command, Settings, BookOpen, Code, Box } from "lucide-svelte"
+	import { sidebarState } from './LeftDrawer.svelte.ts';
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 	const data = {
@@ -67,7 +68,6 @@
 					{
 						title: "Data Fetching",
 						url: "#",
-						isActive: true,
 					},
 					{
 						title: "Rendering",
@@ -172,6 +172,15 @@
 		],
 	};
 
+	$effect(() => {
+		// Set initial open state based on stored state
+		data.navMain.forEach(item => {
+			if (sidebarState.openMenus.includes(item.title)) {
+				item.isOpen = true;
+			}
+		});
+	});
+
 </script>
 
 <Sidebar.Root class="pt-[var(--header-height)] pb-[var(--footer-height)]">
@@ -183,10 +192,10 @@
 			<Sidebar.Menu>
 				{#each data.navMain as mainItem, index (mainItem.title)}
 					<Collapsible.Root 
-						open={index === 1} 
+						open={sidebarState.openMenus.includes(mainItem.title)}
 						class="group/collapsible"
 						onOpenChange={(isOpen) => {
-							console.log(`Menu "${mainItem.title}" ${isOpen ? 'opened' : 'closed'}`);
+							sidebarState.toggleMenu(mainItem.title, isOpen);
 						}}
 					>
 						<Sidebar.MenuItem>
@@ -213,11 +222,17 @@
 									<Sidebar.MenuSub>
 										{#each mainItem.items as item (item.title)}
 											<Sidebar.MenuSubItem>
-												<Sidebar.MenuSubButton isActive={item.isActive}>
+												<Sidebar.MenuSubButton 
+													isActive={sidebarState.activeItem === item.title}
+												>
 													{#snippet child({ props })}
-														<a href={item.url} {...props}
-															>{item.title}</a
+														<a 
+															href={item.url} 
+															{...props}
+															on:click={() => sidebarState.setActiveItem(item.title)}
 														>
+															{item.title}
+														</a>
 													{/snippet}
 												</Sidebar.MenuSubButton>
 											</Sidebar.MenuSubItem>
