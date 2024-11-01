@@ -2,11 +2,13 @@
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import SearchForm from "$lib/components/search-form.svelte";
 	import * as Collapsible from "$lib/components/ui/collapsible/index.js";
+	import TeamSwitcher from "$lib/components/team-switcher.svelte";
 	import GalleryVerticalEnd from "lucide-svelte/icons/gallery-vertical-end";
     import NavUser from "$lib/components/nav-user.svelte";
 	import Minus from "lucide-svelte/icons/minus";
 	import Plus from "lucide-svelte/icons/plus";
 	import type { ComponentProps } from "svelte";
+	import { AudioWaveform, Command } from "lucide-svelte"
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 	const data = {
@@ -15,6 +17,23 @@
 			email: "m@example.com",
 			avatar: "/avatars/shadcn.jpg",
 		},
+		teams: [
+			{
+				name: "Acme Inc",
+				logo: GalleryVerticalEnd,
+				plan: "Enterprise",
+			},
+			{
+				name: "Acme Corp.",
+				logo: AudioWaveform,
+				plan: "Startup",
+			},
+			{
+				name: "Evil Corp.",
+				logo: Command,
+				plan: "Free",
+			},
+		],        
 		versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
 		navMain: [
 			{
@@ -149,28 +168,8 @@
 
 <Sidebar.Root class="pt-[var(--header-height)] pb-[var(--footer-height)]">
 	<Sidebar.Header>
-		<Sidebar.Menu>
-			<Sidebar.MenuItem>
-				<Sidebar.MenuButton>
-					{#snippet child({ props })}
-						<a href="##" {...props}>
-							<div
-								class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
-							>
-								<GalleryVerticalEnd class="size-4" />
-							</div>
-							<div class="flex flex-col gap-0.5 leading-none">
-								<span class="font-semibold">Documentation</span>
-								<span class="">v1.0.0</span>
-							</div>
-						</a>
-					{/snippet}
-				</Sidebar.MenuButton>
-			</Sidebar.MenuItem>
-		</Sidebar.Menu>
-		<SearchForm />
+		<TeamSwitcher teams={data.teams} />
 	</Sidebar.Header>
-
 	<Sidebar.Content>
 		<Sidebar.Group>
 			<Sidebar.Menu>
