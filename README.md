@@ -19,6 +19,10 @@ An opinionated development template designed to create large-scale business apps
     - authentication
     - data access layer
     - simple, reusable components
+- automated deployment
+    - static web site
+    - mobile apps: ios, android
+    - desktop apps: windows, macos, linux
 
 ## Tecnologies
 
