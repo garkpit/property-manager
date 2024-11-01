@@ -8,7 +8,7 @@
 	import Minus from "lucide-svelte/icons/minus";
 	import Plus from "lucide-svelte/icons/plus";
 	import type { ComponentProps } from "svelte";
-	import { AudioWaveform, Command } from "lucide-svelte"
+	import { AudioWaveform, Command, Settings, BookOpen, Code, Box } from "lucide-svelte"
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 	const data = {
@@ -39,6 +39,7 @@
 			{
 				title: "Getting Started",
 				url: "#",
+				icon: BookOpen,
 				items: [
 					{
 						title: "Installation",
@@ -53,6 +54,7 @@
 			{
 				title: "Building Your Application",
 				url: "#",
+				icon: Box,
 				items: [
 					{
 						title: "Routing",
@@ -108,6 +110,7 @@
 			{
 				title: "API Reference",
 				url: "#",
+				icon: Code,
 				items: [
 					{
 						title: "Components",
@@ -138,6 +141,7 @@
 			{
 				title: "Architecture",
 				url: "#",
+				icon: Settings,
 				items: [
 					{
 						title: "Accessibility",
@@ -179,7 +183,11 @@
 							<Collapsible.Trigger>
 								{#snippet child({ props })}
 									<Sidebar.MenuButton {...props}>
-										{mainItem.title}{" "}
+										<svelte:component 
+											this={mainItem.icon} 
+											class="mr-2 h-4 w-4" 
+										/>
+										{mainItem.title}
 										<Plus
 											class="ml-auto group-data-[state=open]/collapsible:hidden"
 										/>
