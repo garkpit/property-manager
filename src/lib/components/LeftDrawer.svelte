@@ -57,6 +57,10 @@
 				icon: Box,
 				items: [
 					{
+						title: "About",
+						url: "dashboard/about",
+					},
+					{
 						title: "Routing",
 						url: "#",
 					},
@@ -183,8 +187,7 @@
 							<Collapsible.Trigger>
 								{#snippet child({ props })}
 									<Sidebar.MenuButton {...props}>
-										<svelte:component 
-											this={mainItem.icon} 
+										<mainItem.icon 
 											class="mr-2 h-4 w-4" 
 										/>
 										{mainItem.title}
