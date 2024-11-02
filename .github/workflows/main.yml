@@ -134,14 +134,14 @@ jobs:
           }
           EOF
 
-          # Create tauri.conf.json
+          # Create tauri.conf.json with Linux targets
           cat > src-tauri/tauri.conf.json << EOF
           {
             "build": {
               "beforeDevCommand": "",
               "beforeBuildCommand": "",
-              "devPath": "../build",
-              "distDir": "../build"
+              "devPath": "$(pwd)/build",
+              "distDir": "$(pwd)/build"
             },
             "package": {
               "productName": "${{ env.NAME }}",
@@ -159,7 +159,19 @@ jobs:
                   "icons/icon.ico"
                 ],
                 "resources": [],
-                "targets": ["dmg", "app"],
+                "targets": [
+                  "deb",
+                  "appimage",
+                  "rpm"
+                ],
+                "linux": {
+                  "deb": {
+                    "depends": []
+                  },
+                  "rpm": {
+                    "depends": []
+                  }
+                },
                 "windows": {
                   "certificateThumbprint": null,
                   "digestAlgorithm": "sha256",
