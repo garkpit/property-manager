@@ -134,7 +134,7 @@ jobs:
           }
           EOF
 
-          # Create tauri.conf.json with correct Linux targets structure
+          # Create tauri.conf.json with both Linux and macOS targets
           cat > src-tauri/tauri.conf.json << EOF
           {
             "build": {
@@ -150,6 +150,8 @@ jobs:
             "tauri": {
               "bundle": {
                 "active": true,
+                "category": "DeveloperTool",
+                "copyright": "",
                 "identifier": "${{ env.IDENTIFIER }}",
                 "icon": [
                   "icons/32x32.png",
@@ -159,7 +161,10 @@ jobs:
                   "icons/icon.ico"
                 ],
                 "resources": [],
+                "shortDescription": "",
                 "targets": [
+                  "dmg",
+                  "app",
                   "deb",
                   "appimage",
                   "rpm"
@@ -169,6 +174,13 @@ jobs:
                 },
                 "rpm": {
                   "depends": []
+                },
+                "macOS": {
+                  "frameworks": [],
+                  "minimumSystemVersion": "",
+                  "exceptionDomain": "",
+                  "signingIdentity": null,
+                  "entitlements": null
                 },
                 "windows": {
                   "certificateThumbprint": null,
