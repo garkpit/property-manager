@@ -134,7 +134,7 @@ jobs:
           }
           EOF
 
-          # Create tauri.conf.json with Linux targets
+          # Create tauri.conf.json with correct Linux targets structure
           cat > src-tauri/tauri.conf.json << EOF
           {
             "build": {
@@ -164,13 +164,11 @@ jobs:
                   "appimage",
                   "rpm"
                 ],
-                "linux": {
-                  "deb": {
-                    "depends": []
-                  },
-                  "rpm": {
-                    "depends": []
-                  }
+                "deb": {
+                  "depends": []
+                },
+                "rpm": {
+                  "depends": []
                 },
                 "windows": {
                   "certificateThumbprint": null,
