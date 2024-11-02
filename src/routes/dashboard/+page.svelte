@@ -27,6 +27,7 @@
             {/snippet}
         </Content>
 
-        <StatusBar />
+        <StatusBar>
+        </StatusBar>
     </div>
 </Sidebar.Provider>
