@@ -1,22 +1,19 @@
 <!-- svelte-ignore slot_element_deprecated -->
 <script lang="ts">
-    import { Menu } from 'lucide-svelte';
-    import { Button } from "$lib/components/ui/button/index.js";
-    import * as Sheet from "$lib/components/ui/sheet/index.js";
 	let {
-	  topLeft,
-	  title,
-	  topRight,
-      topLeftData,
-      titleData,
-      topRightData
+	  Left,
+	  Center,
+	  Right,
+      LeftData,
+      CenterData,
+      RightData
 	} = $props<{
-	  topLeft?: (data: any) => unknown,
-	  title?: (data: any) => unknown,
-	  topRight?: (data: any) => unknown,
-	  topLeftData?: any,
-	  titleData?: any,
-	  topRightData?: any      
+	  Left?: (data: any) => unknown,
+	  Center?: (data: any) => unknown,
+	  Right?: (data: any) => unknown,
+	  LeftData?: any,
+	  CenterData?: any,
+	  RightData?: any      
 	}>();
     let sheetOpen = $state(false);
 
@@ -27,61 +24,22 @@
     // Move DOM-related logic into an effect
     const root = document.documentElement;
     const styles = getComputedStyle(root);
-    //let hh = $state(styles.getPropertyValue('--header-height').trim());
-
-    $effect(() => {
-        //const updateInsets = () => {
-        //    hh = styles.getPropertyValue('--header-height').trim();
-        //}
-
-        //updateInsets();
-        //setTimeout(updateInsets, 500);
-        //setTimeout(updateInsets, 1000);
-        //setTimeout(updateInsets, 3000);
-
-        //const observer = new MutationObserver(updateInsets);
-        //observer.observe(root, { attributes: true, attributeFilter: ['style'] });
-
-        //return () => observer.disconnect();
-    });
 </script>
 
 	<header 
     class="header-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-b"
     style="top: var(--safe-area-inset-top, 0px);"
     >
-	  <!--<div class="flex items-center space-x-2">-->
         <div class="flex items-center space-x-2">
-            {@render topLeft?.(topLeftData)}
+            {@render Left?.(LeftData)}
         </div>
 
         <div>
-            {@render title?.(titleData)}
+            {@render Center?.(CenterData)}
         </div>
 
         <div class="flex items-center">
-            {@render topRight?.(topRightData)}
+            {@render Right?.(RightData)}
         </div>
-
-      <!--</div>-->
 	</header>
   
-
-
-<!--
-<main class="bg-background header-height fixed top-0 left-0 right-0 z-30 border-b">
-    <div class="container mx-auto px-4 flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-            {@render topLeft?.(topLeftData)}
-        </div>
-
-        <div class="flex-1 flex justify-center">
-            {@render title?.(titleData)}
-        </div>
-
-        <div class="flex items-center">
-            {@render topRight?.(topRightData)}
-        </div>
-    </div>
-</main>
--->

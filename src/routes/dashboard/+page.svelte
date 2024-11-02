@@ -10,19 +10,19 @@
     <LeftDrawer />
     <div id="contentpage" class="flex flex-col h-fit">
         <Navbar>
-            {#snippet topLeft()}
+            {#snippet Left()}
                 <Sidebar.Trigger />
             {/snippet}
-            {#snippet title()}
+            {#snippet Center()}
                 Dashboard
             {/snippet}
-            {#snippet topRight()}
+            {#snippet Right()}
                 TR
             {/snippet}
         </Navbar>
 
         <Content>
-            {#snippet children()}
+            {#snippet content()}
                 <h1>welcome to the dashboard</h1>
             {/snippet}
         </Content>

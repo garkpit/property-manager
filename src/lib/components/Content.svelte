@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { children } = $props<{ children: () => unknown }>()
+	let { content } = $props<{ content: () => unknown }>()
 </script>
 
 <main class="h-fit overflow-y-auto">
@@ -11,7 +11,7 @@
         <div class="fixed bottom-0 left-0 right-0 h-[var(--safe-area-inset-bottom,0px)] bg-background z-20"></div>
         
         <div class="relative py-6">
-            {@render children()}
+            {@render content()}
         </div>
     </div>
 </main>
