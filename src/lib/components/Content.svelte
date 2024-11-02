@@ -1,5 +1,13 @@
 <script lang="ts">
-	let { content } = $props<{ content: () => unknown }>()
+  import type { Snippet } from 'svelte';
+	let {
+    Middle,
+    MiddleData
+	} = $props<{
+	  //Middle?: (data: any) => unknown,
+	  Middle?: Snippet,
+	  MiddleData?: any,
+	}>();
 </script>
 
 <main class="h-fit overflow-y-auto">
@@ -11,7 +19,7 @@
         <div class="fixed bottom-0 left-0 right-0 h-[var(--safe-area-inset-bottom,0px)] bg-background z-20"></div>
         
         <div class="relative py-6">
-            {@render content()}
+            {@render Middle(MiddleData)}
         </div>
     </div>
 </main>

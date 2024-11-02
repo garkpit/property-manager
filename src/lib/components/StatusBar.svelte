@@ -1,68 +1,62 @@
 <script lang="ts">
-	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
-	import { Toaster } from '$lib/components/ui/sonner';
-	import DarkModeToggle from '$lib/components/DarkModeToggle.svelte';
-  
-	let {
-	  Left,
-	  Center,
-	  Right,
-	  FullStatusBar,
-	  LeftData,
-	  CenterData,
-	  RightData,
-	  FullStatusBarData
-	} = $props<{
-	  Left?: (data: any) => unknown,
-	  Center?: (data: any) => unknown,
-	  Right?: (data: any) => unknown,
-	  FullStatusBar?: (data: any) => unknown,
-	  footer?: unknown,
-	  LeftData?: any,
-	  CenterData?: any,
-	  RightData?: any,
-	  FullStatusBarData?: any
-	}>();
-  </script>
-  
-	<footer 
-	class="footer-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-t"
-	style="bottom: var(--safe-area-inset-bottom, 0px)"
-	>
+  import LanguageSelector from "$lib/components/LanguageSelector.svelte";
+  import { Toaster } from "$lib/components/ui/sonner";
+  import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
 
-	{#if FullStatusBar}
-		<div class="flex items-center justify-center w-full">
-			{@render FullStatusBar(FullStatusBarData)}
-		</div>
-	{:else}
+  let {
+    Left,
+    Center,
+    Right,
+    FullStatusBar,
+    LeftData,
+    CenterData,
+    RightData,
+    FullStatusBarData,
+  } = $props<{
+    Left?: (data: any) => unknown;
+    Center?: (data: any) => unknown;
+    Right?: (data: any) => unknown;
+    FullStatusBar?: (data: any) => unknown;
+    footer?: unknown;
+    LeftData?: any;
+    CenterData?: any;
+    RightData?: any;
+    FullStatusBarData?: any;
+  }>();
+</script>
 
-		<div class="flex items-center space-x-2">
-			{#if Left}
-			{@render Left(LeftData)}
-			{:else}
-			<DarkModeToggle />
-			{/if}
-		</div>
+<footer
+  class="footer-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-t"
+  style="bottom: var(--safe-area-inset-bottom, 0px)"
+>
+  {#if FullStatusBar}
+    <div class="flex items-center justify-center w-full">
+      {@render FullStatusBar(FullStatusBarData)}
+    </div>
+  {:else}
+    <div class="flex items-center space-x-2">
+      {#if Left}
+        {@render Left(LeftData)}
+      {:else}
+        <DarkModeToggle />
+      {/if}
+    </div>
 
-		<div>
-			{#if Center}
-			{@render Center(CenterData)}
-			{:else}
-			{__APP_TITLE__} v{__APP_VERSION__}
-			{/if}
-		</div>
-	
-		<div class="flex items-center space-x-2">
-			{#if Right}
-			{@render Right(RightData)}
-			{:else}
-			<LanguageSelector />
-			{/if}
-		</div>
+    <div>
+      {#if Center}
+        {@render Center(CenterData)}
+      {:else}
+        {__APP_TITLE__} v{__APP_VERSION__}
+      {/if}
+    </div>
 
-	{/if}
-
-
-	</footer>
-	<Toaster richColors />
-  
+    <div class="flex items-center space-x-2">
+      {#if Right}
+        {@render Right(RightData)}
+      {:else}
+        <LanguageSelector />
+      {/if}
+    </div>
+  {/if}
+</footer>
+<Toaster richColors />

@@ -26,6 +26,8 @@
 		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.454.0",
 		"mode-watcher": "^0.4.1",
+		"prettier": "^3.3.3",
+		"prettier-plugin-svelte": "^3.2.7",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"svelte-sonner": "^0.3.28",
