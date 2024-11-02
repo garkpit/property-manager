@@ -3,12 +3,9 @@
 	import SearchForm from "$lib/components/search-form.svelte";
 	import * as Collapsible from "$lib/components/ui/collapsible/index.js";
 	import TeamSwitcher from "$lib/components/team-switcher.svelte";
-	import GalleryVerticalEnd from "lucide-svelte/icons/gallery-vertical-end";
-    import NavUser from "$lib/components/nav-user.svelte";
-	import Minus from "lucide-svelte/icons/minus";
-	import Plus from "lucide-svelte/icons/plus";
+	import { GalleryVerticalEnd, Minus, Plus, AudioWaveform, Command, Settings, BookOpen, Code, Box } from "lucide-svelte";
+	import NavUser from "$lib/components/nav-user.svelte";
 	import type { ComponentProps } from "svelte";
-	import { AudioWaveform, Command, Settings, BookOpen, Code, Box } from "lucide-svelte"
 	import { sidebarState } from './LeftDrawer.svelte.ts';
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();

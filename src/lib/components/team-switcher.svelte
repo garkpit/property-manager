@@ -2,8 +2,7 @@
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
-	import ChevronsUpDown from "lucide-svelte/icons/chevrons-up-down";
-	import Plus from "lucide-svelte/icons/plus";
+	import { ChevronsUpDown, Plus } from "lucide-svelte";
 
 	// This should be `Component` after lucide-svelte updates types
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

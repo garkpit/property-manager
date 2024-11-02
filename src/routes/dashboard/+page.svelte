@@ -1,7 +1,7 @@
 <script lang="ts">
     import Content from '$lib/components/Content.svelte'
-    import StatusBar from '@/components/StatusBar.svelte'
-    import Navbar from '@/components/Navbar.svelte'
+    import StatusBar from '$lib/components/StatusBar.svelte'
+    import Navbar from '$lib/components/Navbar.svelte'
     import LeftDrawer from '$lib/components/LeftDrawer.svelte'
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 </script>
