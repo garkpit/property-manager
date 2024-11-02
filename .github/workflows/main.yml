@@ -17,10 +17,10 @@ jobs:
         include:
           - platform: "macos-latest" # for Arm based macs (M1 and above).
             args: "--target aarch64-apple-darwin"
-          #- platform: "macos-latest" # for Intel based macs.
-          #  args: "--target x86_64-apple-darwin"
-          #- platform: "ubuntu-22.04" # for Tauri v1 you could replace this with ubuntu-20.04.
-          #  args: ""
+          - platform: "macos-latest" # for Intel based macs.
+            args: "--target x86_64-apple-darwin"
+          - platform: "ubuntu-22.04" # for Tauri v1 you could replace this with ubuntu-20.04.
+            args: ""
           #- platform: "windows-latest"
           #  args: ""
 
@@ -134,14 +134,14 @@ jobs:
           }
           EOF
 
-          # Create tauri.conf.json
+          # Create tauri.conf.json with correct Linux targets structure
           cat > src-tauri/tauri.conf.json << EOF
           {
             "build": {
               "beforeDevCommand": "",
               "beforeBuildCommand": "",
-              "devPath": "../build",
-              "distDir": "../build"
+              "devPath": "$(pwd)/build",
+              "distDir": "$(pwd)/build"
             },
             "package": {
               "productName": "${{ env.NAME }}",
@@ -159,7 +159,17 @@ jobs:
                   "icons/icon.ico"
                 ],
                 "resources": [],
-                "targets": ["dmg", "app"],
+                "targets": [
+                  "deb",
+                  "appimage",
+                  "rpm"
+                ],
+                "deb": {
+                  "depends": []
+                },
+                "rpm": {
+                  "depends": []
+                },
                 "windows": {
                   "certificateThumbprint": null,
                   "digestAlgorithm": "sha256",
