@@ -20,11 +20,6 @@
           <Button size="lg">Get Started</Button>
         </a>
       </div>
-      <div class="flex justify-center gap-4 pt-4">
-        <a href="/test">
-          <Button size="lg">Test</Button>
-        </a>
-      </div>
     </div>
 
     <!-- Features Grid -->
