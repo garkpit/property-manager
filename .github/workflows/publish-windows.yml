@@ -79,10 +79,10 @@ jobs:
           Copy-Item static/favicon.png src-tauri/icons/icon.icns
           Copy-Item static/favicon.png src-tauri/icons/icon.ico
 
-          $CargoTomlContent = @'
+          $CargoTomlContent = @"
           [package]
           name = "svelte5-template"
-          version = "'$env:VERSION'"
+          version = "$($env:VERSION)"
           description = "Svelte 5 Template App"
           authors = ["you"]
           license = ""
@@ -101,7 +101,7 @@ jobs:
           [features]
           custom-protocol = [ "tauri/custom-protocol" ]
           default = [ "custom-protocol" ]
-          '@
+          "@
 
           Set-Content -Path src-tauri/Cargo.toml -Value $CargoTomlContent
 
