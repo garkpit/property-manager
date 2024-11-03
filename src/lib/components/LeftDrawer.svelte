@@ -199,7 +199,9 @@
 
 <Sidebar.Root class="z-50">
   <Sidebar.Header>
-    <TeamSwitcher teams={data.teams} />
+    <div class="pt-[var(--safe-area-inset-top,0px)]">
+      <TeamSwitcher teams={data.teams} />
+    </div>
   </Sidebar.Header>
   <Sidebar.Content>
     <Sidebar.Group>
@@ -261,7 +263,9 @@
     </Sidebar.Group>
   </Sidebar.Content>
   <Sidebar.Footer>
-    <NavUser user={data.user} />
+    <div class="pb-[var(--safe-area-inset-bottom,0px)]">
+      <NavUser user={data.user} />
+    </div>
   </Sidebar.Footer>
   <Sidebar.Rail />
 </Sidebar.Root>
