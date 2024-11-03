@@ -197,7 +197,7 @@
   // pt-[var(--header-height)] pb-[var(--footer-height)]
 </script>
 
-<Sidebar.Root class="">
+<Sidebar.Root class="z-50">
   <Sidebar.Header>
     <TeamSwitcher teams={data.teams} />
   </Sidebar.Header>
