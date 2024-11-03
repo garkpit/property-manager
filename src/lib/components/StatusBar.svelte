@@ -23,10 +23,11 @@
     RightData?: any;
     FullStatusBarData?: any;
   }>();
+  // bg-background
 </script>
 
 <footer
-  class="footer-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-t"
+  class="bg-red-300 footer-height border-t flex items-center justify-between px-4"
   style="bottom: var(--safe-area-inset-bottom, 0px)"
 >
   {#if FullStatusBar}

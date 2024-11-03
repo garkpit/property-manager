@@ -194,9 +194,10 @@
       }
     });
   });
+  // pt-[var(--header-height)] pb-[var(--footer-height)]
 </script>
 
-<Sidebar.Root class="pt-[var(--header-height)] pb-[var(--footer-height)]">
+<Sidebar.Root class="">
   <Sidebar.Header>
     <TeamSwitcher teams={data.teams} />
   </Sidebar.Header>
