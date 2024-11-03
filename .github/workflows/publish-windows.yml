@@ -63,8 +63,10 @@ jobs:
       - name: Create and initialize Tauri project
         shell: pwsh
         run: |
+          # Install required packages
           npm install
           npm run build
+          npm install -g png-to-ico
 
           New-Item -ItemType Directory -Path 'src-tauri/icons' -Force
           New-Item -ItemType Directory -Path 'src-tauri/src' -Force
@@ -73,11 +75,12 @@ jobs:
           cargo init --name svelte5-template
           Pop-Location
 
+          # Convert PNG to proper icon formats
           Copy-Item static/favicon.png src-tauri/icons/32x32.png
           Copy-Item static/favicon.png src-tauri/icons/128x128.png
           Copy-Item static/favicon.png src-tauri/icons/128x128@2x.png
           Copy-Item static/favicon.png src-tauri/icons/icon.icns
-          Copy-Item static/favicon.png src-tauri/icons/icon.ico
+          png-to-ico static/favicon.png > src-tauri/icons/icon.ico
 
           $CargoTomlContent = @"
           [package]
