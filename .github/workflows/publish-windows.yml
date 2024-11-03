@@ -57,8 +57,8 @@ jobs:
           Write-Host "ENV VERSION: $env:VERSION"
           Write-Host "ENV NAME: $env:NAME"
           Write-Host "ENV IDENTIFIER: $env:IDENTIFIER"
-          Write-Host "Computed VERSION: $(node -p \"require('./package.json').version\")"
-          Write-Host "Computed NAME: $(node -p \"require('./package.json').name\")"
+          Write-Host "Computed VERSION: $(node -p 'require(""./package.json"").version')"
+          Write-Host "Computed NAME: $(node -p 'require(""./package.json"").name')"
 
       - name: Create and initialize Tauri project
         shell: pwsh
