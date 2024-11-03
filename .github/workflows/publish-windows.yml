@@ -1,11 +1,9 @@
-name: "publish-windows"
+name: "publish-macos-arm"
 
 on:
   push:
     branches:
       - release
-
-# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 
 jobs:
   publish-tauri:
@@ -15,12 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #- platform: "macos-latest" # for Arm based macs (M1 and above).
-          #  args: "--target aarch64-apple-darwin"
-          #- platform: "macos-latest" # for Intel based macs.
-          #  args: "--target x86_64-apple-darwin"
-          #- platform: "ubuntu-22.04" # for Tauri v1 you could replace this with ubuntu-20.04.
-          #  args: ""
           - platform: "windows-latest"
             args: ""
 
@@ -28,24 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name: install Rust stable
+      - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          # This target is only used on macOS runners.
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04' # This must match the platform value defined above.
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-        # webkitgtk 4.0 is for Tauri v1 - webkitgtk 4.1 is for Tauri v2.
-        # You can remove the one that doesn't apply to your app to speed up the workflow a bit.
 
       - name: Set environment variables
         shell: pwsh
@@ -53,24 +37,28 @@ jobs:
           Write-Host "package.json contents:"
           Get-Content package.json
           Write-Host "**************"
-          Write-Host "setting env variables"
-          echo "VERSION=$(node -p "require('./package.json').version")" >> $env:GITHUB_ENV
-          echo "NAME=$(node -p "require('./package.json').name")" >> $env:GITHUB_ENV
-          echo "IDENTIFIER=$(node -p "require('./package.json').identifier")" >> $env:GITHUB_ENV
-          $env:VERSION = $(node -p "require('./package.json').version")
-          $env:NAME = $(node -p "require('./package.json').name")
-          $env:IDENTIFIER = $(node -p "require('./package.json').identifier")
-          Write-Host "Shell VERSION: $env:VERSION"
-          Write-Host "Shell NAME: $env:NAME"
-          Write-Host "Shell IDENTIFIER: $env:IDENTIFIER"
+          Write-Host "Setting environment variables"
+
+          $VERSION = node -p "require('./package.json').version"
+          $NAME = node -p "require('./package.json').name"
+          $IDENTIFIER = node -p "require('./package.json').identifier"
+
+          Add-Content -Path $env:GITHUB_ENV -Value "VERSION=$VERSION"
+          Add-Content -Path $env:GITHUB_ENV -Value "NAME=$NAME"
+          Add-Content -Path $env:GITHUB_ENV -Value "IDENTIFIER=$IDENTIFIER"
+
+          Write-Host "Shell VERSION: $VERSION"
+          Write-Host "Shell NAME: $NAME"
+          Write-Host "Shell IDENTIFIER: $IDENTIFIER"
+
       - name: Check environment variables
         shell: pwsh
         run: |
-          echo "ENV VERSION: $env:VERSION"
-          echo "ENV NAME: $env:NAME"
-          echo "ENV IDENTIFIER: $env:IDENTIFIER"
-          echo "Computed VERSION: $(node -p "require('./package.json').version")"
-          echo "Computed NAME: $(node -p "require('./package.json').name")"
+          Write-Host "ENV VERSION: $env:VERSION"
+          Write-Host "ENV NAME: $env:NAME"
+          Write-Host "ENV IDENTIFIER: $env:IDENTIFIER"
+          Write-Host "Computed VERSION: $(node -p \"require('./package.json').version\")"
+          Write-Host "Computed NAME: $(node -p \"require('./package.json').name\")"
 
       - name: Create and initialize Tauri project
         shell: pwsh
@@ -79,8 +67,8 @@ jobs:
           npm run build
 
           # Create src-tauri directory and subdirectories
-          New-Item -Path "src-tauri/icons" -ItemType Directory -Force
-          New-Item -Path "src-tauri/src" -ItemType Directory -Force
+          New-Item -ItemType Directory -Path 'src-tauri/icons' -Force
+          New-Item -ItemType Directory -Path 'src-tauri/src' -Force
 
           # Initialize a new Rust project
           Push-Location src-tauri
@@ -88,130 +76,130 @@ jobs:
           Pop-Location
 
           # Copy icons
-          Copy-Item "static/favicon.png" -Destination "src-tauri/icons/32x32.png"
-          Copy-Item "static/favicon.png" -Destination "src-tauri/icons/128x128.png"
-          Copy-Item "static/favicon.png" -Destination "src-tauri/icons/128x128@2x.png"
-          Copy-Item "static/favicon.png" -Destination "src-tauri/icons/icon.icns"
-          Copy-Item "static/favicon.png" -Destination "src-tauri/icons/icon.ico"
+          Copy-Item static/favicon.png src-tauri/icons/32x32.png
+          Copy-Item static/favicon.png src-tauri/icons/128x128.png
+          Copy-Item static/favicon.png src-tauri/icons/128x128@2x.png
+          Copy-Item static/favicon.png src-tauri/icons/icon.icns
+          Copy-Item static/favicon.png src-tauri/icons/icon.ico
 
           # Create Cargo.toml
-          @'
-          [package]
-          name = "svelte5-template"
-          version = "$($env:VERSION)"
-          description = "Svelte 5 Template App"
-          authors = ["you"]
-          license = ""
-          repository = ""
-          edition = "2021"
-          rust-version = "1.70"
+          $CargoTomlContent = @"
+[package]
+name = "svelte5-template"
+version = "$env:VERSION"
+description = "Svelte 5 Template App"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.70"
 
-          [build-dependencies]
-          tauri-build = { version = "1.5.0", features = [] }
+[build-dependencies]
+tauri-build = { version = "1.5.0", features = [] }
 
-          [dependencies]
-          serde_json = "1.0"
-          serde = { version = "1.0", features = ["derive"] }
-          tauri = { version = "1.5.2", features = ["shell-open"] }
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "1.5.2", features = ["shell-open"] }
 
-          [features]
-          custom-protocol = [ "tauri/custom-protocol" ]
-          default = [ "custom-protocol" ]
-'@ | Set-Content -Path "src-tauri/Cargo.toml"
+[features]
+custom-protocol = [ "tauri/custom-protocol" ]
+default = [ "custom-protocol" ]
+"@
+          Set-Content -Path src-tauri/Cargo.toml -Value $CargoTomlContent
 
           # Create build.rs
-          @'
-          fn main() {
-              tauri_build::build()
-          }
-'@ | Set-Content -Path "src-tauri/build.rs"
+          $BuildRsContent = @"
+fn main() {
+  tauri_build::build()
+}
+"@
+          Set-Content -Path src-tauri/build.rs -Value $BuildRsContent
 
           # Create main.rs
-          @'
-          #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+          $MainRsContent = @"
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-          fn main() {
-              tauri::Builder::default()
-                  .run(tauri::generate_context!())
-                  .expect("error while running tauri application");
-          }
-'@ | Set-Content -Path "src-tauri/src/main.rs"
+fn main() {
+    tauri::Builder::default()
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+"@
+          Set-Content -Path src-tauri/src/main.rs -Value $MainRsContent
+
+          # Get current directory and adjust paths
+          $CurrentDir = (Get-Location).Path
+          $CurrentDirForwardSlash = $CurrentDir -replace '\\','/'
+          $DevPath = "$CurrentDirForwardSlash/build"
+          $DistDir = $DevPath
 
           # Create tauri.conf.json
-          $currentPath = (Get-Location).Path
-          $config = @{
-              build = @{
-                  beforeDevCommand = ""
-                  beforeBuildCommand = ""
-                  devPath = "$currentPath/build"
-                  distDir = "$currentPath/build"
-              }
-              package = @{
-                  productName = "$($env:NAME)"
-                  version = "$($env:VERSION)"
-              }
-              tauri = @{
-                  bundle = @{
-                      active = $true
-                      category = "DeveloperTool"
-                      copyright = ""
-                      identifier = "$($env:IDENTIFIER)"
-                      icon = @(
-                          "icons/32x32.png"
-                          "icons/128x128.png"
-                          "icons/128x128@2x.png"
-                          "icons/icon.icns"
-                          "icons/icon.ico"
-                      )
-                      resources = @()
-                      shortDescription = ""
-                      targets = @("dmg", "app", "deb", "appimage", "rpm")
-                      deb = @{
-                          depends = @()
-                      }
-                      rpm = @{
-                          depends = @()
-                      }
-                      macOS = @{
-                          frameworks = @()
-                          minimumSystemVersion = ""
-                          exceptionDomain = ""
-                          signingIdentity = $null
-                          entitlements = $null
-                      }
-                      windows = @{
-                          certificateThumbprint = $null
-                          digestAlgorithm = "sha256"
-                          timestampUrl = ""
-                      }
-                  }
-                  security = @{
-                      csp = $null
-                  }
-                  windows = @(
-                      @{
-                          fullscreen = $false
-                          height = 600
-                          resizable = $true
-                          title = "$($env:NAME)"
-                          width = 800
-                      }
-                  )
-              }
-          }
-          $config | ConvertTo-Json -Depth 10 | Set-Content "src-tauri/tauri.conf.json"
+          $TauriConfJsonContent = @"
+{
+  "build": {
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "",
+    "devPath": "$DevPath",
+    "distDir": "$DistDir"
+  },
+  "package": {
+    "productName": "$env:NAME",
+    "version": "$env:VERSION"
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "category": "DeveloperTool",
+      "copyright": "",
+      "identifier": "$env:IDENTIFIER",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "resources": [],
+      "shortDescription": "",
+      "targets": [
+        "msi",
+        "nsis"
+      ],
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 600,
+        "resizable": true,
+        "title": "$env:NAME",
+        "width": 800
+      }
+    ]
+  }
+}
+"@
+          Set-Content -Path src-tauri/tauri.conf.json -Value $TauriConfJsonContent
 
           # Verify the directory structure
           Write-Host "Tauri directory contents:"
-          Get-ChildItem -Path "src-tauri/" -Recurse
+          Get-ChildItem -Path src-tauri
           Write-Host "Cargo.toml contents:"
-          Get-Content "src-tauri/Cargo.toml"
+          Get-Content src-tauri/Cargo.toml
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          tagName: app-v__VERSION__  # The action automatically replaces __VERSION__ with the app version.
           releaseName: "App v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
