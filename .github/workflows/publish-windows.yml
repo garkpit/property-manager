@@ -48,23 +48,23 @@ jobs:
         # You can remove the one that doesn't apply to your app to speed up the workflow a bit.
 
       - name: Set environment variables
-        shell: pwsh # Explicitly specify PowerShell
+        shell: pwsh
         run: |
-          echo "package.json contents:"
-          cat package.json
-          echo "**************"
-          echo "setting env variables"
+          Write-Host "package.json contents:"
+          Get-Content package.json
+          Write-Host "**************"
+          Write-Host "setting env variables"
           echo "VERSION=$(node -p "require('./package.json').version")" >> $env:GITHUB_ENV
           echo "NAME=$(node -p "require('./package.json').name")" >> $env:GITHUB_ENV
           echo "IDENTIFIER=$(node -p "require('./package.json').identifier")" >> $env:GITHUB_ENV
           $env:VERSION = $(node -p "require('./package.json').version")
           $env:NAME = $(node -p "require('./package.json').name")
           $env:IDENTIFIER = $(node -p "require('./package.json').identifier")
-          echo "Shell VERSION: $env:VERSION"
-          echo "Shell NAME: $env:NAME"
-          echo "Shell IDENTIFIER: $env:IDENTIFIER"
+          Write-Host "Shell VERSION: $env:VERSION"
+          Write-Host "Shell NAME: $env:NAME"
+          Write-Host "Shell IDENTIFIER: $env:IDENTIFIER"
       - name: Check environment variables
-        shell: pwsh # Explicitly specify PowerShell
+        shell: pwsh
         run: |
           echo "ENV VERSION: $env:VERSION"
           echo "ENV NAME: $env:NAME"
