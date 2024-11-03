@@ -83,7 +83,7 @@ jobs:
           Copy-Item static/favicon.png src-tauri/icons/icon.ico
 
           # Create Cargo.toml
-          $CargoTomlContent = @"
+$CargoTomlContent = @"
 [package]
 name = "svelte5-template"
 version = "$env:VERSION"
@@ -109,7 +109,7 @@ default = [ "custom-protocol" ]
           Set-Content -Path src-tauri/Cargo.toml -Value $CargoTomlContent
 
           # Create build.rs
-          $BuildRsContent = @"
+$BuildRsContent = @"
 fn main() {
   tauri_build::build()
 }
@@ -117,7 +117,7 @@ fn main() {
           Set-Content -Path src-tauri/build.rs -Value $BuildRsContent
 
           # Create main.rs
-          $MainRsContent = @"
+$MainRsContent = @"
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
@@ -135,7 +135,7 @@ fn main() {
           $DistDir = $DevPath
 
           # Create tauri.conf.json
-          $TauriConfJsonContent = @"
+$TauriConfJsonContent = @"
 {
   "build": {
     "beforeDevCommand": "",
