@@ -27,7 +27,7 @@
 </script>
 
 <footer
-  class="bg-red-300 footer-height border-t flex items-center justify-between px-4"
+  class="bg-red-300 footer-height border-t flex items-center justify-between px-4 absolute bottom-0 left-0 right-0 z-30"
   style="bottom: var(--safe-area-inset-bottom, 0px)"
 >
   {#if FullStatusBar}

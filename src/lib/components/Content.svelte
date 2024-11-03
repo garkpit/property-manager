@@ -1,27 +1,29 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-	let {
-    Middle,
-    MiddleData
-	} = $props<{
-	  //Middle?: (data: any) => unknown,
-	  Middle?: Snippet,
-	  MiddleData?: any,
-	}>();
+  import type { Snippet } from "svelte";
+  let { Middle, MiddleData } = $props<{
+    //Middle?: (data: any) => unknown,
+    Middle?: Snippet;
+    MiddleData?: any;
+  }>();
 </script>
 
-<main class="h-fit overflow-y-auto">
-    <div class="container mx-auto relative"
-    style="margin-top: calc(var(--safe-area-inset-top, 0px) + 3rem); margin-bottom: calc(var(--safe-area-inset-bottom, 0px) + 3rem);"
-    >
-        <div class="fixed top-0 left-0 right-0 h-[var(--safe-area-inset-top,0px)] bg-background z-20"></div>
-        
-        <div class="fixed bottom-0 left-0 right-0 h-[var(--safe-area-inset-bottom,0px)] bg-background z-20"></div>
-        
-        <div class="relative py-6">
-            {@render Middle(MiddleData)}
-        </div>
+<main class="flex-1 overflow-y-auto relative">
+  <div
+    class="container mx-auto relative px-4"
+    style="padding-top: calc(var(--header-height) + var(--safe-area-inset-top, 0px)); padding-bottom: calc(var(--footer-height) + var(--safe-area-inset-bottom, 0px));"
+  >
+    <div
+      class="fixed top-0 left-0 right-0 h-[var(--safe-area-inset-top,0px)] bg-background z-20"
+    ></div>
+
+    <div
+      class="fixed bottom-0 left-0 right-0 h-[var(--safe-area-inset-bottom,0px)] bg-background z-20"
+    ></div>
+
+    <div class="relative py-6">
+      {@render Middle(MiddleData)}
     </div>
+  </div>
 </main>
 
 <style>
