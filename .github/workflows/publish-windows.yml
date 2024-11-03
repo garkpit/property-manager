@@ -144,19 +144,20 @@ jobs:
             "build": {
               "beforeDevCommand": "",
               "beforeBuildCommand": "",
-              "devPath": "$DevPath",
-              "distDir": "$DistDir"
+              "devPath": "../build",
+              "distDir": "../build",
+              "withGlobalTauri": true
             },
             "package": {
-              "productName": "$env:NAME",
-              "version": "$env:VERSION"
+              "productName": "$($env:NAME)",
+              "version": "$($env:VERSION)"
             },
             "tauri": {
               "bundle": {
                 "active": true,
                 "category": "DeveloperTool",
                 "copyright": "",
-                "identifier": "$env:IDENTIFIER",
+                "identifier": "$($env:IDENTIFIER)",
                 "icon": [
                   "icons/32x32.png",
                   "icons/128x128.png",
@@ -173,7 +174,10 @@ jobs:
                 "windows": {
                   "certificateThumbprint": null,
                   "digestAlgorithm": "sha256",
-                  "timestampUrl": ""
+                  "timestampUrl": "",
+                  "webviewInstallMode": {
+                    "type": "downloadBootstrapper"
+                  }
                 }
               },
               "security": {
@@ -184,7 +188,7 @@ jobs:
                   "fullscreen": false,
                   "height": 600,
                   "resizable": true,
-                  "title": "$env:NAME",
+                  "title": "$($env:NAME)",
                   "width": 800
                 }
               ]
