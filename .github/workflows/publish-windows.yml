@@ -66,24 +66,20 @@ jobs:
           npm install
           npm run build
 
-          # Create src-tauri directory and subdirectories
           New-Item -ItemType Directory -Path 'src-tauri/icons' -Force
           New-Item -ItemType Directory -Path 'src-tauri/src' -Force
 
-          # Initialize a new Rust project
           Push-Location src-tauri
           cargo init --name svelte5-template
           Pop-Location
 
-          # Copy icons
           Copy-Item static/favicon.png src-tauri/icons/32x32.png
           Copy-Item static/favicon.png src-tauri/icons/128x128.png
           Copy-Item static/favicon.png src-tauri/icons/128x128@2x.png
           Copy-Item static/favicon.png src-tauri/icons/icon.icns
           Copy-Item static/favicon.png src-tauri/icons/icon.ico
 
-          # Create Cargo.toml
-$CargoTomlContent = @"
+          $CargoTomlContent = @'
 [package]
 name = "svelte5-template"
 version = "$env:VERSION"
@@ -105,7 +101,8 @@ tauri = { version = "1.5.2", features = ["shell-open"] }
 [features]
 custom-protocol = [ "tauri/custom-protocol" ]
 default = [ "custom-protocol" ]
-"@
+'@
+
           Set-Content -Path src-tauri/Cargo.toml -Value $CargoTomlContent
 
           # Create build.rs
