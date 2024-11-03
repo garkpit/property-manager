@@ -80,49 +80,49 @@ jobs:
           Copy-Item static/favicon.png src-tauri/icons/icon.ico
 
           $CargoTomlContent = @'
-[package]
-name = "svelte5-template"
-version = "$env:VERSION"
-description = "Svelte 5 Template App"
-authors = ["you"]
-license = ""
-repository = ""
-edition = "2021"
-rust-version = "1.70"
+          [package]
+          name = "svelte5-template"
+          version = "$env:VERSION"
+          description = "Svelte 5 Template App"
+          authors = ["you"]
+          license = ""
+          repository = ""
+          edition = "2021"
+          rust-version = "1.70"
 
-[build-dependencies]
-tauri-build = { version = "1.5.0", features = [] }
+          [build-dependencies]
+          tauri-build = { version = "1.5.0", features = [] }
 
-[dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5.2", features = ["shell-open"] }
+          [dependencies]
+          serde_json = "1.0"
+          serde = { version = "1.0", features = ["derive"] }
+          tauri = { version = "1.5.2", features = ["shell-open"] }
 
-[features]
-custom-protocol = [ "tauri/custom-protocol" ]
-default = [ "custom-protocol" ]
-'@
+          [features]
+          custom-protocol = [ "tauri/custom-protocol" ]
+          default = [ "custom-protocol" ]
+          '@
 
           Set-Content -Path src-tauri/Cargo.toml -Value $CargoTomlContent
 
           # Create build.rs
-$BuildRsContent = @"
-fn main() {
-  tauri_build::build()
-}
-"@
+          $BuildRsContent = @"
+          fn main() {
+            tauri_build::build()
+          }
+          "@
           Set-Content -Path src-tauri/build.rs -Value $BuildRsContent
 
           # Create main.rs
-$MainRsContent = @"
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+          $MainRsContent = @"
+          #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-fn main() {
-    tauri::Builder::default()
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
-"@
+          fn main() {
+              tauri::Builder::default()
+                  .run(tauri::generate_context!())
+                  .expect("error while running tauri application");
+          }
+          "@
           Set-Content -Path src-tauri/src/main.rs -Value $MainRsContent
 
           # Get current directory and adjust paths
@@ -132,58 +132,58 @@ fn main() {
           $DistDir = $DevPath
 
           # Create tauri.conf.json
-$TauriConfJsonContent = @"
-{
-  "build": {
-    "beforeDevCommand": "",
-    "beforeBuildCommand": "",
-    "devPath": "$DevPath",
-    "distDir": "$DistDir"
-  },
-  "package": {
-    "productName": "$env:NAME",
-    "version": "$env:VERSION"
-  },
-  "tauri": {
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "identifier": "$env:IDENTIFIER",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "resources": [],
-      "shortDescription": "",
-      "targets": [
-        "msi",
-        "nsis"
-      ],
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
-    },
-    "security": {
-      "csp": null
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 600,
-        "resizable": true,
-        "title": "$env:NAME",
-        "width": 800
-      }
-    ]
-  }
-}
-"@
+          $TauriConfJsonContent = @"
+          {
+            "build": {
+              "beforeDevCommand": "",
+              "beforeBuildCommand": "",
+              "devPath": "$DevPath",
+              "distDir": "$DistDir"
+            },
+            "package": {
+              "productName": "$env:NAME",
+              "version": "$env:VERSION"
+            },
+            "tauri": {
+              "bundle": {
+                "active": true,
+                "category": "DeveloperTool",
+                "copyright": "",
+                "identifier": "$env:IDENTIFIER",
+                "icon": [
+                  "icons/32x32.png",
+                  "icons/128x128.png",
+                  "icons/128x128@2x.png",
+                  "icons/icon.icns",
+                  "icons/icon.ico"
+                ],
+                "resources": [],
+                "shortDescription": "",
+                "targets": [
+                  "msi",
+                  "nsis"
+                ],
+                "windows": {
+                  "certificateThumbprint": null,
+                  "digestAlgorithm": "sha256",
+                  "timestampUrl": ""
+                }
+              },
+              "security": {
+                "csp": null
+              },
+              "windows": [
+                {
+                  "fullscreen": false,
+                  "height": 600,
+                  "resizable": true,
+                  "title": "$env:NAME",
+                  "width": 800
+                }
+              ]
+            }
+          }
+          "@
           Set-Content -Path src-tauri/tauri.conf.json -Value $TauriConfJsonContent
 
           # Verify the directory structure
@@ -196,7 +196,7 @@ $TauriConfJsonContent = @"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__  # The action automatically replaces __VERSION__ with the app version.
+          tagName: app-v__VERSION__ # The action automatically replaces __VERSION__ with the app version.
           releaseName: "App v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
