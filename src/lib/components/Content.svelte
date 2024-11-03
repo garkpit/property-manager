@@ -20,6 +20,13 @@
       class="fixed bottom-0 left-0 right-0 h-[var(--safe-area-inset-bottom,0px)] bg-background z-20"
     ></div>
 
+    <div class="w-full h-0 invisible">
+      <!-- This is an invisible spacer to prevent the 
+           Navbar and StatusBar from collapsing -->
+      {#each Array(200) as _, i}
+        <span>SPACER {i}</span>
+      {/each}
+    </div>
     <div class="relative py-6">
       {@render Middle(MiddleData)}
     </div>
