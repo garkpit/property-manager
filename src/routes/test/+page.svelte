@@ -4,13 +4,14 @@
   import StatusBar from "$lib/components/StatusBar.svelte";
   import Navbar from "$lib/components/Navbar.svelte";
   import Content from "$lib/components/Content.svelte";
+  // bg-background???
 </script>
 
 <Sidebar.Provider>
   <div class="flex min-h-screen">
     <LeftDrawer />
 
-    <main class="bg-blue-300 flex-1 relative flex flex-col">
+    <main class="flex-1 relative flex flex-col">
       <div class="flex flex-col h-screen">
         <Navbar>
           {#snippet Left()}
@@ -27,7 +28,6 @@
         <Content>
           {#snippet Middle()}
             <div class="flex items-center justify-between">
-              <Sidebar.Trigger class="mb-4" />
               <h1 class="text-3xl font-bold">Welcome to Test Page</h1>
             </div>
 
