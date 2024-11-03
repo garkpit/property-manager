@@ -1,4 +1,4 @@
-name: "publish-macos-arm"
+name: "publish-windows"
 
 on:
   push:
@@ -82,7 +82,7 @@ jobs:
           $CargoTomlContent = @'
           [package]
           name = "svelte5-template"
-          version = "$env:VERSION"
+          version = "'$env:VERSION'"
           description = "Svelte 5 Template App"
           authors = ["you"]
           license = ""
