@@ -60,13 +60,15 @@ jobs:
           Write-Host "Computed VERSION: $(node -p 'require(""./package.json"").version')"
           Write-Host "Computed NAME: $(node -p 'require(""./package.json"").name')"
 
+      - name: Install ImageMagick
+        run: choco install imagemagick.app -y
+
       - name: Create and initialize Tauri project
         shell: pwsh
         run: |
           # Install required packages
           npm install
           npm run build
-          npm install -g png-to-ico
 
           New-Item -ItemType Directory -Path 'src-tauri/icons' -Force
           New-Item -ItemType Directory -Path 'src-tauri/src' -Force
@@ -80,7 +82,9 @@ jobs:
           Copy-Item static/favicon.png src-tauri/icons/128x128.png
           Copy-Item static/favicon.png src-tauri/icons/128x128@2x.png
           Copy-Item static/favicon.png src-tauri/icons/icon.icns
-          png-to-ico static/favicon.png > src-tauri/icons/icon.ico
+
+          # Create Windows icon with multiple sizes
+          magick convert static/favicon.png -define icon:auto-resize=256,128,64,48,32,16 src-tauri/icons/icon.ico
 
           $CargoTomlContent = @"
           [package]
