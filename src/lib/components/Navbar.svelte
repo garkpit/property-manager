@@ -21,7 +21,7 @@
 </script>
 
 <header
-  class="bg-background header-height border-t flex items-center justify-between px-4 absolute top-0 left-0 right-0 z-30"
+  class="bg-background header-height border-b flex items-center justify-between px-4 absolute top-0 left-0 right-0 z-30"
   style="top: var(--safe-area-inset-top, 0px);"
 >
   <div class="flex items-center space-x-2">
