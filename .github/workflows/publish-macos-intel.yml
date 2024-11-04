@@ -144,7 +144,7 @@ jobs:
               "distDir": "$(pwd)/build"
             },
             "package": {
-              "productName": "${{ env.NAME }}",
+              "productName": "${{ env.NAME }}_macos",
               "version": "${{ env.VERSION }}"
             },
             "tauri": {
@@ -222,5 +222,5 @@ jobs:
           args: ${{ matrix.args }}
           distPath: ./build
           bundleIdentifier: ${{ env.IDENTIFIER }}
-          appName: ${{ env.NAME }}_macos
+          appName: ${{ env.NAME }}
           appVersion: ${{ env.VERSION }}

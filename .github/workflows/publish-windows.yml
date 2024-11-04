@@ -149,8 +149,8 @@ jobs:
               "withGlobalTauri": true
             },
             "package": {
-              "productName": "$($env:NAME)",
-              "version": "$($env:VERSION)"
+              "productName": "${{ env.NAME }}_windows",
+              "version": "${{ env.VERSION }}"
             },
             "tauri": {
               "bundle": {
@@ -215,5 +215,5 @@ jobs:
           args: ${{ matrix.args }}
           distPath: ./build
           bundleIdentifier: ${{ env.IDENTIFIER }}
-          appName: ${{ env.NAME }}_windows
+          appName: ${{ env.NAME }}
           appVersion: ${{ env.VERSION }}

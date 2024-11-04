@@ -255,8 +255,8 @@ jobs:
               "distDir": "../build"
             },
             "package": {
-              "productName": "svelte5-template",
-              "version": "0.0.4"
+              "productName": "${{ env.NAME }}_linux",
+              "version": "${{ env.VERSION }}"
             },
             "tauri": {
               "bundle": {
@@ -324,5 +324,5 @@ jobs:
           args: ${{ matrix.args }}
           distPath: ./build
           bundleIdentifier: ${{ env.IDENTIFIER }}
-          appName: ${{ env.NAME }}_linux
+          appName: ${{ env.NAME }}
           appVersion: ${{ env.VERSION }}
