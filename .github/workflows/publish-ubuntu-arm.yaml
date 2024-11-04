@@ -242,83 +242,83 @@ jobs:
           }
           EOF
 
-          # Configure build for ARM64
-          if: matrix.platform == 'ubuntu-22.04'
-          run: |
-            # Create or update tauri.conf.json
-            cat > src-tauri/tauri.conf.json << EOF
-            {
-              "build": {
-                "beforeDevCommand": "",
-                "beforeBuildCommand": "",
-                "devPath": "../build",
-                "distDir": "../build"
+      - name: Configure ARM64 build
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          # Create or update tauri.conf.json
+          cat > src-tauri/tauri.conf.json << EOF
+          {
+            "build": {
+              "beforeDevCommand": "",
+              "beforeBuildCommand": "",
+              "devPath": "../build",
+              "distDir": "../build"
+            },
+            "package": {
+              "productName": "svelte5-template",
+              "version": "0.0.4"
+            },
+            "tauri": {
+              "bundle": {
+                "active": true,
+                "category": "DeveloperTool",
+                "copyright": "",
+                "deb": {
+                  "depends": []
+                },
+                "externalBin": [],
+                "icon": [
+                  "icons/32x32.png",
+                  "icons/128x128.png",
+                  "icons/128x128@2x.png",
+                  "icons/icon.icns",
+                  "icons/icon.ico"
+                ],
+                "identifier": "com.tauri.dev",
+                "longDescription": "",
+                "macOS": {
+                  "entitlements": null,
+                  "exceptionDomain": "",
+                  "frameworks": [],
+                  "providerShortName": null,
+                  "signingIdentity": null
+                },
+                "resources": [],
+                "shortDescription": "",
+                "targets": ["deb"],
+                "windows": {
+                  "certificateThumbprint": null,
+                  "digestAlgorithm": "sha256",
+                  "timestampUrl": ""
+                }
               },
-              "package": {
-                "productName": "svelte5-template",
-                "version": "0.0.4"
+              "security": {
+                "csp": null
               },
-              "tauri": {
-                "bundle": {
-                  "active": true,
-                  "category": "DeveloperTool",
-                  "copyright": "",
-                  "deb": {
-                    "depends": []
-                  },
-                  "externalBin": [],
-                  "icon": [
-                    "icons/32x32.png",
-                    "icons/128x128.png",
-                    "icons/128x128@2x.png",
-                    "icons/icon.icns",
-                    "icons/icon.ico"
-                  ],
-                  "identifier": "com.tauri.dev",
-                  "longDescription": "",
-                  "macOS": {
-                    "entitlements": null,
-                    "exceptionDomain": "",
-                    "frameworks": [],
-                    "providerShortName": null,
-                    "signingIdentity": null
-                  },
-                  "resources": [],
-                  "shortDescription": "",
-                  "targets": ["deb"],
-                  "windows": {
-                    "certificateThumbprint": null,
-                    "digestAlgorithm": "sha256",
-                    "timestampUrl": ""
-                  }
-                },
-                "security": {
-                  "csp": null
-                },
-                "updater": {
-                  "active": false
-                },
-                "windows": [
-                  {
-                    "fullscreen": false,
-                    "height": 600,
-                    "resizable": true,
-                    "title": "Svelte 5 Template",
-                    "width": 800
-                  }
-                ]
-              }
+              "updater": {
+                "active": false
+              },
+              "windows": [
+                {
+                  "fullscreen": false,
+                  "height": 600,
+                  "resizable": true,
+                  "title": "Svelte 5 Template",
+                  "width": 800
+                }
+              ]
             }
-            EOF
+          }
+          EOF
 
-          - name: Build Tauri app
-            uses: tauri-apps/tauri-action@v0
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            with:
-              tagName: v__VERSION__
-              releaseName: "v__VERSION__"
-              releaseBody: "See the assets to download this version and install."
-              releaseDraft: true
-              prerelease: false
-              args: ${{ matrix.args }}
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "v__VERSION__"
+          releaseBody: "See the assets to download this version and install."
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
