@@ -317,8 +317,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v__VERSION__
-          releaseName: "v__VERSION__"
+          releaseName: "App v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+          distPath: ./build
+          bundleIdentifier: ${{ env.IDENTIFIER }}
+          appName: ${{ env.NAME }}
+          appVersion: ${{ env.VERSION }}
+          releaseAssets: |
+            ${{ env.NAME }}-linux-aarch64.deb
+            ${{ env.NAME }}-linux-aarch64.AppImage
