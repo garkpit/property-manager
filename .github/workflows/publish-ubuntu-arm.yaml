@@ -43,11 +43,19 @@ jobs:
         run: |
           # Add ARM64 architecture and update package sources
           sudo dpkg --add-architecture arm64
+
+          # Backup original sources
+          sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
+
+          # Create new sources list for ARM64
           sudo tee /etc/apt/sources.list.d/arm64.list << EOF
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted
           deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted
           EOF
+
+          # Modify main sources list to specify x86_64 architecture
+          sudo sed -i 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
 
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
