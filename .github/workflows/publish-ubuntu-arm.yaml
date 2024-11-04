@@ -322,3 +322,10 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+          distPath: ./build
+          bundleIdentifier: ${{ env.IDENTIFIER }}
+          appName: ${{ env.NAME }}
+          appVersion: ${{ env.VERSION }}
+          releaseAssets: |
+            ${{ env.NAME }}-linux-aarch64.deb
+            ${{ env.NAME }}-linux-aarch64.AppImage
