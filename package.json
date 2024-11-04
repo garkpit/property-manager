@@ -1,7 +1,8 @@
 {
 	"name": "svelte5-template",
-	"version": "0.0.4",
+	"version": "0.0.8",
 	"identifier": "com.example.svelte5template",
+	"description": "Svelte 5 Template App",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --host 0.0.0.0",

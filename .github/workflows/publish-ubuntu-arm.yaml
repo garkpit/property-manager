@@ -163,13 +163,16 @@ jobs:
           echo "setting env variables"
           echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
           echo "NAME=$(node -p "require('./package.json').name")" >> $GITHUB_ENV
-          echo "IDENTIFIER=$(node -p "require('./package.json').identifier")" >> $GITHUB_ENV
+          echo "IDENTIFIER=$(node -p "require('./package.json').identifier")" >> $GITHUB_ENV    
+          echo "DESCRIPTION=$(node -p "require('./package.json').description")" >> $GITHUB_ENV
           export VERSION=$(node -p "require('./package.json').version")
           export NAME=$(node -p "require('./package.json').name")
           export IDENTIFIER=$(node -p "require('./package.json').identifier")
+          export DESCRIPTION=$(node -p "require('./package.json').description")
           echo "Shell VERSION: $VERSION"
           echo "Shell NAME: $NAME"
           echo "Shell IDENTIFIER: $IDENTIFIER"
+          echo "Shell DESCRIPTION: $DESCRIPTION"
       - name: Check environment variables
         run: |
           echo "ENV VERSION: ${{ env.VERSION }}"
@@ -189,7 +192,7 @@ jobs:
 
           # Initialize a new Rust project
           cd src-tauri
-          cargo init --name svelte5-template
+          cargo init --name ${{ env.NAME }}
           cd ..
 
           # Copy icons
@@ -202,9 +205,9 @@ jobs:
           # Create Cargo.toml
           cat > src-tauri/Cargo.toml << EOF
           [package]
-          name = "svelte5-template"
+          name = "${{ env.NAME }}"
           version = "${{ env.VERSION }}"
-          description = "Svelte 5 Template App"
+          description = "${{ env.DESCRIPTION }}"
           authors = ["you"]
           license = ""
           repository = ""
@@ -255,8 +258,8 @@ jobs:
               "distDir": "../build"
             },
             "package": {
-              "productName": "svelte5-template",
-              "version": "0.0.4"
+              "productName": "${{ env.NAME }}_linux",
+              "version": "${{ env.VERSION }}"
             },
             "tauri": {
               "bundle": {
@@ -316,7 +319,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
+          tagName: app-v__VERSION__
           releaseName: "App v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
@@ -326,6 +329,3 @@ jobs:
           bundleIdentifier: ${{ env.IDENTIFIER }}
           appName: ${{ env.NAME }}
           appVersion: ${{ env.VERSION }}
-          releaseAssets: |
-            ${{ env.NAME }}-linux-aarch64.deb
-            ${{ env.NAME }}-linux-aarch64.AppImage
