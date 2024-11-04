@@ -224,6 +224,3 @@ jobs:
           bundleIdentifier: ${{ env.IDENTIFIER }}
           appName: ${{ env.NAME }}
           appVersion: ${{ env.VERSION }}
-          releaseAssets: |
-            ${{ env.NAME }}-linux-x86_64.deb
-            ${{ env.NAME }}-linux-x86_64.AppImage

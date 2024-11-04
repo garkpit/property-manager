@@ -217,6 +217,3 @@ jobs:
           bundleIdentifier: ${{ env.IDENTIFIER }}
           appName: ${{ env.NAME }}
           appVersion: ${{ env.VERSION }}
-          releaseAssets: |
-            ${{ env.NAME }}-windows-x86_64.msi
-            ${{ env.NAME }}-windows-x86_64.exe

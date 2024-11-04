@@ -224,6 +224,3 @@ jobs:
           bundleIdentifier: ${{ env.IDENTIFIER }}
           appName: ${{ env.NAME }}
           appVersion: ${{ env.VERSION }}
-          releaseAssets: |
-            ${{ env.NAME }}-macos-aarch64.app.tar.gz
-            ${{ env.NAME }}-macos-aarch64.dmg
