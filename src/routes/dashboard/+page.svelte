@@ -47,7 +47,7 @@
 </script>
 
 <Sidebar.Provider>
-  <div class="flex min-h-screen">
+  <div class="flex min-h-screen w-full">
     <LeftDrawer />
 
     <main class="flex-1 relative flex flex-col">
