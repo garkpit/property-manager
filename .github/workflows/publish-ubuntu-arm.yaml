@@ -44,17 +44,19 @@ jobs:
           # Add ARM64 architecture
           sudo dpkg --add-architecture arm64
 
-          # Create new sources list for both architectures
+          # Update sources list - separate AMD64 and ARM64 repositories
           sudo tee /etc/apt/sources.list << EOF
+          # AMD64 repositories
           deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
           deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
           deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
           deb [arch=amd64] http://security.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
 
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-backports main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
+          # ARM64 repositories
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-security main restricted universe multiverse
           EOF
 
           # Clean and update package lists
@@ -62,48 +64,96 @@ jobs:
           sudo apt-get clean
           sudo apt-get update
 
-          # Install x86_64 build dependencies
-          sudo apt-get install -y \
-            libwebkit2gtk-4.0-dev \
-            libwebkit2gtk-4.1-dev \
-            libappindicator3-dev \
-            librsvg2-dev \
-            patchelf \
+          # Debug: Search for GTK/GDK packages with error handling
+          echo "Available GTK/GDK packages:"
+          apt-cache search "libgtk" | grep "arm64" || true
+          apt-cache search "libgdk" | grep "arm64" || true
+
+          # Install packages without stopping on errors
+          sudo apt-get install -y --no-install-recommends \
+            crossbuild-essential-arm64 \
             gcc-aarch64-linux-gnu \
             g++-aarch64-linux-gnu \
-            crossbuild-essential-arm64 \
-            pkg-config
-
-          # Install ARM64 specific dependencies
-          sudo apt-get install -y \
+            pkg-config \
+            libgtk-3-0:arm64 \
+            libgtk-3-dev:arm64 \
+            libgtk-3-common:arm64 \
+            gir1.2-gtk-3.0:arm64 \
+            libglib2.0-dev:arm64 \
+            libglib2.0-0:arm64 \
+            libpango-1.0-0:arm64 \
+            libpango1.0-dev:arm64 \
+            libcairo2:arm64 \
+            libcairo2-dev:arm64 \
+            libatk1.0-0:arm64 \
+            libatk1.0-dev:arm64 \
+            libgdk-pixbuf2.0-0:arm64 \
+            libgdk-pixbuf2.0-dev:arm64 \
             libwebkit2gtk-4.0-dev:arm64 \
             libwebkit2gtk-4.1-dev:arm64 \
-            libappindicator3-dev:arm64 \
-            librsvg2-dev:arm64 \
-            libglib2.0-dev:arm64 \
-            libgtk-3-dev:arm64 \
+            libjavascriptcoregtk-4.0-dev:arm64 \
             libsoup-3.0-dev:arm64 \
-            libgdk-pixbuf2.0-dev:arm64 \
-            libatk1.0-dev:arm64 \
-            libpango1.0-dev:arm64 \
-            libcairo2-dev:arm64
+            librsvg2-dev:arm64 || true
+
+          # Debug: Show what was actually installed
+          echo "Installed packages:"
+          dpkg -l | grep -i "gtk\|gdk" || true
+
+          echo "Looking for pkg-config files:"
+          find /usr/lib/aarch64-linux-gnu/pkgconfig -name "*gtk*.pc" -o -name "*gdk*.pc" || true
+
+          # Install AppImage dependencies
+          sudo apt-get install -y --no-install-recommends \
+            file \
+            desktop-file-utils \
+            libfuse2 \
+            zsync \
+            patchelf \
+            fakeroot
+
+          # Create AppImage build environment
+          sudo mkdir -p /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0
+          sudo mkdir -p /usr/lib/aarch64-linux-gnu/gtk-3.0
+
+          # Copy necessary libraries
+          sudo cp -r /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/* /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/ || true
+          sudo cp -r /usr/lib/aarch64-linux-gnu/gtk-3.0/* /usr/lib/aarch64-linux-gnu/gtk-3.0/ || true
+
+          # Update library cache
+          sudo ldconfig
 
       - name: Set up cross-compilation environment
         if: matrix.platform == 'ubuntu-22.04'
         run: |
-          # Create a wrapper script for pkg-config to handle cross-compilation
+          # Create pkg-config wrapper
           sudo tee /usr/local/bin/aarch64-linux-gnu-pkg-config << 'EOF' > /dev/null
           #!/bin/sh
-          export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
+          export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig
           export PKG_CONFIG_LIBDIR=/usr/lib/aarch64-linux-gnu/pkgconfig
+          export PKG_CONFIG_SYSROOT_DIR=/
+          export PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1
+          export PKG_CONFIG_ALLOW_SYSTEM_LIBS=1
+
+          # Debug
+          echo "Searching for: $@"
+          echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
+          ls -la /usr/lib/aarch64-linux-gnu/pkgconfig/gdk*.pc
+
           exec pkg-config "$@"
           EOF
           sudo chmod +x /usr/local/bin/aarch64-linux-gnu-pkg-config
 
-          echo "PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig" >> $GITHUB_ENV
+          # Set environment variables
+          echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+          echo "CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+          echo "CXX_aarch64_unknown_linux_gnu=aarch64-linux-gnu-g++" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig" >> $GITHUB_ENV
           echo "PKG_CONFIG_ALLOW_CROSS=1" >> $GITHUB_ENV
-          echo "PKG_CONFIG_SYSROOT_DIR=/" >> $GITHUB_ENV
           echo "PKG_CONFIG=/usr/local/bin/aarch64-linux-gnu-pkg-config" >> $GITHUB_ENV
+
+          # Debug: Test pkg-config
+          echo "Testing pkg-config for gdk-3.0:"
+          /usr/local/bin/aarch64-linux-gnu-pkg-config --list-all | grep -i gdk
 
       - name: Set environment variables
         run: |
@@ -192,25 +242,31 @@ jobs:
           }
           EOF
 
-          # Create tauri.conf.json with both Linux and macOS targets
+      - name: Configure ARM64 build
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          # Create or update tauri.conf.json
           cat > src-tauri/tauri.conf.json << EOF
           {
             "build": {
               "beforeDevCommand": "",
               "beforeBuildCommand": "",
-              "devPath": "$(pwd)/build",
-              "distDir": "$(pwd)/build"
+              "devPath": "../build",
+              "distDir": "../build"
             },
             "package": {
-              "productName": "${{ env.NAME }}",
-              "version": "${{ env.VERSION }}"
+              "productName": "svelte5-template",
+              "version": "0.0.4"
             },
             "tauri": {
               "bundle": {
                 "active": true,
                 "category": "DeveloperTool",
                 "copyright": "",
-                "identifier": "${{ env.IDENTIFIER }}",
+                "deb": {
+                  "depends": []
+                },
+                "externalBin": [],
                 "icon": [
                   "icons/32x32.png",
                   "icons/128x128.png",
@@ -218,28 +274,18 @@ jobs:
                   "icons/icon.icns",
                   "icons/icon.ico"
                 ],
+                "identifier": "${{ env.IDENTIFIER }}",
+                "longDescription": "",
+                "macOS": {
+                  "entitlements": null,
+                  "exceptionDomain": "",
+                  "frameworks": [],
+                  "providerShortName": null,
+                  "signingIdentity": null
+                },
                 "resources": [],
                 "shortDescription": "",
-                "targets": [
-                  "dmg",
-                  "app",
-                  "deb",
-                  "appimage",
-                  "rpm"
-                ],
-                "deb": {
-                  "depends": []
-                },
-                "rpm": {
-                  "depends": []
-                },
-                "macOS": {
-                  "frameworks": [],
-                  "minimumSystemVersion": "",
-                  "exceptionDomain": "",
-                  "signingIdentity": null,
-                  "entitlements": null
-                },
+                "targets": ["deb"],
                 "windows": {
                   "certificateThumbprint": null,
                   "digestAlgorithm": "sha256",
@@ -249,12 +295,15 @@ jobs:
               "security": {
                 "csp": null
               },
+              "updater": {
+                "active": false
+              },
               "windows": [
                 {
                   "fullscreen": false,
                   "height": 600,
                   "resizable": true,
-                  "title": "${{ env.NAME }}",
+                  "title": "Svelte 5 Template",
                   "width": 800
                 }
               ]
@@ -262,23 +311,14 @@ jobs:
           }
           EOF
 
-          # Verify the directory structure
-          echo "Tauri directory contents:"
-          ls -la src-tauri/
-          echo "Cargo.toml contents:"
-          cat src-tauri/Cargo.toml
-
-      - uses: tauri-apps/tauri-action@v0
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: "App v__VERSION__"
+          tagName: v__VERSION__
+          releaseName: "v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
-          distPath: ./build
-          bundleIdentifier: ${{ env.IDENTIFIER }}
-          appName: ${{ env.NAME }}
-          appVersion: ${{ env.VERSION }}
