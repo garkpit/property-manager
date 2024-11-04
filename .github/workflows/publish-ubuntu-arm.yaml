@@ -44,17 +44,19 @@ jobs:
           # Add ARM64 architecture
           sudo dpkg --add-architecture arm64
 
-          # Update sources list
+          # Update sources list - separate AMD64 and ARM64 repositories
           sudo tee /etc/apt/sources.list << EOF
-          deb [arch=amd64,arm64] http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
-          deb [arch=amd64,arm64] http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
-          deb [arch=amd64,arm64] http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
-          deb [arch=amd64,arm64] http://security.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
+          # AMD64 repositories
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
+          deb [arch=amd64] http://security.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
 
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-updates main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-backports main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports jammy-security main restricted universe multiverse
+          # ARM64 repositories
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-security main restricted universe multiverse
           EOF
 
           # Clean and update package lists
