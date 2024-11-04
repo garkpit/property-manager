@@ -215,5 +215,5 @@ jobs:
           args: ${{ matrix.args }}
           distPath: ./build
           bundleIdentifier: ${{ env.IDENTIFIER }}
-          appName: ${{ env.NAME }}
+          appName: ${{ env.NAME }}_windows
           appVersion: ${{ env.VERSION }}
