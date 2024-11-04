@@ -1,4 +1,4 @@
-name: "publish-ubuntu"
+name: "publish-ubuntu-x86"
 
 on:
   push:
