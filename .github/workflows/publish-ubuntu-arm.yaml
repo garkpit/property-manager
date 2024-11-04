@@ -62,7 +62,10 @@ jobs:
           # Modify main sources list to specify x86_64 architecture
           sudo sed -i 's/deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
 
-          # Update package lists
+          # Remove any security.ubuntu.com references
+          sudo sed -i '/security.ubuntu.com/d' /etc/apt/sources.list
+
+          # Clean and update package lists
           sudo rm -rf /var/lib/apt/lists/*
           sudo apt-get clean
           sudo apt-get update
