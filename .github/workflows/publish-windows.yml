@@ -42,14 +42,17 @@ jobs:
           $VERSION = node -p "require('./package.json').version"
           $NAME = node -p "require('./package.json').name"
           $IDENTIFIER = node -p "require('./package.json').identifier"
+          $DESCRIPTION = node -p "require('./package.json').description"
 
           Add-Content -Path $env:GITHUB_ENV -Value "VERSION=$VERSION"
           Add-Content -Path $env:GITHUB_ENV -Value "NAME=$NAME"
           Add-Content -Path $env:GITHUB_ENV -Value "IDENTIFIER=$IDENTIFIER"
+          Add-Content -Path $env:GITHUB_ENV -Value "DESCRIPTION=$DESCRIPTION"
 
           Write-Host "Shell VERSION: $VERSION"
           Write-Host "Shell NAME: $NAME"
           Write-Host "Shell IDENTIFIER: $IDENTIFIER"
+          Write-Host "Shell DESCRIPTION: $DESCRIPTION"
 
       - name: Check environment variables
         shell: pwsh
@@ -74,7 +77,7 @@ jobs:
           New-Item -ItemType Directory -Path 'src-tauri/src' -Force
 
           Push-Location src-tauri
-          cargo init --name svelte5-template
+          cargo init --name ${{ env.NAME }}
           Pop-Location
 
           # Convert PNG to proper icon formats
@@ -88,9 +91,9 @@ jobs:
 
           $CargoTomlContent = @"
           [package]
-          name = "svelte5-template"
-          version = "$($env:VERSION)"
-          description = "Svelte 5 Template App"
+          name = "${{ env.NAME }}"
+          version = "${{ env.VERSION }}"
+          description = "${{ env.DESCRIPTION }}"
           authors = ["you"]
           license = ""
           repository = ""
