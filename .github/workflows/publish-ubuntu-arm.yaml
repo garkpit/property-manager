@@ -274,7 +274,7 @@ jobs:
                   "icons/icon.icns",
                   "icons/icon.ico"
                 ],
-                "identifier": "com.tauri.dev",
+                "identifier": "${{ env.IDENTIFIER }}",
                 "longDescription": "",
                 "macOS": {
                   "entitlements": null,
