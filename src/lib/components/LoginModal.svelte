@@ -138,17 +138,19 @@
     }
 
     try {
-      const { error: resetError } = await resetPasswordForEmail(email);
-
-      if (resetError && resetError !== null) {
-        error = resetError?.message;
+      const { data: resetData, error: resetError } =
+        await resetPasswordForEmail(email);
+      if (resetError) {
+        error = resetError.message;
         toast.error("ERROR", {
           description: error || "An unexpected error occurred",
         });
       } else {
         // Show success message
         error = null;
-        alert($t("loginModal.resetPasswordEmailSent"));
+        toast.success("SUCCESS", {
+          description: $t("loginModal.resetPasswordEmailSent"),
+        });
         closeModal();
       }
     } catch (e) {

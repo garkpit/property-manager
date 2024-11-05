@@ -32,5 +32,16 @@ export default {
     resetPasswordEmailSent: "Password reset email sent. Check your inbox.",
     unexpectedError: "An unexpected error occurred. Please try again.",
     registerSuccess: "Registration successful. Please verify your email."
+  },
+  resetPassword: {
+    pageTitle: "Reset Password - Acme Inc",
+    title: "Reset Your Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm Password",
+    resetButton: "Reset Password",
+    resetting: "Resetting...",
+    passwordMismatch: "Passwords do not match",
+    successMessage: "Password successfully reset. You can now log in with your new password.",
+    unexpectedError: "An unexpected error occurred. Please try again."
   }
 };

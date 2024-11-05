@@ -176,10 +176,12 @@ export const signInWithOAuth = async (provider: string) => {
 }
 
 export const resetPasswordForEmail = async (email: string) => {
-  const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+
+
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/auth/reset-password`,
   });
-  return resetError;
+  return { data, error };
 }
 
 export const getSession = async () => {
