@@ -3,7 +3,7 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import { useSidebar } from "$lib/components/ui/sidebar/index.js";
-  import { getAvatarUrl, getUser } from "$lib/services/backend.svelte";
+  import { getAvatarUrl, getUser, signOut } from "$lib/services/backend.svelte";
   import LoginModal from "$lib/components/LoginModal.svelte";
   import {
     BadgeCheck,
@@ -11,6 +11,7 @@
     ChevronsUpDown,
     CreditCard,
     LogOut,
+    Sparkles,
     UserPlus,
   } from "lucide-svelte";
 
@@ -95,7 +96,7 @@
             </DropdownMenu.Item>
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
-          <DropdownMenu.Item>
+          <DropdownMenu.Item onclick={signOut}>
             <LogOut />
             Log out
           </DropdownMenu.Item>
@@ -113,7 +114,7 @@
           </Avatar.Fallback>
         </Avatar.Root>
         <div class="grid flex-1 text-left text-sm leading-tight">
-          <span class="truncate font-semibold">Sign In</span>
+          <span class="truncate font-semibold">Sign In or</span>
           <span class="truncate text-xs">Create an account</span>
         </div>
       </Sidebar.MenuButton>

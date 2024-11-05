@@ -3,11 +3,12 @@
   import { ModeWatcher } from "mode-watcher";
   import { SafeArea } from "@capacitor-community/safe-area";
   import { setLocale } from "$lib/i18n";
+  import { initializeUser } from "$lib/services/backend.svelte";
 
   let { children } = $props();
 
   $effect(() => {
-    // initializeUser()
+    initializeUser();
     SafeArea.enable({
       config: {
         customColorsForSystemBars: true,
