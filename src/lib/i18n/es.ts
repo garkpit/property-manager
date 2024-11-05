@@ -30,7 +30,9 @@ export default {
     emailRequired: "Se requiere el correo electrónico para restablecer la contraseña",
     resetPasswordEmailSent: "Correo de restablecimiento de contraseña enviado. Revisa tu bandeja de entrada.",
     unexpectedError: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
-    registerSuccess: "Registro exitoso. Por favor, verifica tu correo electrónico."
+    registerSuccess: "Registro exitoso. Por favor, verifica tu correo electrónico.",
+    resetPasswordConfirmTitle: "Restablecer Contraseña",
+    resetPasswordConfirmDescription: "¿Estás seguro de que quieres enviar un enlace de restablecimiento de contraseña a {email}?"
   },
   contacts: {
     title: "Contactos",
@@ -170,6 +172,7 @@ export default {
     notLoggedIn: "No has iniciado sesión",
     noData: "No se encontraron datos",
     loading: "Cargando...",
+    continue: "Continuar"
   },
   darkModeToggle: {
     toggleTheme: "Cambiar tema",
