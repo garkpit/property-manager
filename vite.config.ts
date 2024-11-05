@@ -5,7 +5,8 @@ import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 
 const file = fileURLToPath(new URL('package.json', import.meta.url));
-const keysFile = fileURLToPath(new URL('.keys.json', import.meta.url));
+//const keysFile = fileURLToPath(new URL('.keys.json', import.meta.url));
+const keysFile = fileURLToPath(new URL('package.json', import.meta.url));
 const json = readFileSync(file, 'utf8');
 const pkg = JSON.parse(json);
 const keysJson = readFileSync(keysFile, 'utf8');
