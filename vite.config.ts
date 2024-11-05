@@ -5,8 +5,11 @@ import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 
 const file = fileURLToPath(new URL('package.json', import.meta.url));
+const keysFile = fileURLToPath(new URL('.keys.json', import.meta.url));
 const json = readFileSync(file, 'utf8');
 const pkg = JSON.parse(json);
+const keysJson = readFileSync(keysFile, 'utf8');
+const keys = JSON.parse(keysJson);
 
 export default defineConfig({
 	plugins: [sveltekit()],
@@ -24,5 +27,9 @@ export default defineConfig({
 		'__APP_THEME_COLOR__': JSON.stringify(pkg.theme_color),
 		'__APP_BACKGROUND_COLOR__': JSON.stringify(pkg.background_color),
 		'__APP_IDENTIFIER__': JSON.stringify(pkg.identifier),
+		'__SUPABASE_URL_ENCRYPTED__': JSON.stringify(keys.SUPABASE_URL_ENCRYPTED),
+		'__SUPABASE_URL_ENCRYPTION_KEY__': JSON.stringify(keys.SUPABASE_URL_ENCRYPTION_KEY),
+		'__SUPABASE_ANON_KEY_ENCRYPTED__': JSON.stringify(keys.SUPABASE_ANON_KEY_ENCRYPTED),
+		'__SUPABASE_ANON_KEY_ENCRYPTION_KEY__': JSON.stringify(keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY),
 	}
 });
