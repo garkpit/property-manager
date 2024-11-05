@@ -129,7 +129,10 @@ export const getList = async (collection: string, startingIndex: number, perPage
 // **** AUTHENTICATION ****
 // ************************
 
-export const getAvatarUrl = (user: User) => {
+export const getAvatarUrl = (user: User | null) => {
+  if (!user) {
+    return '';
+  }
   return user?.user_metadata?.picture || '';
 }
 
