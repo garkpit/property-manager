@@ -1,4 +1,4 @@
-name: "publish-windows"
+name: "publish-windows-x86"
 
 on:
   push:
