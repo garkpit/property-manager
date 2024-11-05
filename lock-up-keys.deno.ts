@@ -62,22 +62,25 @@ function decryptData(encryptedData: string, hexKey: string): string {
 
 
 // generate a random password
-const password = forge.random.getBytesSync(16).toString('hex');
+const password_1 = forge.random.getBytesSync(16).toString('hex');
+const password_2 = forge.random.getBytesSync(16).toString('hex');
 // generate a random salt
-const salt = forge.random.getBytesSync(16).toString('hex');
+const salt_1 = forge.random.getBytesSync(16).toString('hex');
+const salt_2 = forge.random.getBytesSync(16).toString('hex');
 // generate a key
-const key = deriveKey(password, salt);
+const key_1 = deriveKey(password_1, salt_1);
+const key_2 = deriveKey(password_2, salt_2);
 // open the keys.json file
 const keysFile = Deno.readTextFileSync('.keys.json');
 // convert the keysFile to a json object
 const keys = JSON.parse(keysFile);
 console.log("keys", keys);
 // encrypt the keys
-keys.SUPABASE_URL_ENCRYPTED = encryptData(keys.SUPABASE_URL, key);
-keys.SUPABASE_ANON_KEY_ENCRYPTED = encryptData(keys.SUPABASE_ANON_KEY, key);
+keys.SUPABASE_URL_ENCRYPTED = encryptData(keys.SUPABASE_URL, key_1);
+keys.SUPABASE_ANON_KEY_ENCRYPTED = encryptData(keys.SUPABASE_ANON_KEY, key_2);
 
-keys.SUPABASE_URL_ENCRYPTION_KEY = key;
-keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY = key;
+keys.SUPABASE_URL_ENCRYPTION_KEY = key_1;
+keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY = key_2;
 
 // write the keys back to the keys.json file
 Deno.writeTextFileSync('.keys.json', JSON.stringify(keys, null, 2));
