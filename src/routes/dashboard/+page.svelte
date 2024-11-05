@@ -6,15 +6,6 @@
   import Content from "$lib/components/Content.svelte";
   import { MoreVertical, Settings, CircleHelp, LogOut } from "lucide-svelte";
   import Actions from "$lib/components/actions.svelte";
-  import { supabase } from "$lib/services/supabase";
-  async function testlogin() {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: "test@test.com",
-      password: "test",
-    });
-    console.log(data, error);
-  }
-  testlogin();
   const actionItems: any[] = [
     {
       groupName: "Settings",
