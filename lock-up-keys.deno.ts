@@ -85,3 +85,11 @@ keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY = key_2;
 // write the keys back to the keys.json file
 Deno.writeTextFileSync('.keys.json', JSON.stringify(keys, null, 2));
 console.log(".keys.json file updated");
+
+// create a file: .env.github and write the encrypted keys to it
+Deno.writeTextFileSync('.env',
+    `SUPABASE_URL_ENCRYPTED=${keys.SUPABASE_URL_ENCRYPTED}\n` +
+    `SUPABASE_ANON_KEY_ENCRYPTED=${keys.SUPABASE_ANON_KEY_ENCRYPTED}\n` +
+    `SUPABASE_URL_ENCRYPTION_KEY=${keys.SUPABASE_URL_ENCRYPTION_KEY}\n` +
+    `SUPABASE_ANON_KEY_ENCRYPTION_KEY=${keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY}`);
+console.log(".env.github file created");

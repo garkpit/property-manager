@@ -18,6 +18,13 @@ jobs:
             args: "--target aarch64-pc-windows-msvc"
 
     runs-on: ${{ matrix.platform }}
+    # Add environment variables here
+    env:
+      SUPABASE_URL_ENCRYPTED: ${{ secrets.SUPABASE_URL_ENCRYPTED }}
+      SUPABASE_URL_ENCRYPTION_KEY: ${{ secrets.SUPABASE_URL_ENCRYPTION_KEY }}
+      SUPABASE_ANON_KEY_ENCRYPTED: ${{ secrets.SUPABASE_ANON_KEY_ENCRYPTED }}
+      SUPABASE_ANON_KEY_ENCRYPTION_KEY: ${{ secrets.SUPABASE_ANON_KEY_ENCRYPTION_KEY }}
+
     steps:
       - uses: actions/checkout@v4
 
