@@ -278,7 +278,7 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }} --target aarch64-unknown-linux-gnu -- --release --features optimize
+          args: ${{ matrix.args }} -- --release --features optimize
           distPath: ./build
           bundleIdentifier: ${{ env.IDENTIFIER }}
           appName: ${{ env.NAME }}
