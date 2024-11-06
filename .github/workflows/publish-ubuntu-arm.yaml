@@ -54,80 +54,27 @@ jobs:
           # Update sources list - separate AMD64 and ARM64 repositories
           sudo tee /etc/apt/sources.list << EOF
           # AMD64 repositories
-          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
-          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
-          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse
-          deb [arch=amd64] http://security.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main restricted
+          deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted
 
           # ARM64 repositories
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-backports main restricted universe multiverse
-          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-security main restricted universe multiverse
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ jammy-updates main restricted
           EOF
 
-          # Clean and update package lists
-          sudo rm -rf /var/lib/apt/lists/*
-          sudo apt-get clean
           sudo apt-get update
 
-          # Debug: Search for GTK/GDK packages with error handling
-          echo "Available GTK/GDK packages:"
-          apt-cache search "libgtk" | grep "arm64" || true
-          apt-cache search "libgdk" | grep "arm64" || true
-
-          # Install packages without stopping on errors
+          # Install only the minimum required packages
           sudo apt-get install -y --no-install-recommends \
             crossbuild-essential-arm64 \
             gcc-aarch64-linux-gnu \
             g++-aarch64-linux-gnu \
             pkg-config \
-            libgtk-3-0:arm64 \
             libgtk-3-dev:arm64 \
-            libgtk-3-common:arm64 \
-            gir1.2-gtk-3.0:arm64 \
-            libglib2.0-dev:arm64 \
-            libglib2.0-0:arm64 \
-            libpango-1.0-0:arm64 \
-            libpango1.0-dev:arm64 \
-            libcairo2:arm64 \
-            libcairo2-dev:arm64 \
-            libatk1.0-0:arm64 \
-            libatk1.0-dev:arm64 \
-            libgdk-pixbuf2.0-0:arm64 \
-            libgdk-pixbuf2.0-dev:arm64 \
             libwebkit2gtk-4.0-dev:arm64 \
-            libwebkit2gtk-4.1-dev:arm64 \
-            libjavascriptcoregtk-4.0-dev:arm64 \
-            libsoup-3.0-dev:arm64 \
-            librsvg2-dev:arm64 || true
-
-          # Debug: Show what was actually installed
-          echo "Installed packages:"
-          dpkg -l | grep -i "gtk\|gdk" || true
-
-          echo "Looking for pkg-config files:"
-          find /usr/lib/aarch64-linux-gnu/pkgconfig -name "*gtk*.pc" -o -name "*gdk*.pc" || true
-
-          # Install AppImage dependencies
-          sudo apt-get install -y --no-install-recommends \
-            file \
-            desktop-file-utils \
-            libfuse2 \
-            zsync \
-            patchelf \
-            fakeroot
-
-          # Create AppImage build environment
-          sudo mkdir -p /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0
-          sudo mkdir -p /usr/lib/aarch64-linux-gnu/gtk-3.0
-
-          # Copy necessary libraries
-          sudo cp -r /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/* /usr/lib/aarch64-linux-gnu/gdk-pixbuf-2.0/ || true
-          sudo cp -r /usr/lib/aarch64-linux-gnu/gtk-3.0/* /usr/lib/aarch64-linux-gnu/gtk-3.0/ || true
-
-          # Update library cache
-          sudo ldconfig
+            libappindicator3-dev:arm64 \
+            librsvg2-dev:arm64 \
+            patchelf
 
       - name: Set up cross-compilation environment
         if: matrix.platform == 'ubuntu-22.04'
@@ -331,7 +278,7 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }}
+          args: ${{ matrix.args }} --target aarch64-unknown-linux-gnu -- --release --features optimize
           distPath: ./build
           bundleIdentifier: ${{ env.IDENTIFIER }}
           appName: ${{ env.NAME }}
