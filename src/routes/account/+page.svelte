@@ -97,8 +97,6 @@
           class="resize-y min-h-[100px]"
         />
       </div>
-
-      <Button type="submit">Save Changes</Button>
     </form>
   {/snippet}
 </PageTemplate>
