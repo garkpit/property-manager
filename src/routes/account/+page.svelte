@@ -14,6 +14,13 @@
   let lastname = $state(user?.user_metadata?.lastname ?? "");
   let bio = $state(user?.user_metadata?.bio ?? "");
 
+  let isFormChanged = $state(false);
+
+  // Add onInput handler to form
+  function handleInput() {
+    isFormChanged = true;
+  }
+
   $effect(() => {
     firstname = user?.user_metadata?.firstname ?? "";
     lastname = user?.user_metadata?.lastname ?? "";
@@ -38,6 +45,7 @@
       toast.success("SUCCESS", {
         description: "Profile updated",
       });
+      isFormChanged = false;
     }
   }
 </script>
@@ -47,15 +55,23 @@
     Account
   {/snippet}
   {#snippet TopRight()}
-    <Button variant="ghost" size="icon" onclick={handleSubmit} class="h-9 w-9">
-      <Check class="h-5 w-5" />
-      <span class="sr-only">Save changes</span>
-    </Button>
+    {#if isFormChanged}
+      <Button
+        variant="ghost"
+        size="icon"
+        onclick={handleSubmit}
+        class="h-9 w-9"
+      >
+        <Check class="h-5 w-5" />
+        <span class="sr-only">Save changes</span>
+      </Button>
+    {/if}
   {/snippet}
 
   {#snippet Middle()}
     <form
       class="w-full max-w-xl space-y-6"
+      oninput={handleInput}
       onsubmit={(e) => {
         e.preventDefault();
         handleSubmit();
