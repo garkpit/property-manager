@@ -42,14 +42,12 @@
 </script>
 
 <PageTemplate {actionItems}>
-  {#snippet TopLeft()}TL{/snippet}
   {#snippet TopCenter()}
-    <div>TC</div>
+    Account
   {/snippet}
-  {#snippet TopRight()}TR{/snippet}
 
   {#snippet Middle()}
-    Account
+    Account Page
   {/snippet}
 
   <!--
