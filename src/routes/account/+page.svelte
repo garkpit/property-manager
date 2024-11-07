@@ -5,6 +5,7 @@
   import { Textarea } from "$lib/components/ui/textarea";
   import { Label } from "$lib/components/ui/label";
   import { Button } from "$lib/components/ui/button";
+  import { toast } from "svelte-sonner";
 
   const user = $derived(getUser());
 
@@ -21,14 +22,22 @@
   async function handleSubmit() {
     // TODO: Implement save functionality
     console.log({ firstname, lastname, bio });
-    const { data, error } = await updateUser({
+    const { error } = await updateUser({
       data: {
         firstname,
         lastname,
         bio,
       },
     });
-    console.log("data, error", { data, error });
+    if (error) {
+      toast.error("ERROR", {
+        description: error.message,
+      });
+    } else {
+      toast.success("SUCCESS", {
+        description: "Profile updated",
+      });
+    }
   }
 </script>
 
