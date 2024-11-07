@@ -6,6 +6,7 @@
   import { Label } from "$lib/components/ui/label";
   import { Button } from "$lib/components/ui/button";
   import { toast } from "svelte-sonner";
+  import { Check } from "lucide-svelte";
 
   const user = $derived(getUser());
 
@@ -44,6 +45,12 @@
 <PageTemplate>
   {#snippet TopCenter()}
     Account
+  {/snippet}
+  {#snippet TopRight()}
+    <Button variant="ghost" size="icon" onclick={handleSubmit} class="h-9 w-9">
+      <Check class="h-5 w-5" />
+      <span class="sr-only">Save changes</span>
+    </Button>
   {/snippet}
 
   {#snippet Middle()}
