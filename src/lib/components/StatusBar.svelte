@@ -22,22 +22,6 @@
     RightData?: any;
     FullStatusBarData?: any;
   }>();
-  // bg-background
-  if (Left) {
-    console.log("Left is defined");
-  } else {
-    console.log("Left is undefined");
-  }
-  if (Center) {
-    console.log("Center is defined");
-  } else {
-    console.log("Center is undefined");
-  }
-  if (Right) {
-    console.log("Right is defined");
-  } else {
-    console.log("Right is undefined");
-  }
 </script>
 
 <footer

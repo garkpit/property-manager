@@ -39,36 +39,6 @@
     BottomCenter?: (data: any) => unknown;
     BottomRight?: (data: any) => unknown;
   }>();
-  if (TopLeft) {
-    console.log("TopLeft is defined");
-  } else {
-    console.log("TopLeft is undefined");
-  }
-  if (TopCenter) {
-    console.log("TopCenter is defined");
-  } else {
-    console.log("TopCenter is undefined");
-  }
-  if (TopRight) {
-    console.log("TopRight is defined");
-  } else {
-    console.log("TopRight is undefined");
-  }
-  if (BottomLeft) {
-    console.log("BottomLeft is defined");
-  } else {
-    console.log("BottomLeft is undefined");
-  }
-  if (BottomCenter) {
-    console.log("BottomCenter is defined");
-  } else {
-    console.log("BottomCenter is undefined");
-  }
-  if (BottomRight) {
-    console.log("BottomRight is defined");
-  } else {
-    console.log("BottomRight is undefined");
-  }
 </script>
 
 <Sidebar.Provider>

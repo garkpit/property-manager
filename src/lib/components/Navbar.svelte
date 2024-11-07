@@ -8,16 +8,6 @@
     CenterData?: any;
     RightData?: any;
   }>();
-  let sheetOpen = $state(false);
-
-  function closeSheet() {
-    sheetOpen = false;
-  }
-
-  // Move DOM-related logic into an effect
-  const root = document.documentElement;
-  const styles = getComputedStyle(root);
-  // class="header-height bg-background fixed left-0 right-0 z-30 flex items-center justify-between px-4 border-b"
 </script>
 
 <header
