@@ -62,6 +62,20 @@ An opinionated development template designed to create large-scale business apps
 ## Deploy Targets
 
 - Static Web Site: `npm run build`
+- iOS: `npm run ios`
+- Android `npm run android`
+- Desktop Releases:
+  - Push to `release` branch
+    - `git checkout -B release`
+    - `git merge main`
+    - `git push`
+  - This will trigger Github Actions (`./.github/*.yaml`) to automatically build with the following releases with Tauri:
+    - MacOS Intel (x86_64)
+    - MacOS Apple Silicon (ARM)
+    - Windows x86_64
+    - Windows ARM
+    - Ubuntu/Linux x86_64
+    - Ubuntu/Linux ARM
 
 ## Implementation Notes
 
