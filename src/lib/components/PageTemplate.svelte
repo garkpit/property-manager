@@ -1,0 +1,129 @@
+<script lang="ts">
+  import * as Sidebar from "$lib/components/ui/sidebar";
+  import LeftDrawer from "$lib/components/LeftDrawer.svelte";
+  import StatusBar from "$lib/components/StatusBar.svelte";
+  import Navbar from "$lib/components/Navbar.svelte";
+  import Content from "$lib/components/Content.svelte";
+  import { MoreVertical } from "lucide-svelte";
+  import Actions from "$lib/components/actions.svelte";
+  import type { Snippet } from "svelte";
+  import LanguageSelector from "$lib/components/LanguageSelector.svelte";
+  import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
+
+  /*
+  let { Left, Center, Right, LeftData, CenterData, RightData } = $props<{
+    Left?: (data: any) => unknown;
+    Center?: (data: any) => unknown;
+    Right?: (data: any) => unknown;
+    LeftData?: any;
+    CenterData?: any;
+    RightData?: any;
+  }>();
+  */
+  let {
+    actionItems,
+    TopLeft,
+    TopCenter,
+    TopRight,
+    Middle,
+    BottomLeft,
+    BottomCenter,
+    BottomRight,
+  } = $props<{
+    actionItems?: any[];
+    TopLeft?: (data: any) => unknown;
+    TopCenter?: (data: any) => unknown;
+    TopRight?: (data: any) => unknown;
+    Middle?: (data: any) => unknown;
+    BottomLeft?: Snippet | undefined; // (data: any) => unknown;
+    BottomCenter?: (data: any) => unknown;
+    BottomRight?: (data: any) => unknown;
+  }>();
+  if (TopLeft) {
+    console.log("TopLeft is defined");
+  } else {
+    console.log("TopLeft is undefined");
+  }
+  if (TopCenter) {
+    console.log("TopCenter is defined");
+  } else {
+    console.log("TopCenter is undefined");
+  }
+  if (TopRight) {
+    console.log("TopRight is defined");
+  } else {
+    console.log("TopRight is undefined");
+  }
+  if (BottomLeft) {
+    console.log("BottomLeft is defined");
+  } else {
+    console.log("BottomLeft is undefined");
+  }
+  if (BottomCenter) {
+    console.log("BottomCenter is defined");
+  } else {
+    console.log("BottomCenter is undefined");
+  }
+  if (BottomRight) {
+    console.log("BottomRight is defined");
+  } else {
+    console.log("BottomRight is undefined");
+  }
+</script>
+
+<Sidebar.Provider>
+  <div class="flex min-h-screen w-full">
+    <LeftDrawer />
+
+    <main class="flex-1 relative flex flex-col">
+      <div class="flex flex-col h-screen">
+        <Navbar>
+          {#snippet Left()}
+            <Sidebar.Trigger />
+            {@render TopLeft?.()}
+          {/snippet}
+          {#snippet Center()}
+            {@render TopCenter?.()}
+          {/snippet}
+          {#snippet Right()}
+            {#if TopRight}
+              {@render TopRight?.()}
+            {:else if actionItems}
+              <Actions items={actionItems} triggerIcon={MoreVertical} />
+            {/if}
+          {/snippet}
+        </Navbar>
+
+        <Content>
+          {#snippet Middle()}
+            {@render Middle?.()}
+          {/snippet}
+        </Content>
+
+        <StatusBar>
+          {#snippet Left()}
+            {#if BottomLeft}
+              {@render BottomLeft()}
+            {:else}
+              <LanguageSelector />
+            {/if}
+          {/snippet}
+          {#snippet Center()}
+            {#if BottomCenter}
+              {@render BottomCenter()}
+            {:else}
+              {__APP_TITLE__} v{__APP_VERSION__}
+            {/if}
+          {/snippet}
+          {#snippet Right()}
+            {#if BottomRight}
+              {@render BottomRight()}
+            {:else}
+              <DarkModeToggle />
+            {/if}
+          {/snippet}
+        </StatusBar>
+      </div>
+    </main>
+  </div>
+</Sidebar.Provider>

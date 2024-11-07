@@ -14,6 +14,7 @@
     Sparkles,
     UserPlus,
   } from "lucide-svelte";
+  import { goto } from "$app/navigation";
 
   const user = $derived(getUser());
   const avatarUrl = $derived(getAvatarUrl(user));
@@ -25,6 +26,10 @@
       .split(" ")
       .map((n) => n[0])
       .join("");
+  };
+
+  const navigateToAccount = () => {
+    goto("/account");
   };
 </script>
 
@@ -79,7 +84,7 @@
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Group>
-            <DropdownMenu.Item>
+            <DropdownMenu.Item onclick={navigateToAccount}>
               <BadgeCheck />
               Account
             </DropdownMenu.Item>

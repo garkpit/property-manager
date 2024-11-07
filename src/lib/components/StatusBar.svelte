@@ -13,17 +13,31 @@
     RightData,
     FullStatusBarData,
   } = $props<{
-    Left?: (data: any) => unknown;
-    Center?: (data: any) => unknown;
-    Right?: (data: any) => unknown;
-    FullStatusBar?: (data: any) => unknown;
-    footer?: unknown;
+    Left?: (data: any) => unknown | undefined;
+    Center?: (data: any) => unknown | undefined;
+    Right?: (data: any) => unknown | undefined;
+    FullStatusBar?: (data: any) => unknown | undefined;
     LeftData?: any;
     CenterData?: any;
     RightData?: any;
     FullStatusBarData?: any;
   }>();
   // bg-background
+  if (Left) {
+    console.log("Left is defined");
+  } else {
+    console.log("Left is undefined");
+  }
+  if (Center) {
+    console.log("Center is defined");
+  } else {
+    console.log("Center is undefined");
+  }
+  if (Right) {
+    console.log("Right is defined");
+  } else {
+    console.log("Right is undefined");
+  }
 </script>
 
 <footer
@@ -32,31 +46,19 @@
 >
   {#if FullStatusBar}
     <div class="flex items-center justify-center w-full">
-      {@render FullStatusBar(FullStatusBarData)}
+      {@render FullStatusBar?.(FullStatusBarData)}
     </div>
   {:else}
     <div class="flex items-center space-x-2">
-      {#if Left}
-        {@render Left(LeftData)}
-      {:else}
-        <DarkModeToggle />
-      {/if}
+      {@render Left?.(LeftData)}
     </div>
 
     <div>
-      {#if Center}
-        {@render Center(CenterData)}
-      {:else}
-        {__APP_TITLE__} v{__APP_VERSION__}
-      {/if}
+      {@render Center?.(CenterData)}
     </div>
 
     <div class="flex items-center space-x-2">
-      {#if Right}
-        {@render Right(RightData)}
-      {:else}
-        <LanguageSelector />
-      {/if}
+      {@render Right?.(RightData)}
     </div>
   {/if}
 </footer>
