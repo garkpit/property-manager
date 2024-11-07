@@ -7,6 +7,7 @@
   import { Button } from "$lib/components/ui/button";
   import { toast } from "svelte-sonner";
   import { Check } from "lucide-svelte";
+  import { beforeNavigate } from "$app/navigation";
 
   const user = $derived(getUser());
 
@@ -16,15 +17,39 @@
 
   let isFormChanged = $state(false);
 
+  beforeNavigate(({ cancel }) => {
+    if (isFormChanged) {
+      if (
+        !confirm(
+          "You have unsaved changes. Do you want to leave without saving?",
+        )
+      ) {
+        cancel();
+      }
+    }
+  });
+
   // Add onInput handler to form
   function handleInput() {
     isFormChanged = true;
   }
-
   $effect(() => {
     firstname = user?.user_metadata?.firstname ?? "";
     lastname = user?.user_metadata?.lastname ?? "";
     bio = user?.user_metadata?.bio ?? "";
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isFormChanged) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   });
 
   async function handleSubmit() {
