@@ -30,7 +30,6 @@ function encryptData(data: string, hexKey: string): string {
 
     // Combine IV, encrypted data, and tag for storage/transmission
     const payload = forge.util.encode64(iv + encrypted + tag);
-    console.log("encryptData payload", payload);
     return payload;
 }
 
@@ -74,7 +73,7 @@ const key_2 = deriveKey(password_2, salt_2);
 const keysFile = Deno.readTextFileSync('.keys.json');
 // convert the keysFile to a json object
 const keys = JSON.parse(keysFile);
-console.log("keys", keys);
+
 // encrypt the keys
 keys.SUPABASE_URL_ENCRYPTED = encryptData(keys.SUPABASE_URL, key_1);
 keys.SUPABASE_ANON_KEY_ENCRYPTED = encryptData(keys.SUPABASE_ANON_KEY, key_2);
@@ -82,14 +81,14 @@ keys.SUPABASE_ANON_KEY_ENCRYPTED = encryptData(keys.SUPABASE_ANON_KEY, key_2);
 keys.SUPABASE_URL_ENCRYPTION_KEY = key_1;
 keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY = key_2;
 
-// write the keys back to the keys.json file
-Deno.writeTextFileSync('.keys.json', JSON.stringify(keys, null, 2));
-console.log(".keys.json file updated");
-
-// create a file: .env.github and write the encrypted keys to it
+// create a file: .env and write the encrypted keys to it
 Deno.writeTextFileSync('.env',
     `SUPABASE_URL_ENCRYPTED=${keys.SUPABASE_URL_ENCRYPTED}\n` +
     `SUPABASE_ANON_KEY_ENCRYPTED=${keys.SUPABASE_ANON_KEY_ENCRYPTED}\n` +
     `SUPABASE_URL_ENCRYPTION_KEY=${keys.SUPABASE_URL_ENCRYPTION_KEY}\n` +
     `SUPABASE_ANON_KEY_ENCRYPTION_KEY=${keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY}`);
-console.log(".env.github file created");
+console.log(".env file was created");
+console.log("");
+console.log("If you plan to use github actions to create desktop builds with Tauri, you will need to set the secrets in github:");
+console.log("");
+console.log("run: gh secret set -f .env");

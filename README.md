@@ -72,4 +72,8 @@ An opinionated development template designed to create large-scale business apps
 - Server URL and ANON_KEY are encrypted (for obfuscation)
   - `cp .keys.json.sample .keys.json`
   - enter your URL and ANON_KEY in `.keys.json`
-  - run: `deno run --allow-read --allow-write lock-up-keys.deno.ts`
+  - make sure **Deno 2.0** is installed
+  - run: `./lock-up-keys.sh` _OR_ `deno run --allow-read --allow-write lock-up-keys.deno.ts`
+- Copy keys to Github Secrets (necessary to run Github Actions to create Desktop versions with Tauri)
+  - make sure `gh` (Github Command Line) is installed
+  - run `gh secret set -f .env`
