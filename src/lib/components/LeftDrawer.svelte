@@ -14,6 +14,7 @@
     Code,
     Box,
     SwatchBook,
+    Sparkles,
   } from "lucide-svelte";
   import NavUser from "$lib/components/nav-user.svelte";
   import type { ComponentProps } from "svelte";
@@ -26,11 +27,6 @@
     ...restProps
   }: ComponentProps<typeof Sidebar.Root> = $props();
   const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/user.jpg",
-    },
     teams: [
       {
         name: "Acme Inc",
@@ -53,7 +49,7 @@
       {
         title: "Samples",
         url: "#",
-        icon: SwatchBook,
+        icon: Sparkles,
         isActive: false,
         items: [
           {
