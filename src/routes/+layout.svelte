@@ -4,6 +4,7 @@
   import { SafeArea } from "@capacitor-community/safe-area";
   import { setLocale } from "$lib/i18n";
   import { initializeUser } from "$lib/services/backend.svelte";
+  import Alert from "$lib/components/ui/alert/alert.svelte";
 
   let { children } = $props();
 
@@ -27,4 +28,5 @@
 </script>
 
 <ModeWatcher />
+<Alert />
 {@render children()}
