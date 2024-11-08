@@ -142,6 +142,7 @@ An opinionated development template designed to create large-scale business apps
 ## Scripts
 
 - `dev.sh`
+- `deploy-cloudflare.sh`
 - `dump_schema.sh`
 - `generate-types.sh`
 - `lock-up-keys.sh`
