@@ -17,24 +17,34 @@
   import type { PageData } from "./$types";
   import { goto } from "$app/navigation";
   import { Button } from "@/components/ui/button";
+  import type { Database } from "$lib/types/database.types";
   const user = $derived(getUser());
 
-  let orgs = $state([] as Org[]);
+  let orgs = $state([] as Database["public"]["Tables"]["orgs"]["Row"][]);
   const currentOrgId = $derived(getCurrentOrgId());
-  const currentOrg = $derived(orgs.find((org: Org) => org.id === currentOrgId));
+  const currentOrg = $derived(
+    orgs.find(
+      (org: Database["public"]["Tables"]["orgs"]["Row"]) =>
+        org.id === currentOrgId,
+    ),
+  );
 
   const load = async () => {
     // const { data, error } = await getAllOrgs();
     const { data, error } = await fetchOrgs("title", "asc");
     if (error) {
     } else {
-      orgs = data as any[];
+      orgs = data;
+      console.log("orgs", orgs);
     }
   };
-  async function handleOrgClick(org: Org) {
+  async function handleOrgClick(
+    org: Database["public"]["Tables"]["orgs"]["Row"],
+  ) {
+    console.log("handleOrgClick", org);
     try {
       await setCurrentOrg(org);
-      await goto(`/dashboard/orgs/${org.id}`);
+      await goto(`/orgs/${org.id}`);
     } catch (error) {
       console.error("Error handling org click:", error);
       toast.error("ERROR", {
@@ -122,7 +132,17 @@
             {/if}
           </div>
 
-          <GenericList data={orgs} {headers} onRowClick={handleOrgClick} />
+          <!--<GenericList data={orgs} {headers} onRowClick={handleOrgClick} />-->
+          {#each orgs as org}
+            <Button
+              type="button"
+              class="w-full text-left"
+              onclick={() => handleOrgClick(org)}
+              onkeydown={(e) => e.key === "Enter" && handleOrgClick(org)}
+            >
+              {org.title}
+            </Button>
+          {/each}
         </div>
       {:else}
         <p class="pt-8 text-center text-lg text-gray-500">

@@ -1,49 +1,49 @@
 // SUPABASE BACKEND
 // import { writable } from 'svelte/store';
-import type { User } from '@supabase/supabase-js';
+import type { User } from "@supabase/supabase-js";
 // import type { Contact } from '$lib/types/contact.ts';
 
-import { supabase } from '$lib/services/supabase.ts'
-export { supabase };  // Add this line to export the supabase object
-import { locale } from '$lib/i18n/index.ts';
-let user = $state<User | null>(null)
+import { supabase } from "$lib/services/supabase.ts";
+export { supabase }; // Add this line to export the supabase object
+import { locale } from "$lib/i18n/index.ts";
+let user = $state<User | null>(null);
 // Add this getter function
 export function getUser() {
   return user;
 }
 export const setUser = (newUser: User | null) => {
   user = newUser;
-}
+};
 export function initializeUser() {
   $effect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      user = session?.user ?? null
-    })
+      user = session?.user ?? null;
+    });
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_, session) => {
-        user = session?.user ?? null
+        user = session?.user ?? null;
 
-        const userLocale = user?.user_metadata?.i18n
+        const userLocale = user?.user_metadata?.i18n;
         if (userLocale) {
-          locale.set(userLocale)
-          localStorage.setItem('locale', userLocale)
+          locale.set(userLocale);
+          localStorage.setItem("locale", userLocale);
         }
         // Fetch currentOrgId from user metadata and set it
-        const newCurrentOrgId = user?.user_metadata?.currentOrgId
+        const newCurrentOrgId = user?.user_metadata?.currentOrgId;
         if (newCurrentOrgId) {
-          currentOrgId = newCurrentOrgId
+          currentOrgId = newCurrentOrgId;
         }
-      }
-    )
+      },
+    );
 
     return () => {
-      authListener.subscription.unsubscribe()
-    }
-  })
+      authListener.subscription.unsubscribe();
+    };
+  });
 }
 // Add this new store for the currently selected orgid
-let currentOrgId = $state<string | null>(null)
+let currentOrgId = $state<string | null>(null);
 export function getCurrentOrgId() {
   return currentOrgId;
 }
@@ -51,42 +51,59 @@ export const setCurrentOrgId = async (newOrgId: string | null) => {
   currentOrgId = newOrgId;
   const { data: updateUserData, error: updateUserError } = await updateUser({
     data: { currentOrgId: newOrgId },
-  })
+  });
   if (updateUserError) {
     return false;
   } else {
     return true;
   }
-}
-
+};
 
 // **************************
 // **** DATABASE ACTIONS ****
 // **************************
 
-export const getItemById = async (collection: string, id: string, filterColumn?: string, filterValue?: string) => {
+export const getItemById = async (
+  collection: string,
+  id: string,
+  filterColumn?: string,
+  filterValue?: string,
+) => {
   let query = supabase
     .from(collection)
-    .select('*')
-    .eq('id', id);
+    .select("*")
+    .eq("id", id);
 
   if (filterColumn && filterValue) {
     query = query.eq(filterColumn, filterValue);
   }
 
   const { data, error } = await query.single();
+  if (error) {
+    console.log("getItemById error");
+    console.log("collection", collection);
+    console.log("id", id);
+    console.log("filterColumn", filterColumn);
+    console.log("filterValue", filterValue);
+    console.error("error", error);
+  }
 
   return {
     data,
-    error
+    error,
   };
-}
+};
 
-export const deleteItem = async (collection: string, id: string, filterColumn?: string, filterValue?: string) => {
+export const deleteItem = async (
+  collection: string,
+  id: string,
+  filterColumn?: string,
+  filterValue?: string,
+) => {
   let query = supabase
     .from(collection)
     .delete()
-    .eq('id', id);
+    .eq("id", id);
 
   if (filterColumn && filterValue) {
     query = query.eq(filterColumn, filterValue);
@@ -94,9 +111,9 @@ export const deleteItem = async (collection: string, id: string, filterColumn?: 
 
   const { error } = await query;
   return {
-    error
+    error,
   };
-}
+};
 
 export const saveItem = async (collection: string, item: any) => {
   const { data, error } = await supabase
@@ -104,16 +121,23 @@ export const saveItem = async (collection: string, item: any) => {
     .upsert(item);
   return {
     data,
-    error
+    error,
   };
-}
+};
 
-export const getList = async (collection: string, startingIndex: number, perPage: number, sortColumn: string, sortDirection: 'asc' | 'desc', filterColumn?: string, filterValue?: string) => {
-
+export const getList = async (
+  collection: string,
+  startingIndex: number,
+  perPage: number,
+  sortColumn: string,
+  sortDirection: "asc" | "desc",
+  filterColumn?: string,
+  filterValue?: string,
+) => {
   let query = supabase
     .from(collection)
-    .select('*')
-    .order(sortColumn, { ascending: sortDirection === 'asc' })
+    .select("*")
+    .order(sortColumn, { ascending: sortDirection === "asc" })
     .range(startingIndex - 1, startingIndex + perPage - 1);
 
   if (filterColumn && filterValue) {
@@ -122,8 +146,8 @@ export const getList = async (collection: string, startingIndex: number, perPage
 
   const { data, error } = await query;
 
-  return { data, error } // data || [];
-}
+  return { data, error }; // data || [];
+};
 
 // ************************
 // **** AUTHENTICATION ****
@@ -131,10 +155,10 @@ export const getList = async (collection: string, startingIndex: number, perPage
 
 export const getAvatarUrl = (user: User | null) => {
   if (!user) {
-    return '';
+    return "";
   }
-  return user?.user_metadata?.picture || '';
-}
+  return user?.user_metadata?.picture || "";
+};
 
 export const signInWithPassword = async (email: string, password: string) => {
   const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -144,65 +168,63 @@ export const signInWithPassword = async (email: string, password: string) => {
   if (signInError) {
     return signInError;
   } else {
-    return '';
+    return "";
   }
-}
+};
 
 export const signUp = async (email: string, password: string) => {
-  const currentLanguage = localStorage.getItem('locale') || 'en';
+  const currentLanguage = localStorage.getItem("locale") || "en";
   const { error: signUpError } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
         language: currentLanguage,
-        i18n: currentLanguage
-      }
-    }
+        i18n: currentLanguage,
+      },
+    },
   });
   return String(signUpError);
-}
+};
 
 export const signInWithOAuth = async (provider: string) => {
   let currentUrl = window.location.href;
-  localStorage.setItem('redirectUrl', currentUrl)
+  localStorage.setItem("redirectUrl", currentUrl);
   const { error: signInError } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
+    provider: "google",
     options: {
-      redirectTo: `${window.location.origin + '/auth/redirect'}` //currentUrl ? currentUrl :`${window.location.origin}/`
-    }
+      redirectTo: `${window.location.origin + "/auth/redirect"}`, //currentUrl ? currentUrl :`${window.location.origin}/`
+    },
   });
   return signInError;
-}
+};
 
 export const resetPasswordForEmail = async (email: string) => {
-
-
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/auth/reset-password`,
   });
   return { data, error };
-}
+};
 
 export const getSession = async () => {
   const { data, error } = await supabase.auth.getSession();
   return {
     data,
-    error
+    error,
   };
-}
+};
 
 export const updateUser = async (obj: any) => {
   const { data, error } = await supabase.auth.updateUser(obj);
   return {
     data,
-    error
+    error,
   };
-}
+};
 
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
   return {
-    error
+    error,
   };
-}
+};
