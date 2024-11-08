@@ -28,10 +28,28 @@ An opinionated development template designed to create large-scale business apps
 
 ## Tecnologies
 
+**Front End:**
+
 - [Svelte 5](https://svelte.dev/docs/svelte/overview)
 - [SvelteKit](https://svelte.dev/docs/kit/introduction)
 - [Tailwindcss](https://tailwindcss.com/docs/installation)
 - [Shadcn-svelte](https://next.shadcn-svelte.com/docs)
+
+**Back End:**
+
+- [Supabase](https://supabase.com)
+  - Supabase [Database (PostgreSQL)](https://supabase.com/docs/guides/database/overview)
+  - Supabase [Auth (Authentication)](https://supabase.com/docs/guides/auth)
+  - Supabase [Edge Functions](https://supabase.com/docs/guides/functions)
+- [Deno 2.0](https://deno.com/)
+
+**Automation / AI**
+
+- [Cursor](https://www.cursor.com/)
+  - `.cursorrules` file included to guide AI-driven development
+  - `.cursor-documentation` this is list of documentation links to enter into Cursor
+    - Cursor Settings / Features / Docs / Add New Doc
+    - Add each documentation link found in `.cursor-documentation`
 
 ## Developer Aids
 
