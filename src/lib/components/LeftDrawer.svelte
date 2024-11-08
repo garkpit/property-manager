@@ -13,6 +13,7 @@
     BookOpen,
     Code,
     Box,
+    SwatchBook,
   } from "lucide-svelte";
   import NavUser from "$lib/components/nav-user.svelte";
   import type { ComponentProps } from "svelte";
@@ -47,6 +48,18 @@
     ],
     versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
     navMain: [
+      {
+        title: "Samples",
+        url: "#",
+        icon: SwatchBook,
+        isActive: false,
+        items: [
+          {
+            title: "Alert",
+            url: "/samples/alert",
+          },
+        ],
+      },
       {
         title: "Getting Started",
         url: "#",
