@@ -30,13 +30,13 @@
       title: "Pick an Option",
       message: "Click on your chocie:",
       buttons: [
-        { label: "A", value: "A", variant: "default" },
-        { label: "B", value: "B", variant: "secondary" },
-        { label: "C", value: "C", variant: "outline" },
-        { label: "D", value: "D", variant: "destructive" },
-        { label: "E", value: "E", variant: "ghost" },
-        { label: "F", value: "F", variant: "link" },
-        { label: "Cancel", value: "cancel", variant: "outline" },
+        { label: "def", value: "default", variant: "default" },
+        { label: "sec", value: "secondary", variant: "secondary" },
+        { label: "out", value: "outline", variant: "outline" },
+        { label: "des", value: "destuctive", variant: "destructive" },
+        { label: "gst", value: "ghost", variant: "ghost" },
+        { label: "lnk", value: "link", variant: "link" },
+        { label: "cancel", value: "cancel", variant: "outline" },
       ],
     });
 
