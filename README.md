@@ -122,6 +122,14 @@ An opinionated development template designed to create large-scale business apps
   - by default this file is excluded from source control
   - you can add it source control by commenting it out in `supabase/.gitignore`
 - run: `supabase link` from the root of your project
+- setup keys
+  - create the `.env` file: `cp supabase/.env-sample supabase/.env`
+  - set your keys in the `supabase/.env` file:
+    - `SEND_EMAIL_HOOK_SECRET=your_hook_secret`
+      - Set up auth hook here: [Supabase Auth Hooks](https://supabase.com/dashboard/project/_/auth/hooks)
+      - Set up auth hook for your edge function: send-email **TODO**
+    - `MAILGUN_API_KEY=your_mailgun_api_key`
+    - `MAILGUN_DOMAIN=your_mailgun_domain`
 
 ### Deploy Supabase Edge Functions
 
