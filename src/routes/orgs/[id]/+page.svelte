@@ -12,7 +12,19 @@
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
   let loading = $state(true);
+  let titleError = $state("");
   const load = async () => {
+    if (id === "new") {
+      org = {
+        title: "",
+        created_at: "",
+        id: "",
+        metadata: null,
+      };
+      loading = false;
+      return;
+    }
+
     const { data, error } = await getOrgById(id);
     if (error) {
       console.error("getOrgById error", error);
@@ -43,6 +55,26 @@
 	  }
 	];
 	*/
+
+  function validateTitle(title: string) {
+    if (!title.trim()) {
+      titleError = "Title is required";
+      return false;
+    }
+    titleError = "";
+    return true;
+  }
+
+  function handleSubmit() {
+    if (!org) return;
+
+    if (!validateTitle(org.title)) {
+      return;
+    }
+
+    // TODO: Add your update logic here
+    console.log("Submitting valid org:", org);
+  }
 </script>
 
 <!-- <PageTemplate {actionItems} /> -->
@@ -63,7 +95,7 @@
     {#if loading}
       Loading...
     {:else}
-      {org?.title}
+      {id === "new" ? "New Organization" : org?.title}
     {/if}
   {/snippet}
   <!--{#snippet TopRight()}{/snippet}-->
@@ -84,22 +116,32 @@
                   id="name"
                   value={org?.title ?? ""}
                   placeholder="Title of your organization"
+                  class={titleError ? "border-destructive" : ""}
+                  oninput={(e) => {
+                    if (org) org.title = e.currentTarget.value;
+                    validateTitle(e.currentTarget.value);
+                  }}
                 />
+                {#if titleError}
+                  <p class="text-sm text-destructive">{titleError}</p>
+                {/if}
               </div>
-              <div class="flex flex-col space-y-1.5">
-                <Label for="name">Created</Label>
-                <Input
-                  id="name"
-                  disabled
-                  value={org?.created_at?.substring(0, 10) ?? ""}
-                />
-              </div>
+              {#if id !== "new"}
+                <div class="flex flex-col space-y-1.5">
+                  <Label for="name">Created</Label>
+                  <Input
+                    id="name"
+                    disabled
+                    value={org?.created_at?.substring(0, 10) ?? ""}
+                  />
+                </div>
+              {/if}
             </div>
           </form>
         </Card.Content>
         <Card.Footer class="flex justify-between">
           <Button variant="outline">Cancel</Button>
-          <Button>Update</Button>
+          <Button on:click={handleSubmit}>Update</Button>
         </Card.Footer>
       </Card.Root>
     </div>

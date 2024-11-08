@@ -72,7 +72,7 @@
   }
 
   async function handleNewOrgClick() {
-    await goto("/dashboard/orgs/new");
+    await goto("/orgs/new");
   }
 
   async function handleSelectOrg(org: Org) {
