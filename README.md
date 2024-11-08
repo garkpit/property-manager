@@ -138,3 +138,14 @@ An opinionated development template designed to create large-scale business apps
   - `supabase functions deploy org_delete`
   - `supabase functions deploy org_update`
   - `supabase functions deploy send-email`
+
+## Scripts
+
+- `dev.sh`
+- `dump_schema.sh`
+- `generate-types.sh`
+- `lock-up-keys.sh`
+- `make-icons.sh`
+- `setup-apps.sh`
+- `shadcn-add-component.sh`
+- `update-app-icons.sh`
