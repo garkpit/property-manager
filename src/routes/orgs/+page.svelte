@@ -9,12 +9,14 @@
   } from "$lib/services/backend.svelte";
   import { t } from "$lib/i18n/index";
   import { toast } from "svelte-sonner";
-  import { Plus } from "lucide-svelte";
+  import { Plus, CircleCheckBig, Circle } from "lucide-svelte";
   import { fetchOrgs } from "$lib/services/orgService.svelte";
-
+  import GenericList from "$lib/components/GenericList.svelte";
+  import * as Table from "$lib/components/ui/table/index.js";
   import { goto } from "$app/navigation";
   import { Button } from "@/components/ui/button";
   import type { Org } from "$lib/services/orgService.svelte";
+  import Checkbox from "@/components/ui/checkbox/checkbox.svelte";
   const user = $derived(getUser());
 
   let orgs = $state([] as Org[]);
@@ -73,6 +75,10 @@
     await goto("/dashboard/orgs/new");
   }
 
+  async function handleSelectOrg(org: Org) {
+    setCurrentOrgId(org.id);
+  }
+
   const headers = [{ key: "title", label: "orgs.title", sortable: true }];
   /*
 	const actionItems: any[] = [
@@ -113,6 +119,7 @@
       {#if user}
         <div class="space-y-6">
           <!-- Current Org display -->
+          <!--
           <div class="bg-secondary p-4 rounded-lg mb-4">
             <h2 class="text-lg font-semibold mb-2">{$t("org.currentOrg")}</h2>
             {#if currentOrg}
@@ -121,6 +128,8 @@
               <p class="text-gray-500">{$t("org.noCurrentOrg")}</p>
             {/if}
           </div>
+		  -->
+          <!--
           {#each orgs as org}
             <Button
               type="button"
@@ -131,6 +140,54 @@
               {org.title}
             </Button>
           {/each}
+		  -->
+
+          <!--<GenericList data={orgs} {headers} onRowClick={handleOrgClick} />-->
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.Head>Active</Table.Head>
+                <Table.Head>Title</Table.Head>
+                <Table.Head class="w-[100px]">Created</Table.Head>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {#each orgs as org, i (i)}
+                <Table.Row onclick={() => handleOrgClick(org)}>
+                  <Table.Cell class="w-[30px] text-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        handleSelectOrg(org);
+                      }}
+                      class="h-12 w-12"
+                      aria-label={$t("org.addNew")}
+                    >
+                      {#if org.id === currentOrgId}
+                        <CircleCheckBig class="w-6 h-6" />
+                      {:else}
+                        <Circle class="w-6 h-6" />
+                      {/if}
+                    </Button>
+                  </Table.Cell>
+                  <Table.Cell class="font-medium">{org.title}</Table.Cell>
+                  <Table.Cell
+                    >{new Date(org.created_at).toLocaleDateString()}</Table.Cell
+                  >
+                </Table.Row>
+              {/each}
+            </Table.Body>
+            <!--
+            <Table.Footer>
+              <Table.Row>
+                <Table.Cell colspan={3}>Total</Table.Cell>
+                <Table.Cell class="text-right">$2,500.00</Table.Cell>
+              </Table.Row>
+            </Table.Footer>
+			-->
+          </Table.Root>
         </div>
       {:else}
         <p class="pt-8 text-center text-lg text-gray-500">

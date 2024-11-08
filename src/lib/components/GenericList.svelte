@@ -93,6 +93,7 @@
   }
 
   function sortData(data: any[], column: string, direction: "asc" | "desc") {
+    console.log("sortData", data);
     if (!column) return data;
 
     return [...data].sort((a, b) => {
@@ -176,7 +177,7 @@
       <TableBody>
         {#each sortedData as item (item.id)}
           <TableRow
-            on:click={(e) => handleRowClick(e, item)}
+            onclick={(e) => handleRowClick(e, item)}
             class="cursor-pointer"
           >
             {#if showCheckboxes}
