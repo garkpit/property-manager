@@ -6,8 +6,12 @@ import {
     saveItem,
 } from "./backend.svelte.ts";
 import { supabase } from "./backend.svelte.ts";
-import type { Org } from "$lib/types/org.ts";
 import type { Database } from "$lib/types/database.types";
+
+export type Org = Database["public"]["Tables"]["orgs"]["Row"];
+
+//import type { Org } from "$lib/types/org.ts";
+//import type { Database } from "$lib/types/database.types";
 
 export const getAllOrgs = async () => {
     return fetchOrgs("title", "asc");

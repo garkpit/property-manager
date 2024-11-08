@@ -9,25 +9,17 @@
   } from "$lib/services/backend.svelte";
   import { t } from "$lib/i18n/index";
   import { toast } from "svelte-sonner";
-  import GenericList from "$lib/components/GenericList.svelte";
   import { Plus } from "lucide-svelte";
-  import type { Org } from "$lib/types/org";
   import { fetchOrgs } from "$lib/services/orgService.svelte";
 
-  import type { PageData } from "./$types";
   import { goto } from "$app/navigation";
   import { Button } from "@/components/ui/button";
-  import type { Database } from "$lib/types/database.types";
+  import type { Org } from "$lib/services/orgService.svelte";
   const user = $derived(getUser());
 
-  let orgs = $state([] as Database["public"]["Tables"]["orgs"]["Row"][]);
+  let orgs = $state([] as Org[]);
   const currentOrgId = $derived(getCurrentOrgId());
-  const currentOrg = $derived(
-    orgs.find(
-      (org: Database["public"]["Tables"]["orgs"]["Row"]) =>
-        org.id === currentOrgId,
-    ),
-  );
+  const currentOrg = $derived(orgs.find((org: Org) => org.id === currentOrgId));
 
   const load = async () => {
     // const { data, error } = await getAllOrgs();
@@ -38,9 +30,7 @@
       console.log("orgs", orgs);
     }
   };
-  async function handleOrgClick(
-    org: Database["public"]["Tables"]["orgs"]["Row"],
-  ) {
+  async function handleOrgClick(org: Org) {
     console.log("handleOrgClick", org);
     try {
       await setCurrentOrg(org);
@@ -131,8 +121,6 @@
               <p class="text-gray-500">{$t("org.noCurrentOrg")}</p>
             {/if}
           </div>
-
-          <!--<GenericList data={orgs} {headers} onRowClick={handleOrgClick} />-->
           {#each orgs as org}
             <Button
               type="button"
