@@ -56,6 +56,10 @@
             title: "Alert",
             url: "/samples/alert",
           },
+          {
+            title: "Loading",
+            url: "/samples/loading",
+          },
         ],
       },
       {

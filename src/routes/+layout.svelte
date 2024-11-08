@@ -5,6 +5,7 @@
   import { setLocale } from "$lib/i18n";
   import { initializeUser } from "$lib/services/backend.svelte";
   import Alert from "$lib/components/ui/alert/alert.svelte";
+  import Loading from "$lib/components/loading/loading.svelte";
 
   let { children } = $props();
 
@@ -29,4 +30,5 @@
 
 <ModeWatcher />
 <Alert />
+<Loading />
 {@render children()}
