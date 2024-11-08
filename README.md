@@ -16,6 +16,9 @@ An opinionated development template designed to create large-scale business apps
   - great-looking UI
   - flexible
   - large community
+- Supabase backend
+  - uses Supabase JavaScript Client Library
+  - host on free tier / upgrade to scale
 - modular, organized code base
   - designed for large-scale, complex business projects
   - authentication
@@ -34,6 +37,7 @@ An opinionated development template designed to create large-scale business apps
 - [SvelteKit](https://svelte.dev/docs/kit/introduction)
 - [Tailwindcss](https://tailwindcss.com/docs/installation)
 - [Shadcn-svelte](https://next.shadcn-svelte.com/docs)
+- [Supabase JavaScript Client Library](https://supabase.com/docs/reference/javascript/start)
 
 **Back End:**
 
@@ -41,6 +45,8 @@ An opinionated development template designed to create large-scale business apps
   - Supabase [Database (PostgreSQL)](https://supabase.com/docs/guides/database/overview)
   - Supabase [Auth (Authentication)](https://supabase.com/docs/guides/auth)
   - Supabase [Edge Functions](https://supabase.com/docs/guides/functions)
+  - Supabase [Storage](https://supabase.com/docs/guides/storage)
+  - Supabase [Realtime](https://supabase.com/docs/guides/realtime)
 - [Deno 2.0](https://deno.com/)
 
 **Automation / AI**
@@ -95,11 +101,9 @@ An opinionated development template designed to create large-scale business apps
     - Ubuntu/Linux x86_64
     - Ubuntu/Linux ARM
 
-## Implementation Notes
+# Setup / Quickstart
 
-- All client-side code
-
-## How to Set Up Keys
+## Set Up Keys
 
 - Server URL and ANON_KEY are encrypted (for obfuscation)
   - `cp .keys.json.sample .keys.json`
@@ -119,7 +123,7 @@ An opinionated development template designed to create large-scale business apps
   - you can add it source control by commenting it out in `supabase/.gitignore`
 - run: `supabase link` from the root of your project
 
-### Deploy the Supabase Edge Functions
+### Deploy Supabase Edge Functions
 
 - from the root of your project, run:
   - `supabase functions deploy org_create`
