@@ -18,6 +18,8 @@
   import NavUser from "$lib/components/nav-user.svelte";
   import type { ComponentProps } from "svelte";
   import { sidebarState } from "./LeftDrawer.svelte.ts";
+  import { getUser } from "@/services/backend.svelte.ts";
+  const user = $derived(getUser());
 
   let {
     ref = $bindable(null),
