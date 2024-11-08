@@ -91,3 +91,20 @@ An opinionated development template designed to create large-scale business apps
 - Copy keys to Github Secrets (necessary to run Github Actions to create Desktop versions with Tauri)
   - make sure `gh` (Github Command Line) is installed
   - run `gh secret set -f .env`
+
+## Set up Supabase Edge Functions
+
+- make sure the [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) is installed
+- run: `supabase init` from the root of your project
+  - a file `supabase/config.toml` will be created
+  - by default this file is excluded from source control
+  - you can add it source control by commenting it out in `supabase/.gitignore`
+- run: `supabase link` from the root of your project
+
+### Deploy the Supabase Edge Functions
+
+- from the root of your project, run:
+  - `supabase functions deploy org_create`
+  - `supabase functions deploy org_delete`
+  - `supabase functions deploy org_update`
+  - `supabase functions deploy send-email`
