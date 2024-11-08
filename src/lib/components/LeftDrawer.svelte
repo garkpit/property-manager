@@ -61,138 +61,22 @@
         ],
       },
       {
-        title: "Getting Started",
+        title: "Information",
         url: "#",
         icon: BookOpen,
         isOpen: false,
         items: [
           {
-            title: "Installation",
-            url: "#",
+            title: "About this app",
+            url: "/about",
           },
           {
-            title: "Project Structure",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Building Your Application",
-        url: "#",
-        icon: Box,
-        isOpen: false,
-        items: [
-          {
-            title: "About",
-            url: "dashboard/about",
+            title: "Terms of Service",
+            url: "/terms",
           },
           {
-            title: "Routing",
-            url: "#",
-          },
-          {
-            title: "Data Fetching",
-            url: "#",
-          },
-          {
-            title: "Rendering",
-            url: "#",
-          },
-          {
-            title: "Caching",
-            url: "#",
-          },
-          {
-            title: "Styling",
-            url: "#",
-          },
-          {
-            title: "Optimizing",
-            url: "#",
-          },
-          {
-            title: "Configuring",
-            url: "#",
-          },
-          {
-            title: "Testing",
-            url: "#",
-          },
-          {
-            title: "Authentication",
-            url: "#",
-          },
-          {
-            title: "Deploying",
-            url: "#",
-          },
-          {
-            title: "Upgrading",
-            url: "#",
-          },
-          {
-            title: "Examples",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "API Reference",
-        url: "#",
-        icon: Code,
-        isOpen: false,
-        items: [
-          {
-            title: "Components",
-            url: "#",
-          },
-          {
-            title: "File Conventions",
-            url: "#",
-          },
-          {
-            title: "Functions",
-            url: "#",
-          },
-          {
-            title: "next.config.js Options",
-            url: "#",
-          },
-          {
-            title: "CLI",
-            url: "#",
-          },
-          {
-            title: "Edge Runtime",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Architecture",
-        url: "#",
-        icon: Settings,
-        isOpen: false,
-        items: [
-          {
-            title: "Accessibility",
-            url: "#",
-          },
-          {
-            title: "Fast Refresh",
-            url: "#",
-          },
-          {
-            title: "Svelte Compiler",
-            url: "#",
-          },
-          {
-            title: "Supported Browsers",
-            url: "#",
-          },
-          {
-            title: "Rollup",
-            url: "#",
+            title: "Privacy Policy",
+            url: "/privacy",
           },
         ],
       },
