@@ -63,6 +63,18 @@
         ],
       },
       {
+        title: "Data",
+        url: "#",
+        icon: Sparkles,
+        isActive: false,
+        items: [
+          {
+            title: "Organizations",
+            url: "/orgs",
+          },
+        ],
+      },
+      {
         title: "Information",
         url: "#",
         icon: BookOpen,
