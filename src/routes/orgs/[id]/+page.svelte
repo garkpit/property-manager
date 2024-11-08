@@ -6,6 +6,9 @@
   import { goto } from "$app/navigation";
   import { ArrowLeft } from "lucide-svelte";
   import { Button } from "$lib/components/ui/button";
+  import * as Card from "$lib/components/ui/card/index.js";
+  import { Label } from "$lib/components/ui/label";
+  import { Input } from "$lib/components/ui/input";
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
   let loading = $state(true);
@@ -66,8 +69,40 @@
   <!--{#snippet TopRight()}{/snippet}-->
 
   {#snippet Middle()}
-    Org Details:
-    {org?.title}
+    <div class="flex items-center justify-center">
+      <Card.Root class="w-[350px]">
+        <Card.Header>
+          <Card.Title>Organization Details</Card.Title>
+          <Card.Description>This is your organization.</Card.Description>
+        </Card.Header>
+        <Card.Content>
+          <form>
+            <div class="grid w-full items-center gap-4">
+              <div class="flex flex-col space-y-1.5">
+                <Label for="name">Title</Label>
+                <Input
+                  id="name"
+                  value={org?.title ?? ""}
+                  placeholder="Title of your organization"
+                />
+              </div>
+              <div class="flex flex-col space-y-1.5">
+                <Label for="name">Created</Label>
+                <Input
+                  id="name"
+                  disabled
+                  value={org?.created_at?.substring(0, 10) ?? ""}
+                />
+              </div>
+            </div>
+          </form>
+        </Card.Content>
+        <Card.Footer class="flex justify-between">
+          <Button variant="outline">Cancel</Button>
+          <Button>Update</Button>
+        </Card.Footer>
+      </Card.Root>
+    </div>
   {/snippet}
 
   <!--{#snippet BottomLeft()}{/snippet}-->
