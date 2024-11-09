@@ -1,7 +1,7 @@
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import { page } from "$app/stores";
-  import { getOrgById } from "$lib/services/orgService.svelte";
+  import { getOrgById, saveOrg } from "$lib/services/orgService.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
   import { goto } from "$app/navigation";
   import { ArrowLeft } from "lucide-svelte";
@@ -9,10 +9,15 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
+  import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
+  import { toast } from "svelte-sonner";
+
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
   let loading = $state(true);
   let titleError = $state("");
+  let isFormChanged = $state(false);
+
   const load = async () => {
     if (id === "new") {
       org = {
@@ -28,6 +33,7 @@
     const { data, error } = await getOrgById(id);
     if (error) {
       console.error("getOrgById error", error);
+      toast.error("ERROR", { description: (error as Error).message });
       loading = false;
     } else {
       if (data) {
@@ -64,16 +70,23 @@
     titleError = "";
     return true;
   }
-
-  function handleSubmit() {
+  function handleInput() {
+    isFormChanged = true;
+  }
+  async function handleSubmit() {
     if (!org) return;
 
     if (!validateTitle(org.title)) {
       return;
     }
 
-    // TODO: Add your update logic here
-    console.log("Submitting valid org:", org);
+    const { data, error } = await saveOrg(org);
+    if (error) {
+      toast.error("ERROR", { description: (error as Error).message });
+    } else {
+      console.log("saveOrg success", data);
+      toast.success("SUCCESS", { description: "Organization updated" });
+    }
   }
 </script>
 
@@ -98,7 +111,11 @@
       {id === "new" ? "New Organization" : org?.title}
     {/if}
   {/snippet}
-  <!--{#snippet TopRight()}{/snippet}-->
+  {#snippet TopRight()}
+    {#if isFormChanged}
+      <SaveButton onclick={handleSubmit} />
+    {/if}
+  {/snippet}
 
   {#snippet Middle()}
     <div class="flex items-center justify-center">
@@ -108,7 +125,13 @@
           <Card.Description>This is your organization.</Card.Description>
         </Card.Header>
         <Card.Content>
-          <form>
+          <form
+            oninput={handleInput}
+            onsubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
             <div class="grid w-full items-center gap-4">
               <div class="flex flex-col space-y-1.5">
                 <Label for="name">Title</Label>
@@ -141,7 +164,7 @@
         </Card.Content>
         <Card.Footer class="flex justify-between">
           <Button variant="outline">Cancel</Button>
-          <Button on:click={handleSubmit}>Update</Button>
+          <Button onclick={handleSubmit}>Update</Button>
         </Card.Footer>
       </Card.Root>
     </div>

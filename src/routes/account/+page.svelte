@@ -8,6 +8,7 @@
   import { toast } from "svelte-sonner";
   import { Check } from "lucide-svelte";
   import { beforeNavigate } from "$app/navigation";
+  import SaveButton from "$lib/components/iconbuttons/SaveButton.svelte";
 
   const user = $derived(getUser());
 
@@ -81,15 +82,7 @@
   {/snippet}
   {#snippet TopRight()}
     {#if isFormChanged}
-      <Button
-        variant="ghost"
-        size="icon"
-        onclick={handleSubmit}
-        class="h-9 w-9"
-      >
-        <Check class="h-5 w-5" />
-        <span class="sr-only">Save changes</span>
-      </Button>
+      <SaveButton onclick={handleSubmit} />
     {/if}
   {/snippet}
 
