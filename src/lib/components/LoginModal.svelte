@@ -61,7 +61,7 @@
       try {
         const signUpError = await signUp(email, password);
         if (signUpError && signUpError !== "null") {
-          console.log("signUpError", signUpError);
+          console.error("signUpError", signUpError);
           toast.error("ERROR", {
             description: signUpError || "An unexpected error occurred",
           });

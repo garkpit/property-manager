@@ -29,11 +29,9 @@
     if (error) {
     } else {
       orgs = data;
-      console.log("orgs", orgs);
     }
   };
   async function handleOrgClick(org: Org) {
-    console.log("handleOrgClick", org);
     try {
       await setCurrentOrg(org);
       await goto(`/orgs/${org.id}`);

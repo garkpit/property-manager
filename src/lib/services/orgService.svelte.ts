@@ -34,7 +34,6 @@ export const getOrgById = async (
     error: unknown | null;
 }> => {
     try {
-        console.log("getOrgById got id", id);
         const { data } = await getItemById("orgs", id);
         return { data, error: null };
     } catch (error) {
@@ -57,15 +56,12 @@ export const getMyRoleInOrg = async (orgId: string) => {
 export const saveOrg = async (org: Org) => {
     try {
         if (!org.id || org.id === "new") {
-            console.log("saveOrg new org", org);
             const { data, error } = await supabase.functions.invoke(
                 "org_create",
                 {
                     body: { title: org.title },
                 },
             );
-            console.log("saveOrg data", data);
-            console.log("saveOrg error", error);
             let errorMessage = "";
             if (!error) {
                 return { data, error: null };
@@ -81,15 +77,12 @@ export const saveOrg = async (org: Org) => {
                 return { data, error };
             }
         } else {
-            console.log("saveOrg update org", org);
             const { data, error } = await supabase.functions.invoke(
                 "org_update",
                 {
                     body: { id: org.id, title: org.title },
                 },
             );
-            console.log("saveOrg data", data);
-            console.log("saveOrg error", error);
             let errorMessage = "";
             if (!error) {
                 return { data, error: null };
@@ -107,7 +100,7 @@ export const saveOrg = async (org: Org) => {
         }
     } catch (e) {
         const error = e as Error;
-        console.log("saveOrg unknown error", e);
+        console.error("saveOrg unknown error", e);
         if (error) error.message = "unknown error";
         return { data: null, error };
     }
@@ -115,15 +108,12 @@ export const saveOrg = async (org: Org) => {
 
 export const deleteOrg = async (org: Org) => {
     try {
-        console.log("deleteOrg", org);
         const { data, error } = await supabase.functions.invoke(
             "org_delete",
             {
                 body: { id: org.id },
             },
         );
-        console.log("deleteOrg data", data);
-        console.log("deleteOrg error", error);
         let errorMessage = "";
         if (!error) {
             return { data, error: null };
@@ -140,7 +130,7 @@ export const deleteOrg = async (org: Org) => {
         }
     } catch (e) {
         const error = e as Error;
-        console.log("deleteOrg unknown error", e);
+        console.error("deleteOrg unknown error", e);
         if (error) error.message = "unknown error";
         return { data: null, error };
     }

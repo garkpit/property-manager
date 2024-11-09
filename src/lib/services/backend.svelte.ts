@@ -80,11 +80,6 @@ export const getItemById = async (
 
   const { data, error } = await query.single();
   if (error) {
-    console.log("getItemById error");
-    console.log("collection", collection);
-    console.log("id", id);
-    console.log("filterColumn", filterColumn);
-    console.log("filterValue", filterValue);
     console.error("error", error);
   }
 

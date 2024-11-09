@@ -93,7 +93,6 @@
   }
 
   function sortData(data: any[], column: string, direction: "asc" | "desc") {
-    console.log("sortData", data);
     if (!column) return data;
 
     return [...data].sort((a, b) => {

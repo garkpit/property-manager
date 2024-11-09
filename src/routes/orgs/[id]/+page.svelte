@@ -90,7 +90,6 @@
     if (error) {
       toast.error("ERROR", { description: (error as Error).message });
     } else {
-      console.log("saveOrg success", data);
       setTimeout(() => {
         toast.success("SUCCESS", { description: "Organization updated" });
       }, 500);
@@ -114,7 +113,6 @@
       if (error) {
         toast.error("ERROR", { description: (error as Error).message });
       } else {
-        console.log("deleteOrg success", data);
         setTimeout(() => {
           toast.success("SUCCESS", { description: "Organization deleted" });
         }, 500);
