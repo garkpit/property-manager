@@ -68,8 +68,8 @@
             created_at: new Date(u.created_at).toLocaleDateString(),
             user_role: u.user_role,
             email: u.email,
-            firstname: u.raw_user_meta_data.firstname,
-            lastname: u.raw_user_meta_data.lastname,
+            firstname: u.raw_user_meta_data.firstname || null,
+            lastname: u.raw_user_meta_data.lastname || null,
             email_verified: u.raw_user_meta_data.email_verified,
           });
         }
@@ -231,34 +231,23 @@
       </Card.Root>
     </div>
     <div class="flex items-center justify-center pt-8">
-      <Card.Root class="w-auto">
+      <Card.Root class="w-[350px]">
         <Card.Header>
           <Card.Title>Organization Users</Card.Title>
           <Card.Description>Users of this organization.</Card.Description>
         </Card.Header>
         <Card.Content>
           <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.Head>Email</Table.Head>
-                <Table.Head>Name</Table.Head>
-                <Table.Head>Role</Table.Head>
-                <Table.Head class="w-[100px]">Created</Table.Head>
-                <Table.Head class="w-[100px]">Verified</Table.Head>
-              </Table.Row>
-            </Table.Header>
             <Table.Body>
               {#if users}
                 {#each users as user, i (i)}
-                  <Table.Row>
-                    <Table.Cell>{user.email}</Table.Cell>
-                    <Table.Cell
-                      >{user.firstname + " " + user.lastname}</Table.Cell
-                    >
-                    <Table.Cell>{user.user_role}</Table.Cell>
-                    <Table.Cell>{user.created_at}</Table.Cell>
-                    <Table.Cell>
-                      {user.email_verified ? "Yes" : "No"}
+                  <Table.Row class="">
+                    <Table.Cell class="">
+                      {user.email}<br />
+                      {#if user.firstname || user.lastname}
+                        {user.firstname + " " + user.lastname}<br />
+                      {/if}
+                      <b>{user.user_role}</b>
                     </Table.Cell>
                   </Table.Row>
                 {/each}
