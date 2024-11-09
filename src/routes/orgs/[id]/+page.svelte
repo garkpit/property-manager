@@ -5,6 +5,7 @@
     getOrgById,
     saveOrg,
     deleteOrg,
+    getOrgUsers,
   } from "$lib/services/orgService.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
   import { goto } from "$app/navigation";
@@ -20,6 +21,7 @@
 
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
+  let users = $state<any[] | null>(null);
   let loading = $state(true);
   let titleError = $state("");
   let isFormChanged = $state(false);
@@ -48,6 +50,32 @@
         org = null;
       }
       loading = false;
+    }
+    if (org) {
+      const { data: usersData, error: usersError } = await getOrgUsers(org);
+      if (usersError) {
+        console.error("getOrgUsers error", usersError);
+      } else {
+        console.log("got users data", usersData.data);
+        console.log("usersData.data.length", usersData.data.length);
+        const tempUsers = [];
+        for (let i = 0; i < usersData.data.length; i++) {
+          const u = usersData.data[i];
+          console.log("u", u);
+          tempUsers.push({
+            id: u.userid,
+            created_at: new Date(u.created_at).toLocaleDateString(),
+            user_role: u.user_role,
+            email: u.email,
+            firstname: u.raw_user_meta_data.firstname,
+            lastname: u.raw_user_meta_data.lastname,
+            email_verified: u.raw_user_meta_data.email_verified,
+          });
+        }
+        users = tempUsers;
+        console.log("got users", users);
+        console.table(tempUsers);
+      }
     }
   };
   $effect(() => {
