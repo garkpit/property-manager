@@ -1,7 +1,11 @@
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import { page } from "$app/stores";
-  import { getOrgById, saveOrg } from "$lib/services/orgService.svelte";
+  import {
+    getOrgById,
+    saveOrg,
+    deleteOrg,
+  } from "$lib/services/orgService.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
   import { goto } from "$app/navigation";
   import { ArrowLeft } from "lucide-svelte";
@@ -10,7 +14,9 @@
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
   import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
+  import DeleteButton from "@/components/iconbuttons/DeleteButton.svelte";
   import { toast } from "svelte-sonner";
+  import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
 
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
@@ -85,7 +91,35 @@
       toast.error("ERROR", { description: (error as Error).message });
     } else {
       console.log("saveOrg success", data);
-      toast.success("SUCCESS", { description: "Organization updated" });
+      setTimeout(() => {
+        toast.success("SUCCESS", { description: "Organization updated" });
+      }, 500);
+      goto("/orgs");
+    }
+  }
+  async function handleDelete() {
+    if (org === null) return;
+    const result = await alertManager.show({
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this organization?",
+      buttons: [
+        { label: "Cancel", value: "cancel", variant: "outline" },
+        { label: "Delete", value: "delete", variant: "destructive" },
+      ],
+    });
+
+    if (result === "delete") {
+      // Handle delete action
+      const { data, error } = await deleteOrg(org);
+      if (error) {
+        toast.error("ERROR", { description: (error as Error).message });
+      } else {
+        console.log("deleteOrg success", data);
+        setTimeout(() => {
+          toast.success("SUCCESS", { description: "Organization deleted" });
+        }, 500);
+        goto("/orgs");
+      }
     }
   }
 </script>
@@ -163,8 +197,9 @@
           </form>
         </Card.Content>
         <Card.Footer class="flex justify-between">
-          <Button variant="outline">Cancel</Button>
-          <Button onclick={handleSubmit}>Update</Button>
+          {#if id !== "new"}
+            <DeleteButton onclick={handleDelete} />
+          {/if}
         </Card.Footer>
       </Card.Root>
     </div>

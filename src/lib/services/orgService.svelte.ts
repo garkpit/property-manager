@@ -1,10 +1,4 @@
-import {
-    deleteItem,
-    getItemById,
-    getList,
-    getSession,
-    saveItem,
-} from "./backend.svelte.ts";
+import { getItemById, getList, getSession } from "./backend.svelte.ts";
 import { supabase } from "./backend.svelte.ts";
 import type { Database } from "$lib/types/database.types";
 import {
@@ -114,6 +108,39 @@ export const saveOrg = async (org: Org) => {
     } catch (e) {
         const error = e as Error;
         console.log("saveOrg unknown error", e);
+        if (error) error.message = "unknown error";
+        return { data: null, error };
+    }
+};
+
+export const deleteOrg = async (org: Org) => {
+    try {
+        console.log("deleteOrg", org);
+        const { data, error } = await supabase.functions.invoke(
+            "org_delete",
+            {
+                body: { id: org.id },
+            },
+        );
+        console.log("deleteOrg data", data);
+        console.log("deleteOrg error", error);
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
+        } else {
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = await error.context.json();
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
+            }
+            error.message = errorMessage;
+            return { data, error };
+        }
+    } catch (e) {
+        const error = e as Error;
+        console.log("deleteOrg unknown error", e);
         if (error) error.message = "unknown error";
         return { data: null, error };
     }
