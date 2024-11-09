@@ -45,3 +45,12 @@ END;
 
 $$;
 
+-- Revoke execute permissions from anon and authenticated roles
+REVOKE EXECUTE ON FUNCTION accept_invite(UUID) FROM anon, authenticated;
+
+-- Grant execute permissions to a specific role (e.g., admin_role)
+-- Uncomment and modify the following line if you want to grant access to a specific role
+-- GRANT EXECUTE ON FUNCTION delete_org(UUID) TO admin_role;
+-- Add a comment to the function
+COMMENT ON FUNCTION accept_invite(UUID) IS 'Accpets an org invite, creating a user entry in the orgs_users table and deleting the orgs_invite record. This function should only be accessible to highly privileged roles.';
+
