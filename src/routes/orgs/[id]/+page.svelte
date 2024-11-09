@@ -18,6 +18,7 @@
   import DeleteButton from "@/components/iconbuttons/DeleteButton.svelte";
   import { toast } from "svelte-sonner";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
+  import * as Table from "$lib/components/ui/table/index.js";
 
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
@@ -227,6 +228,53 @@
             <DeleteButton onclick={handleDelete} />
           {/if}
         </Card.Footer>
+      </Card.Root>
+    </div>
+    <div class="flex items-center justify-center pt-8">
+      <Card.Root class="w-auto">
+        <Card.Header>
+          <Card.Title>Organization Users</Card.Title>
+          <Card.Description>Users of this organization.</Card.Description>
+        </Card.Header>
+        <Card.Content>
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.Head>Email</Table.Head>
+                <Table.Head>Name</Table.Head>
+                <Table.Head>Role</Table.Head>
+                <Table.Head class="w-[100px]">Created</Table.Head>
+                <Table.Head class="w-[100px]">Verified</Table.Head>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {#if users}
+                {#each users as user, i (i)}
+                  <Table.Row>
+                    <Table.Cell>{user.email}</Table.Cell>
+                    <Table.Cell
+                      >{user.firstname + " " + user.lastname}</Table.Cell
+                    >
+                    <Table.Cell>{user.user_role}</Table.Cell>
+                    <Table.Cell>{user.created_at}</Table.Cell>
+                    <Table.Cell>
+                      {user.email_verified ? "Yes" : "No"}
+                    </Table.Cell>
+                  </Table.Row>
+                {/each}
+              {/if}
+            </Table.Body>
+            <!--
+				<Table.Footer>
+				  <Table.Row>
+					<Table.Cell colspan={3}>Total</Table.Cell>
+					<Table.Cell class="text-right">$2,500.00</Table.Cell>
+				  </Table.Row>
+				</Table.Footer>
+				-->
+          </Table.Root>
+        </Card.Content>
+        <Card.Footer></Card.Footer>
       </Card.Root>
     </div>
   {/snippet}
