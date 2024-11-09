@@ -144,6 +144,7 @@ An opinionated development template designed to create large-scale business apps
 - `dev.sh`
 - `deploy-cloudflare.sh`
 - `dump_schema.sh`
+- `fix_macos_app.sh`: to run a downloaded MacOS app version that's unsigned, run `fix_macos_app.sh <app-name>` such as `fix_macos_app.sh svelte5-template_macos.app`. This runs `xattr -cr svelte5-template_macos.app` to enable the app to be run even though it's not signed.
 - `generate-types.sh`
 - `lock-up-keys.sh`
 - `make-icons.sh`
