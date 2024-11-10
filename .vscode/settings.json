@@ -8,6 +8,7 @@
   "deno.enablePaths": [
     "supabase/functions"
   ],
+  "deno.importMap": "./import_map.json",
   "deno.lint": true,
   "deno.unstable": [
     "bare-node-builtins",
