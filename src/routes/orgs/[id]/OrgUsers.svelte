@@ -1,7 +1,7 @@
 <script lang="ts">
   import DeleteButton from "$lib/components/iconbuttons/DeleteButton.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
-  import { deleteOrgUser } from "$lib/services/orgService.svelte";
+  import { deleteOrgUser, getOrgUsers } from "$lib/services/orgService.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import UserRole from "./UserRole.svelte";
@@ -9,7 +9,7 @@
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import { toast } from "svelte-sonner";
 
-  let { users } = $props<{
+  let { org, users } = $props<{
     org: Org;
     users: any[];
   }>();
@@ -37,6 +37,10 @@
       if (error) {
         toast.error("ERROR", { description: (error as Error).message });
       } else {
+        // need to refresh the users list
+        if (org) {
+          users = await getOrgUsers(org.id);
+        }
         setTimeout(() => {
           toast.success("SUCCESS", {
             description: "User removed from organization",
