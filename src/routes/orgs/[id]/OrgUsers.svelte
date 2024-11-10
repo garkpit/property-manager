@@ -8,6 +8,8 @@
   import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import { toast } from "svelte-sonner";
+  import { getUser } from "$lib/services/backend.svelte";
+  const user = $derived(getUser());
 
   let { org, users } = $props<{
     org: Org;
@@ -56,41 +58,47 @@
   }
 </script>
 
-<Card.Root class="w-[350px]">
+<Card.Root class="w-[350px] md:w-[500px]">
   <Card.Header>
     <Card.Title>Users</Card.Title>
     <Card.Description>Users of this organization.</Card.Description>
   </Card.Header>
-  <Card.Content>
+  <Card.Content class="pl-4 pr-4 pt-0">
     <Table.Root>
       <Table.Body>
         {#if users}
-          {#each users as user, i (i)}
-            <Table.Row class="">
-              <Table.Cell class="">
-                <div class="ml-4 flex items-center">
-                  {user.email}<br />
-                  {#if user.firstname || user.lastname}
-                    {user.firstname + " " + user.lastname}<br />
-                  {/if}
+          {#each users as u, i (i)}
+            <Table.Row>
+              <Table.Cell
+                class="w-[44px] max-w-[44px] m-0 p-0 hidden md:table-cell"
+              >
+                {#if u.email !== user?.email}
                   <DeleteButton
                     onclick={() => {
                       handleDelete(user);
                     }}
-                    classes="ml-6"
+                    classes="m-0 p-0"
                   />
-                </div>
-
-                <div class="flex items-center">
-                  <UserRole {user} classes="mt-2" />
-                  {#if user.user_role !== user.new_user_role}
-                    <div class="ml-4 flex items-center">
-                      <SaveButton
-                        onclick={() => {
-                          handleSubmit(user);
-                        }}
-                      />
-                    </div>
+                {/if}
+              </Table.Cell>
+              <Table.Cell class="pl-2 w-[280px] max-w-[280px]">
+                {u.email}<br />
+                {#if u.firstname || u.lastname}
+                  {u.firstname + " " + u.lastname}<br />
+                {/if}
+              </Table.Cell>
+              <Table.Cell
+                class="pl-2 pr-0 mr-0 w-[180px] min-w-[180px] max-w-[180px] hidden md:table-cell"
+              >
+                <div class="flex">
+                  <UserRole user={u} classes="w-[110px] max-w-[110px]" />
+                  {#if u.user_role !== u.new_user_role}
+                    <SaveButton
+                      onclick={() => {
+                        handleSubmit(u);
+                      }}
+                      classes="ml-4"
+                    />
                   {/if}
                 </div>
               </Table.Cell>
