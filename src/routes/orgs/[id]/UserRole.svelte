@@ -8,8 +8,9 @@
     { value: "Read Only", label: "Read Only" },
   ];
 
-  const { user } = $props<{
+  const { user, classes } = $props<{
     user: any;
+    classes?: string;
   }>();
   let value = $state(user.user_role);
 
@@ -30,7 +31,7 @@
 </script>
 
 <Select.Root type="single" name="user_role" bind:value>
-  <Select.Trigger class="w-[180px]">
+  <Select.Trigger class="w-[180px] {classes}">
     {triggerContent}
   </Select.Trigger>
   <Select.Content>

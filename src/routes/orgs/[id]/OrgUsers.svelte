@@ -1,10 +1,10 @@
 <script lang="ts">
+  import DeleteButton from "$lib/components/iconbuttons/DeleteButton.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import UserRole from "./UserRole.svelte";
   import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
-  import CancelButton from "@/components/iconbuttons/CancelButton.svelte";
 
   let { users } = $props<{
     org: Org;
@@ -15,8 +15,8 @@
     console.log("handleSubmit", user);
   }
 
-  async function handleCancel(user: any) {
-    delete user.new_user_role;
+  async function handleDelete(user: any) {
+    console.log("handleDelete", user);
   }
 </script>
 
@@ -32,12 +32,21 @@
           {#each users as user, i (i)}
             <Table.Row class="">
               <Table.Cell class="">
-                {user.email}<br />
-                {#if user.firstname || user.lastname}
-                  {user.firstname + " " + user.lastname}<br />
-                {/if}
+                <div class="ml-4 flex items-center">
+                  {user.email}<br />
+                  {#if user.firstname || user.lastname}
+                    {user.firstname + " " + user.lastname}<br />
+                  {/if}
+                  <DeleteButton
+                    onclick={() => {
+                      handleDelete(user);
+                    }}
+                    classes="ml-6"
+                  />
+                </div>
+
                 <div class="flex items-center">
-                  <UserRole {user} />
+                  <UserRole {user} classes="mt-2" />
                   {#if user.user_role !== user.new_user_role}
                     <div class="ml-4 flex items-center">
                       <SaveButton
