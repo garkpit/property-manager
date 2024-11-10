@@ -8,14 +8,25 @@
     { value: "Read Only", label: "Read Only" },
   ];
 
-  const { initialValue } = $props<{
-    initialValue: string;
+  const { user } = $props<{
+    user: any;
   }>();
-  let value = $state(initialValue);
+  let value = $state(user.user_role);
 
   const triggerContent = $derived(
     roles.find((f) => f.value === value)?.label ?? "Select role",
   );
+
+  // Update when the role changes
+  $effect(() => {
+    if (value !== user.user_role) {
+      user.new_user_role = value;
+      console.log("user.user_role", user.user_role);
+      console.log("user.new_user_role", user.new_user_role);
+    } else {
+      user.new_user_role = user.user_role;
+    }
+  });
 </script>
 
 <Select.Root type="single" name="user_role" bind:value>

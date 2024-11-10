@@ -78,8 +78,8 @@
 
 <Card.Root class="w-[350px]">
   <Card.Header>
-    <Card.Title>Organization Details</Card.Title>
-    <Card.Description>This is your organization.</Card.Description>
+    <Card.Title>Details</Card.Title>
+    <Card.Description>Details of the organization.</Card.Description>
   </Card.Header>
   <Card.Content>
     <form
