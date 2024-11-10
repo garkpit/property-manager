@@ -12,7 +12,6 @@
     initialValue: string;
   }>();
   let value = $state(initialValue);
-  console.log("initialValue", initialValue);
 
   const triggerContent = $derived(
     roles.find((f) => f.value === value)?.label ?? "Select role",

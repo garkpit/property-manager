@@ -9,6 +9,7 @@
   import DeleteButton from "@/components/iconbuttons/DeleteButton.svelte";
   import { toast } from "svelte-sonner";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
+  import CancelButton from "@/components/iconbuttons/CancelButton.svelte";
 
   const { org } = $props<{
     org: Org;
@@ -45,6 +46,9 @@
       }, 500);
       goto("/orgs");
     }
+  }
+  async function handleCancel() {
+    goto("/orgs");
   }
   async function handleDelete() {
     if (org === null) return;
@@ -120,7 +124,10 @@
       <DeleteButton onclick={handleDelete} />
     {/if}
     {#if isFormChanged}
-      <SaveButton onclick={handleSubmit} />
+      <div>
+        <CancelButton onclick={handleCancel} classes="mr-2" />
+        <SaveButton onclick={handleSubmit} />
+      </div>
     {/if}
   </Card.Footer>
 </Card.Root>
