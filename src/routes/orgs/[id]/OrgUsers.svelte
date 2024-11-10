@@ -1,7 +1,11 @@
 <script lang="ts">
   import DeleteButton from "$lib/components/iconbuttons/DeleteButton.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
-  import { deleteOrgUser, getOrgUsers } from "$lib/services/orgService.svelte";
+  import {
+    deleteOrgUser,
+    getOrgUsers,
+    updateUserRole,
+  } from "$lib/services/orgService.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import UserRole from "./UserRole.svelte";
@@ -16,8 +20,43 @@
     users: any[];
   }>();
 
-  async function handleSubmit(user: any) {
-    console.log("handleSubmit", user);
+  async function handleUpdateRole(user: any) {
+    console.log("handleUpdateRole", user);
+    console.log("user.user_role", user.user_role);
+    console.log("user.new_user_role", user.new_user_role);
+    if (user === null) return;
+    if (!user.new_user_role) return;
+    const result = await alertManager.show({
+      title: "Confirm Role Change",
+      message: `Are you sure you want to change the role for ${user.email} from ${user.user_role} to ${user.new_user_role}?`,
+      buttons: [
+        { label: "Cancel", value: "cancel", variant: "outline" },
+        { label: "Update", value: "update", variant: "destructive" },
+      ],
+    });
+
+    if (result === "update") {
+      // Handle update action
+      const { data, error } = await updateUserRole(user.id, user.new_user_role);
+      if (error) {
+        toast.error("ERROR", { description: (error as Error).message });
+      } else {
+        console.log("need to refresh the users list with org", org);
+        // need to refresh the users list
+        if (org) {
+          const { data, error } = await getOrgUsers(org);
+          console.log("data", data);
+          console.log("error", error);
+          users = [...data.data];
+        }
+        setTimeout(() => {
+          toast.success("SUCCESS", {
+            description: "User removed from organization",
+          });
+        }, 500);
+        // goto("/orgs");
+      }
+    }
   }
 
   async function handleDelete(user: any) {
@@ -25,8 +64,7 @@
     if (user.id === null) return;
     const result = await alertManager.show({
       title: "Confirm Remove User",
-      message:
-        "Are you sure you want to remove this user from this organization?",
+      message: `Are you sure you want to remove ${user.email} from this organization?`,
       buttons: [
         { label: "Cancel", value: "cancel", variant: "outline" },
         { label: "Delete", value: "delete", variant: "destructive" },
@@ -95,7 +133,7 @@
                   {#if u.user_role !== u.new_user_role}
                     <SaveButton
                       onclick={() => {
-                        handleSubmit(u);
+                        handleUpdateRole(u);
                       }}
                       classes="ml-4"
                     />

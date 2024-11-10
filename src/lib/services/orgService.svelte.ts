@@ -135,6 +135,46 @@ export const deleteOrg = async (org: Org) => {
         return { data: null, error };
     }
 };
+export const updateUserRole = async (
+    orgs_users_id: string,
+    new_user_role: string,
+) => {
+    if (!orgs_users_id || !new_user_role) {
+        return {
+            data: null,
+            error: "orgs_users_id or new_user_role not provided",
+        };
+    }
+    console.log("updateUserRole: orgs_users_id", orgs_users_id);
+    console.log("updateUserRole: new_user_role", new_user_role);
+    try {
+        const { data, error } = await supabase.functions.invoke(
+            "org_user_update_role",
+            {
+                body: { orgs_users_id, new_user_role },
+            },
+        );
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
+        } else {
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = await error.context.json();
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
+            }
+            error.message = errorMessage;
+            return { data, error };
+        }
+    } catch (e) {
+        const error = e as Error;
+        console.error("updateUserRole unknown error", e);
+        if (error) error.message = "unknown error";
+        return { data: null, error };
+    }
+};
 export const deleteOrgUser = async (id: string) => {
     try {
         const { data, error } = await supabase.functions.invoke(
