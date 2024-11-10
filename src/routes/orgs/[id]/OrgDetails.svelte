@@ -76,7 +76,7 @@
   }
 </script>
 
-<Card.Root class="w-[350px]">
+<Card.Root class="w-[350px] md:w-[500px]">
   <Card.Header>
     <Card.Title>Details</Card.Title>
     <Card.Description>Details of the organization.</Card.Description>
