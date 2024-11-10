@@ -165,6 +165,7 @@ export const deleteOrgUser = async (id: string) => {
     }
 };
 export const getOrgUsers = async (org: Org) => {
+    console.log("getOrgUsers got org", org);
     try {
         console.log(
             "getOrgUsers calling edge function org_users with id:",

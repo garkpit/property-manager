@@ -37,9 +37,13 @@
       if (error) {
         toast.error("ERROR", { description: (error as Error).message });
       } else {
+        console.log("need to refresh the users list with org", org);
         // need to refresh the users list
         if (org) {
-          users = await getOrgUsers(org.id);
+          const { data, error } = await getOrgUsers(org);
+          console.log("data", data);
+          console.log("error", error);
+          users = [...data.data];
         }
         setTimeout(() => {
           toast.success("SUCCESS", {
