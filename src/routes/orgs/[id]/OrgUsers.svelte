@@ -1,10 +1,13 @@
 <script lang="ts">
   import DeleteButton from "$lib/components/iconbuttons/DeleteButton.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
+  import { deleteOrgUser } from "$lib/services/orgService.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import UserRole from "./UserRole.svelte";
   import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
+  import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
+  import { toast } from "svelte-sonner";
 
   let { users } = $props<{
     org: Org;
@@ -16,7 +19,32 @@
   }
 
   async function handleDelete(user: any) {
-    console.log("handleDelete", user);
+    if (user === null) return;
+    if (user.id === null) return;
+    const result = await alertManager.show({
+      title: "Confirm Remove User",
+      message:
+        "Are you sure you want to remove this user from this organization?",
+      buttons: [
+        { label: "Cancel", value: "cancel", variant: "outline" },
+        { label: "Delete", value: "delete", variant: "destructive" },
+      ],
+    });
+
+    if (result === "delete") {
+      // Handle delete action
+      const { data, error } = await deleteOrgUser(user.id);
+      if (error) {
+        toast.error("ERROR", { description: (error as Error).message });
+      } else {
+        setTimeout(() => {
+          toast.success("SUCCESS", {
+            description: "User removed from organization",
+          });
+        }, 500);
+        // goto("/orgs");
+      }
+    }
   }
 </script>
 

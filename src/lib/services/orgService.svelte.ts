@@ -135,6 +135,35 @@ export const deleteOrg = async (org: Org) => {
         return { data: null, error };
     }
 };
+export const deleteOrgUser = async (id: string) => {
+    try {
+        const { data, error } = await supabase.functions.invoke(
+            "org_user_delete",
+            {
+                body: { id },
+            },
+        );
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
+        } else {
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = await error.context.json();
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
+            }
+            error.message = errorMessage;
+            return { data, error };
+        }
+    } catch (e) {
+        const error = e as Error;
+        console.error("deleteOrgUser unknown error", e);
+        if (error) error.message = "unknown error";
+        return { data: null, error };
+    }
+};
 export const getOrgUsers = async (org: Org) => {
     try {
         console.log(
