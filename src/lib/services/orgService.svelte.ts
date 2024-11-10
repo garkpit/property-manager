@@ -145,8 +145,6 @@ export const updateUserRole = async (
             error: "orgs_users_id or new_user_role not provided",
         };
     }
-    console.log("updateUserRole: orgs_users_id", orgs_users_id);
-    console.log("updateUserRole: new_user_role", new_user_role);
     try {
         const { data, error } = await supabase.functions.invoke(
             "org_user_update_role",
@@ -205,20 +203,13 @@ export const deleteOrgUser = async (id: string) => {
     }
 };
 export const getOrgUsers = async (org: Org) => {
-    console.log("getOrgUsers got org", org);
     try {
-        console.log(
-            "getOrgUsers calling edge function org_users with id:",
-            org.id,
-        );
         const { data, error } = await supabase.functions.invoke(
             "org_users",
             {
                 body: { id: org.id },
             },
         );
-        console.log("edge function got data", data);
-        console.log("edge function got error", error);
         let errorMessage = "";
         if (!error) {
             return { data, error: null };

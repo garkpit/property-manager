@@ -21,9 +21,6 @@
   }>();
 
   async function handleUpdateRole(user: any) {
-    console.log("handleUpdateRole", user);
-    console.log("user.user_role", user.user_role);
-    console.log("user.new_user_role", user.new_user_role);
     if (user === null) return;
     if (!user.new_user_role) return;
     const result = await alertManager.show({
@@ -41,19 +38,13 @@
       if (error) {
         toast.error("ERROR", { description: (error as Error).message });
       } else {
-        console.log("need to refresh the users list with org", org);
-        // need to refresh the users list
-        if (org) {
-          const { data, error } = await getOrgUsers(org);
-          console.log("data", data);
-          console.log("error", error);
-          users = [...data.data];
-        }
+        // refresh the page here
+        toast.success("SUCCESS", {
+          description: "User role updated",
+        });
         setTimeout(() => {
-          toast.success("SUCCESS", {
-            description: "User removed from organization",
-          });
-        }, 500);
+          window.location.reload();
+        }, 1000);
         // goto("/orgs");
       }
     }
@@ -77,19 +68,13 @@
       if (error) {
         toast.error("ERROR", { description: (error as Error).message });
       } else {
-        console.log("need to refresh the users list with org", org);
-        // need to refresh the users list
-        if (org) {
-          const { data, error } = await getOrgUsers(org);
-          console.log("data", data);
-          console.log("error", error);
-          users = [...data.data];
-        }
+        // refresh the page here
+        toast.success("SUCCESS", {
+          description: "User removed from organization",
+        });
         setTimeout(() => {
-          toast.success("SUCCESS", {
-            description: "User removed from organization",
-          });
-        }, 500);
+          window.location.reload();
+        }, 1000);
         // goto("/orgs");
       }
     }
@@ -113,7 +98,7 @@
                 {#if u.email !== user?.email}
                   <DeleteButton
                     onclick={() => {
-                      handleDelete(user);
+                      handleDelete(u);
                     }}
                     classes="m-0 p-0"
                   />
@@ -130,7 +115,7 @@
               >
                 <div class="flex">
                   <UserRole user={u} classes="w-[110px] max-w-[110px]" />
-                  {#if u.user_role !== u.new_user_role}
+                  {#if u.new_user_role && u.user_role !== u.new_user_role}
                     <SaveButton
                       onclick={() => {
                         handleUpdateRole(u);
