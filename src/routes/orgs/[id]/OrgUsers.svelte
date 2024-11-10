@@ -17,6 +17,7 @@
   import { toast } from "svelte-sonner";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import * as Table from "$lib/components/ui/table/index.js";
+  import UserRole from "./UserRole.svelte";
 
   const { org, users } = $props<{
     org: Org;
@@ -99,7 +100,7 @@
                 {#if user.firstname || user.lastname}
                   {user.firstname + " " + user.lastname}<br />
                 {/if}
-                <b>{user.user_role}</b>
+                <UserRole initialValue={user.user_role} />
               </Table.Cell>
             </Table.Row>
           {/each}

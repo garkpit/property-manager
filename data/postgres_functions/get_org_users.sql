@@ -1,7 +1,7 @@
 -- Function to delete an organization and all related data
 CREATE OR REPLACE FUNCTION get_org_users(org_id uuid)
     RETURNS TABLE(
-        userid uuid,
+        id uuid,
         created_at timestamp with time zone,
         user_role text,
         email varchar(255),
@@ -12,7 +12,7 @@ CREATE OR REPLACE FUNCTION get_org_users(org_id uuid)
 BEGIN
     RETURN QUERY
     SELECT
-        orgs_users.userid,
+        orgs_users.id,
         orgs_users.created_at,
         orgs_users.user_role,
         auth.users.email,
