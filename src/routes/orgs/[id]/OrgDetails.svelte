@@ -1,14 +1,7 @@
 <script lang="ts">
-  import {
-    getOrgById,
-    saveOrg,
-    deleteOrg,
-    getOrgUsers,
-  } from "$lib/services/orgService.svelte";
+  import { saveOrg, deleteOrg } from "$lib/services/orgService.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
   import { goto } from "$app/navigation";
-  import { ArrowLeft } from "lucide-svelte";
-  import { Button } from "$lib/components/ui/button";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Label } from "$lib/components/ui/label";
   import { Input } from "$lib/components/ui/input";
@@ -16,15 +9,12 @@
   import DeleteButton from "@/components/iconbuttons/DeleteButton.svelte";
   import { toast } from "svelte-sonner";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
-  import * as Table from "$lib/components/ui/table/index.js";
 
   const { org } = $props<{
     org: Org;
   }>();
   //let org = $state<Org | null>(null);
   let id = $derived(org?.id);
-  let users = $state<any[] | null>(null);
-  let loading = $state(true);
   let titleError = $state("");
   let isFormChanged = $state(false);
 
