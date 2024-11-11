@@ -14,9 +14,11 @@
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import { toast } from "svelte-sonner";
   import { getUser } from "$lib/services/backend.svelte";
-  import { getInvites } from "$lib/services/inviteService.svelte";
+  import { getInvites, createInvite } from "$lib/services/inviteService.svelte";
   import type { Invite } from "$lib/services/inviteService.svelte";
   import { cn } from "$lib/utils";
+  import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
+
   const user = $derived(getUser());
 
   let { org } = $props<{
@@ -42,18 +44,11 @@
   function validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isValid = emailRegex.test(email);
-    console.log("Email validation:", { email, isValid });
     return isValid;
   }
 
   async function handleAdd() {
     showValidation = true;
-    console.log("Handle Add:", {
-      newInviteEmail,
-      isEmailValid,
-      showValidation,
-      selectedRole,
-    });
     if (!isEmailValid) {
       toast.error("Invalid email", {
         description: "Please enter a valid email address",
@@ -65,8 +60,20 @@
       role: selectedRole,
       org_id: org.id,
     });
+    loadingState.show("Creating invite...");
+    const { data, error } = await createInvite(
+      org.id,
+      newInviteEmail,
+      selectedRole,
+    );
+    loadingState.hide();
+    if (error) {
+      toast.error("ERROR", { description: (error as Error).message });
+    } else {
+      load();
+      toast.success("SUCCESS", { description: "Invite created" });
+    }
   }
-
   /*
   async function handleUpdateRole(user: any) {
     if (user === null) return;
@@ -163,6 +170,7 @@
                 class="pl-2 pr-0 mr-0 w-[180px] min-w-[180px] max-w-[180px] hidden md:table-cell"
               >
                 <div class="flex">
+                  {inv.user_role}
                   <!-- <UserRole user={u} classes="w-[110px] max-w-[110px]" /> -->
                   <!--
                   {#if inv.new_user_role && u.user_role !== u.new_user_role}
@@ -185,7 +193,6 @@
             >
               <AddButton
                 onclick={() => {
-                  console.log("Add button clicked");
                   handleAdd();
                 }}
                 classes="m-0 p-0"

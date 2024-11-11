@@ -1,5 +1,10 @@
 import type { Database } from "$lib/types/database.types";
 import { supabase } from "./backend.svelte.ts";
+import {
+    FunctionsFetchError,
+    FunctionsHttpError,
+    FunctionsRelayError,
+} from "@supabase/supabase-js";
 export type Invite = Database["public"]["Tables"]["orgs_invites"]["Row"];
 
 export const getInvites = async (orgid: string) => {
@@ -9,5 +14,46 @@ export const getInvites = async (orgid: string) => {
     );
     return { data, error };
 };
-export const createInvite = async (invite: Invite) => {
+// ************* WIP *************
+export const createInvite = async (
+    orgid: string,
+    email: string,
+    user_role: string,
+) => {
+    try {
+        const { data, error } = await supabase.functions.invoke(
+            "server_function",
+            {
+                body: {
+                    action: "invite_insert",
+                    payload: {
+                        orgid,
+                        email,
+                        user_role,
+                    },
+                },
+            },
+        );
+        console.log("saveOrg data", data);
+        console.log("saveOrg error", error);
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
+        } else {
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = await error.context.json();
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
+            }
+            error.message = errorMessage;
+            return { data, error };
+        }
+    } catch (e) {
+        const error = e as Error;
+        console.error("saveOrg unknown error", e);
+        if (error) error.message = "unknown error";
+        return { data: null, error };
+    }
 };

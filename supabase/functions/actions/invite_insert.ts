@@ -1,10 +1,11 @@
 import { supabase } from "../_shared/supabase_client.ts";
 import type { User } from "@supabase/supabase-js";
 import { getUserRole } from "../_shared/get_user_role.ts";
-import type { Invite } from "$lib/services/inviteService.svelte.ts";
+// import type { Invite } from "$lib/services/inviteService.svelte.ts";
 interface Payload {
-    id: string | null;
-    invite: Invite;
+    orgid: string | null;
+    email: string | null;
+    user_role: string | null;
 }
 export const invite_insert = async (
     payload: Payload,
@@ -17,15 +18,20 @@ export const invite_insert = async (
             return { data: null, error: "User not found" };
         }
         // Get the title from the request body
-        const id = payload.id;
-        const invite = payload.invite;
-        if (!invite.orgid) {
+        const { orgid, email, user_role } = payload;
+        if (!orgid || typeof orgid !== "string") {
             return { data: null, error: "orgid is required" };
+        }
+        if (!email || typeof email !== "string") {
+            return { data: null, error: "email is required" };
+        }
+        if (!user_role || typeof user_role !== "string") {
+            return { data: null, error: "user_role is required" };
         }
 
         // check to make sure the user is an owner of the org
         const { data: userRole, error: userRoleError } = await getUserRole(
-            invite.orgid,
+            orgid,
             user.id,
         );
         if (userRoleError) {
@@ -37,32 +43,38 @@ export const invite_insert = async (
                 error: "User is not an owner of the organization",
             };
         }
-        if (!invite.email) {
-            return { data: null, error: "email is required" };
-        }
-        // make sure email is a valid email
-        if (!invite.user_role) {
-            return { data: null, error: "user_role is required" };
-        }
         // make sure user_role is a valid user role
         if (
-            invite.user_role !== "Owner" &&
-            invite.user_role !== "Admin" &&
-            invite.user_role !== "Member" &&
-            invite.user_role !== "Read Only"
+            user_role !== "Owner" &&
+            user_role !== "Admin" &&
+            user_role !== "Member" &&
+            user_role !== "Read Only"
         ) {
             return { data: null, error: "user_role is not valid" };
         }
-
+        // check to make sure the email is not already in the orgs_invites table
+        const { data: existingUser, error: existingUserError } = await supabase
+            .from("orgs_invites")
+            .select("*")
+            .eq("email", email)
+            .eq("orgid", orgid);
+        if (existingUserError) {
+            return { data: null, error: existingUserError };
+        }
+        if (existingUser.length > 0) {
+            return {
+                data: null,
+                error: "email is already in the orgs_invites table",
+            };
+        }
         // Insert new orgs_users row
         const { data: insertData, error: insertError } = await supabase
-            .from("orgs_users")
+            .from("orgs_invites")
             .insert({
-                orgid: invite.orgid,
+                orgid: orgid,
                 owner: user.id,
-                email: invite.email,
-                user_role: invite.user_role,
-                metadata: invite.metadata || {},
+                email: email,
+                user_role: user_role,
             })
             .select()
             .single();
