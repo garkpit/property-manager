@@ -34,8 +34,6 @@ export const createInvite = async (
                 },
             },
         );
-        console.log("invite create data", data);
-        console.log("invite create error", error);
         let errorMessage = "";
         if (!error) {
             return { data, error: null };

@@ -68,8 +68,6 @@ export const saveOrg = async (org: Org) => {
                     },
                 },
             );
-        console.log("saveOrg data", data);
-        console.log("saveOrg error", error);
         let errorMessage = "";
         if (!error) {
             return { data, error: null };
@@ -163,7 +161,6 @@ export const updateUserRole = async (
     }
 };
 export const deleteOrgUser = async (id: string) => {
-    console.log("*** deleteOrgUser", id);
     try {
         const { data, error } = await supabase.functions.invoke(
             "server_function",

@@ -39,7 +39,6 @@ Deno.serve(async (req) => {
         if (authError) {
             throw new Error(authError.message);
         }
-        console.log("user", user);
 
         // call functions here...
         const body = await req.json();

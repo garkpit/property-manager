@@ -55,7 +55,6 @@
 
   async function handleSubmit() {
     // TODO: Implement save functionality
-    console.log({ firstname, lastname, bio });
     const { error } = await updateUser({
       data: {
         firstname,

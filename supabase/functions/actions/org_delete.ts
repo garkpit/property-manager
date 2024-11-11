@@ -8,8 +8,6 @@ export const org_delete = async (
     payload: Payload,
     user: User | null,
 ): Promise<{ data: unknown; error: unknown | null }> => {
-    console.log("org_delete payload", payload);
-    console.log("org_delete user", user);
     try {
         if (!user) {
             return { data: null, error: "User not found" };

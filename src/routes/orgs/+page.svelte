@@ -23,13 +23,10 @@
 
   const load = async () => {
     // const { data, error } = await getAllOrgs();
-    console.time("loader");
     const { data, error } = await fetchOrgs("title", "asc");
     if (error) {
     } else {
       orgs = data;
-      console.timeEnd("loader");
-      console.table(orgs);
     }
   };
   async function handleOrgClick(org: Org) {

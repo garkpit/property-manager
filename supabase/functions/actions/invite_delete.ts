@@ -9,8 +9,6 @@ export const invite_delete = async (
     payload: Payload,
     user: User | null,
 ): Promise<{ data: unknown; error: unknown | null }> => {
-    console.log("invite_delete payload", payload);
-    console.log("invite_delete user", user);
     try {
         const id = payload.id;
         if (!id) {

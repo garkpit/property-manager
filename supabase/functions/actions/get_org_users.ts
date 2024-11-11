@@ -8,8 +8,6 @@ export const get_org_users = async (
     payload: Payload,
     user: User | null,
 ): Promise<{ data: unknown; error: unknown | null }> => {
-    console.log("get_org_users payload", payload);
-    console.log("get_org_users user", user);
     try {
         if (!user) {
             return { data: null, error: "User not found" };

@@ -27,12 +27,9 @@
       if (usersError) {
         console.error("getOrgUsers error", usersError);
       } else {
-        console.log("got users data", usersData.data);
-        console.log("usersData.data.length", usersData.data.length);
         const tempUsers = [];
         for (let i = 0; i < usersData.data.length; i++) {
           const u = usersData.data[i];
-          console.log("u", u);
           tempUsers.push({
             id: u.id,
             created_at: new Date(u.created_at).toLocaleDateString(),
@@ -44,8 +41,6 @@
           });
         }
         users = tempUsers;
-        console.log("*** got users", users);
-        console.table(tempUsers);
       }
     }
   }
@@ -96,7 +91,6 @@
 
     if (result === "delete") {
       // Handle delete action
-      console.log("deleteOrgUser", user.id);
       const {
         data: { data, error },
       } = await deleteOrgUser(user.id);

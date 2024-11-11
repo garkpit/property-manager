@@ -9,8 +9,6 @@ export const org_upsert = async (
     payload: Payload,
     user: User | null,
 ): Promise<{ data: unknown; error: unknown | null }> => {
-    console.log("org_upsert payload", payload);
-    console.log("org_upsert user", user);
     try {
         if (!user) {
             return { data: null, error: "User not found" };
@@ -36,8 +34,6 @@ export const org_upsert = async (
         }
 
         // Insert new orgs_users row
-        console.log("upsert here with title", title);
-        console.log("upsert here with id", id);
         const { data: upsertData, error: upsertError } = await supabase
             .from("orgs")
             .upsert({ id: id || undefined, title })
@@ -47,15 +43,7 @@ export const org_upsert = async (
         if (upsertError) {
             return { data: null, error: upsertError };
         }
-        console.log("upsertData", upsertData);
-        console.log("id", id);
-        console.log("!id is null?", !id);
         if (!id) {
-            console.log("inserting into orgs_users", {
-                orgid: upsertData.id,
-                userid: user.id,
-                user_role: "Owner",
-            });
             // Insert new orgs_users row
             const { data: orgUserData, error: orgUserError } = await supabase
                 .from("orgs_users")

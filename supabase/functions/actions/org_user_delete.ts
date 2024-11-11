@@ -24,8 +24,6 @@ export const org_user_delete = async (
             return { data: null, error: orgError };
         }
         const orgid = org.orgid;
-        console.log("*** org_user_delete org", org);
-        console.log("*** org_user_delete orgid", orgid);
         const { data: userRole, error: userRoleError } = await getUserRole(
             orgid,
             user.id,

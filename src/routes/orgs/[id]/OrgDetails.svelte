@@ -29,9 +29,7 @@
   // let org = $state<Org | null>(null);
 
   const load = async () => {
-    console.log("load function, id:", id);
     if (id === "new") {
-      console.log("new org");
       org = {
         title: "",
         created_at: "",
@@ -39,11 +37,7 @@
         metadata: null,
       };
       return;
-    } else {
-      console.log("existing org");
     }
-
-    console.log("end of load function");
   };
   $effect(() => {
     load();
@@ -69,8 +63,6 @@
 
     loadingState.show("Saving organization...");
     const { data, error } = await saveOrg(org);
-    console.log("aaa data", data);
-    console.log("aaa error", error);
     loadingState.hide();
     if (error) {
       toast.error("ERROR", { description: (error as Error).message || error });
@@ -108,8 +100,6 @@
       const {
         data: { data, error },
       } = await deleteOrg(org);
-      console.log("orgDelete data", data);
-      console.log("orgDelete error", error);
       loadingState.hide();
       if (error) {
         toast.error("ERROR", { description: (error as Error).message });

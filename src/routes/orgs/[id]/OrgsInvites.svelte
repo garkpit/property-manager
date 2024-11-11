@@ -27,7 +27,6 @@
     if (!org) return;
     const { data, error } = await getInvites(org.id);
     invites = data || [];
-    console.table(invites);
   };
   $effect(() => {
     load();
@@ -46,7 +45,6 @@
   }
 
   async function handleDelete(id: string) {
-    console.log("handleDelete", id);
     loadingState.show("Deleting invite...");
     const {
       data: { data, error },
@@ -69,11 +67,6 @@
       });
       return;
     }
-    console.log("Processing invite:", {
-      email: newInviteEmail,
-      role: selectedRole,
-      org_id: org.id,
-    });
     loadingState.show("Creating invite...");
     const {
       data: { data, error },
@@ -172,7 +165,6 @@
                 <DeleteButton
                   onclick={() => {
                     // handleDelete(inv);
-                    console.log("delete invite", inv.id);
                     handleDelete(inv.id);
                   }}
                   classes="m-0 p-0"

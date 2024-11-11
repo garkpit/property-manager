@@ -8,7 +8,7 @@
         {
           icon: IconFromLucide,
           label: "Item Label Here",
-          onClick: () => {console.log("item was clicked")},
+          onClick: () => {("item was clicked")},
         },
       ],
     }

@@ -9,8 +9,6 @@ export const org_user_update_role = async (
     payload: Payload,
     user: User | null,
 ): Promise<{ data: unknown; error: unknown | null }> => {
-    console.log("org_user_update_role payload", payload);
-    console.log("org_user_update_role user", user);
     try {
         if (!user) {
             return { data: null, error: "User not found" };

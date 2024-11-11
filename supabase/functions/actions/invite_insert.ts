@@ -11,8 +11,6 @@ export const invite_insert = async (
     payload: Payload,
     user: User | null,
 ): Promise<{ data: unknown; error: unknown | null }> => {
-    console.log("invite_insert payload", payload);
-    console.log("invite_insert user", user);
     try {
         if (!user) {
             return { data: null, error: "User not found" };
