@@ -10,6 +10,7 @@
   import OrgDetails from "./OrgDetails.svelte";
   import OrgUsers from "./OrgUsers.svelte";
   import OrgsInvites from "./OrgsInvites.svelte";
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
 
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
@@ -118,19 +119,34 @@
 
   {#snippet Middle()}
     <div class="flex items-center justify-center">
-      {#if org}
-        <OrgDetails {org} />
-      {/if}
-    </div>
-    <div class="flex items-center justify-center pt-8">
-      {#if org && users}
-        <OrgUsers {org} {users} />
-      {/if}
-    </div>
-    <div class="flex items-center justify-center pt-8">
-      {#if org}
-        <OrgsInvites {org} />
-      {/if}
+      <Tabs.Root value="details" class="w-[350px] md:w-[500px]">
+        <Tabs.List>
+          <Tabs.Trigger value="details">Details</Tabs.Trigger>
+          <Tabs.Trigger value="users">Users</Tabs.Trigger>
+          <Tabs.Trigger value="invites">Invites</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="details">
+          <div class="flex items-center justify-center">
+            {#if org}
+              <OrgDetails {org} />
+            {/if}
+          </div>
+        </Tabs.Content>
+        <Tabs.Content value="users">
+          <div class="flex items-center justify-center">
+            {#if org && users}
+              <OrgUsers {org} {users} />
+            {/if}
+          </div>
+        </Tabs.Content>
+        <Tabs.Content value="invites">
+          <div class="flex items-center justify-center">
+            {#if org}
+              <OrgsInvites {org} />
+            {/if}
+          </div>
+        </Tabs.Content>
+      </Tabs.Root>
     </div>
   {/snippet}
 
