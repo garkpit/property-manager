@@ -6,11 +6,12 @@ import { getUser } from "../_shared/get_user.ts";
 import { org_delete } from "../actions/org_delete.ts";
 import { org_upsert } from "../actions/org_upsert.ts";
 import { org_user_delete } from "../actions/org_user_delete.ts";
-
+import { get_org_users } from "../actions/get_org_users.ts";
 const actions = {
     org_delete,
     org_upsert,
     org_user_delete,
+    get_org_users,
 } as const;
 
 type ActionKey = keyof typeof actions;
@@ -45,6 +46,21 @@ Deno.serve(async (req) => {
         }
 
         // const { data, error } = await executeAction(action, payload, user);
+        if (!actions[body.action as ActionKey]) {
+            return new Response(
+                JSON.stringify({
+                    data: null,
+                    error: "Invalid action: " + body.action,
+                }),
+                {
+                    headers: {
+                        ...corsHeaders,
+                        "Content-Type": "application/json",
+                    },
+                    status: 400,
+                },
+            );
+        }
         const { data, error } = await actions[body.action as ActionKey](
             body.payload,
             user,

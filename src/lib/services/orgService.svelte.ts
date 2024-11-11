@@ -191,9 +191,9 @@ export const deleteOrgUser = async (id: string) => {
 export const getOrgUsers = async (org: Org) => {
     try {
         const { data, error } = await supabase.functions.invoke(
-            "org_users",
+            "server_function",
             {
-                body: { id: org.id },
+                body: { action: "get_org_users", payload: { id: org.id } },
             },
         );
         let errorMessage = "";
