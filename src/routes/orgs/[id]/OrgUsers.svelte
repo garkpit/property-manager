@@ -9,6 +9,7 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import UserRole from "./UserRole.svelte";
+  import RoleSelector from "./RoleSelector.svelte";
   import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import { toast } from "svelte-sonner";
@@ -34,6 +35,7 @@
             id: u.id,
             created_at: new Date(u.created_at).toLocaleDateString(),
             user_role: u.user_role,
+            new_user_role: u.user_role,
             email: u.email,
             firstname: u.raw_user_meta_data.firstname || null,
             lastname: u.raw_user_meta_data.lastname || null,
@@ -69,9 +71,11 @@
         toast.success("SUCCESS", {
           description: "User role updated",
         });
+        load();
+        /*
         setTimeout(() => {
           window.location.reload();
-        }, 1000);
+        }, 1000);*/
         // goto("/orgs");
       }
     }
@@ -145,7 +149,11 @@
                 class="pl-2 pr-0 mr-0 w-[180px] min-w-[180px] max-w-[180px] hidden md:table-cell"
               >
                 <div class="flex">
-                  <UserRole user={u} classes="w-[110px] max-w-[110px]" />
+                  <RoleSelector
+                    bind:value={u.new_user_role}
+                    classes="w-[110px] max-w-[110px]"
+                  />
+                  <!--<UserRole user={u} classes="w-[110px] max-w-[110px]" />-->
                   {#if u.new_user_role && u.user_role !== u.new_user_role}
                     <SaveButton
                       onclick={() => {

@@ -8,13 +8,8 @@
     { value: "Viewer", label: "Viewer" },
   ];
 
-  let {
-    value = $bindable(),
-    user,
-    classes,
-  } = $props<{
+  let { value = $bindable(), classes } = $props<{
     value?: string;
-    user: any;
     classes?: string;
   }>();
 
@@ -25,13 +20,6 @@
   );
 
   // Update when the role changes
-  $effect(() => {
-    if (value !== user.user_role) {
-      user.new_user_role = value;
-    } else {
-      user.new_user_role = user.user_role;
-    }
-  });
 </script>
 
 <Select.Root type="single" name="user_role" bind:value>

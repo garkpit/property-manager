@@ -77,6 +77,8 @@
       toast.error("ERROR", { description: error });
     } else {
       load();
+      newInviteEmail = "";
+      showValidation = false;
       toast.success("SUCCESS", { description: "Invite created" });
     }
   }
@@ -221,10 +223,6 @@
               >
                 <div class="flex">
                   <RoleSelector
-                    user={{
-                      user_role: selectedRole,
-                      new_user_role: selectedRole,
-                    }}
                     classes="w-[110px] max-w-[110px]"
                     bind:value={selectedRole}
                   />
