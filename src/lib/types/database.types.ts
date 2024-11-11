@@ -168,12 +168,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      delete_org: {
-        Args: {
-          org_id: string
-        }
-        Returns: undefined
-      }
       get_org_role: {
         Args: {
           org_id: string
@@ -187,8 +181,27 @@ export type Database = {
         }
         Returns: string
       }
+      get_org_users: {
+        Args: {
+          org_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          user_role: string
+          email: string
+          last_sign_in_at: string
+          raw_user_meta_data: Json
+        }[]
+      }
       is_backup_running: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      reject_invite: {
+        Args: {
+          invite_id: string
+        }
         Returns: boolean
       }
     }
