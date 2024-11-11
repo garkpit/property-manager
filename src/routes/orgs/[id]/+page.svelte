@@ -9,6 +9,7 @@
   import { toast } from "svelte-sonner";
   import OrgDetails from "./OrgDetails.svelte";
   import OrgUsers from "./OrgUsers.svelte";
+  import OrgsInvites from "./OrgsInvites.svelte";
 
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
@@ -124,6 +125,11 @@
     <div class="flex items-center justify-center pt-8">
       {#if org && users}
         <OrgUsers {org} {users} />
+      {/if}
+    </div>
+    <div class="flex items-center justify-center pt-8">
+      {#if org}
+        <OrgsInvites {org} />
       {/if}
     </div>
   {/snippet}
