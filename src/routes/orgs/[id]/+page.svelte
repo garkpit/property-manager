@@ -126,25 +126,19 @@
           <Tabs.Trigger value="invites">Invites</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="details">
-          <div class="flex items-center justify-center">
-            {#if org}
-              <OrgDetails {org} />
-            {/if}
-          </div>
+          {#if org}
+            <OrgDetails {org} />
+          {/if}
         </Tabs.Content>
         <Tabs.Content value="users">
-          <div class="flex items-center justify-center">
-            {#if org && users}
-              <OrgUsers {org} {users} />
-            {/if}
-          </div>
+          {#if org && users}
+            <OrgUsers {org} {users} />
+          {/if}
         </Tabs.Content>
         <Tabs.Content value="invites">
-          <div class="flex items-center justify-center">
-            {#if org}
-              <OrgsInvites {org} />
-            {/if}
-          </div>
+          {#if org}
+            <OrgsInvites {org} />
+          {/if}
         </Tabs.Content>
       </Tabs.Root>
     </div>
