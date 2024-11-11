@@ -132,9 +132,12 @@ export const updateUserRole = async (
     }
     try {
         const { data, error } = await supabase.functions.invoke(
-            "org_user_update_role",
+            "server_function",
             {
-                body: { orgs_users_id, new_user_role },
+                body: {
+                    action: "org_user_update_role",
+                    payload: { id: orgs_users_id, user_role: new_user_role },
+                },
             },
         );
         let errorMessage = "";
