@@ -114,9 +114,9 @@ export const saveOrg = async (org: Org) => {
 export const deleteOrg = async (org: Org) => {
     try {
         const { data, error } = await supabase.functions.invoke(
-            "org_delete",
+            "server_function",
             {
-                body: { id: org.id },
+                body: { action: "org_delete", payload: { id: org.id } },
             },
         );
         let errorMessage = "";

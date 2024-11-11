@@ -66,7 +66,11 @@
 
     if (result === "delete") {
       // Handle delete action
+      loadingState.show("Deleting organization...");
       const { data, error } = await deleteOrg(org);
+      console.log("orgDelete data", data);
+      console.log("orgDelete error", error);
+      loadingState.hide();
       if (error) {
         toast.error("ERROR", { description: (error as Error).message });
       } else {

@@ -4,8 +4,11 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { getUser } from "../_shared/get_user.ts";
 
 import { org_create } from "../actions/org_create.ts";
+import { org_delete } from "../actions/org_delete.ts";
+
 const actions = {
     org_create,
+    org_delete,
 } as const;
 
 type ActionKey = keyof typeof actions;
