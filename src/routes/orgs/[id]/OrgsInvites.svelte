@@ -1,20 +1,17 @@
 <script lang="ts">
   import DeleteButton from "$lib/components/iconbuttons/DeleteButton.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
-  import {
-    deleteOrgUser,
-    getOrgUsers,
-    updateUserRole,
-  } from "$lib/services/orgService.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import AddButton from "$lib/components/iconbuttons/AddButton.svelte";
   import RoleSelector from "./RoleSelector.svelte";
-  import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
-  import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import { toast } from "svelte-sonner";
   import { getUser } from "$lib/services/backend.svelte";
-  import { getInvites, createInvite } from "$lib/services/inviteService.svelte";
+  import {
+    getInvites,
+    createInvite,
+    deleteInvite,
+  } from "$lib/services/inviteService.svelte";
   import type { Invite } from "$lib/services/inviteService.svelte";
   import { cn } from "$lib/utils";
   import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
@@ -47,6 +44,22 @@
     return isValid;
   }
 
+  async function handleDelete(id: string) {
+    console.log("handleDelete", id);
+    loadingState.show("Deleting invite...");
+    const {
+      data: { data, error },
+      error: createError,
+    } = await deleteInvite(id);
+    loadingState.hide();
+    if (error) {
+      toast.error("ERROR", { description: error });
+    } else {
+      load();
+      toast.success("SUCCESS", { description: "Invite deleted" });
+    }
+  }
+
   async function handleAdd() {
     showValidation = true;
     if (!isEmailValid) {
@@ -61,14 +74,13 @@
       org_id: org.id,
     });
     loadingState.show("Creating invite...");
-    const { data, error } = await createInvite(
-      org.id,
-      newInviteEmail,
-      selectedRole,
-    );
+    const {
+      data: { data, error },
+      error: createError,
+    } = await createInvite(org.id, newInviteEmail, selectedRole);
     loadingState.hide();
     if (error) {
-      toast.error("ERROR", { description: (error as Error).message });
+      toast.error("ERROR", { description: error });
     } else {
       load();
       toast.success("SUCCESS", { description: "Invite created" });
@@ -159,6 +171,8 @@
                 <DeleteButton
                   onclick={() => {
                     // handleDelete(inv);
+                    console.log("delete invite", inv.id);
+                    handleDelete(inv.id);
                   }}
                   classes="m-0 p-0"
                 />
@@ -171,17 +185,6 @@
               >
                 <div class="flex">
                   {inv.user_role}
-                  <!-- <UserRole user={u} classes="w-[110px] max-w-[110px]" /> -->
-                  <!--
-                  {#if inv.new_user_role && u.user_role !== u.new_user_role}
-                    <SaveButton
-                      onclick={() => {
-                        handleUpdateRole(u);
-                      }}
-                      classes="ml-4"
-                    />
-                  {/if}
-                  -->
                 </div>
               </Table.Cell>
             </Table.Row>

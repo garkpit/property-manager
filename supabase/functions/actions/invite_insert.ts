@@ -48,7 +48,8 @@ export const invite_insert = async (
             user_role !== "Owner" &&
             user_role !== "Admin" &&
             user_role !== "Member" &&
-            user_role !== "Read Only"
+            user_role !== "Manager" &&
+            user_role !== "Viewer"
         ) {
             return { data: null, error: "user_role is not valid" };
         }
@@ -64,7 +65,7 @@ export const invite_insert = async (
         if (existingUser.length > 0) {
             return {
                 data: null,
-                error: "email is already in the orgs_invites table",
+                error: "invite already exists for this email",
             };
         }
         // Insert new orgs_users row

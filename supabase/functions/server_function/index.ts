@@ -9,6 +9,7 @@ import { org_user_delete } from "../actions/org_user_delete.ts";
 import { get_org_users } from "../actions/get_org_users.ts";
 import { org_user_update_role } from "../actions/org_user_update_role.ts";
 import { invite_insert } from "../actions/invite_insert.ts";
+import { invite_delete } from "../actions/invite_delete.ts";
 const actions = {
     org_delete,
     org_upsert,
@@ -16,6 +17,7 @@ const actions = {
     get_org_users,
     org_user_update_role,
     invite_insert,
+    invite_delete,
 } as const;
 
 type ActionKey = keyof typeof actions;

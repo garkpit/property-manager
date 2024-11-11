@@ -5,7 +5,7 @@
     { value: "Owner", label: "Owner" },
     { value: "Manager", label: "Manager" },
     { value: "Member", label: "Member" },
-    { value: "Read Only", label: "Read Only" },
+    { value: "Viewer", label: "Viewer" },
   ];
 
   let {

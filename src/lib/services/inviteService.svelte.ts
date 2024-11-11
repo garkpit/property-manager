@@ -14,7 +14,7 @@ export const getInvites = async (orgid: string) => {
     );
     return { data, error };
 };
-// ************* WIP *************
+
 export const createInvite = async (
     orgid: string,
     email: string,
@@ -36,6 +36,43 @@ export const createInvite = async (
         );
         console.log("saveOrg data", data);
         console.log("saveOrg error", error);
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
+        } else {
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = await error.context.json();
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
+            }
+            error.message = errorMessage;
+            return { data, error };
+        }
+    } catch (e) {
+        const error = e as Error;
+        console.error("saveOrg unknown error", e);
+        if (error) error.message = "unknown error";
+        return { data: null, error };
+    }
+};
+
+export const deleteInvite = async (
+    id: string, // orgs_invites id
+) => {
+    try {
+        const { data, error } = await supabase.functions.invoke(
+            "server_function",
+            {
+                body: {
+                    action: "invite_delete",
+                    payload: {
+                        id,
+                    },
+                },
+            },
+        );
         let errorMessage = "";
         if (!error) {
             return { data, error: null };
