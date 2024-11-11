@@ -57,11 +57,16 @@ export const saveOrg = async (org: Org) => {
     try {
         if (!org.id || org.id === "new") {
             const { data, error } = await supabase.functions.invoke(
-                "org_create",
+                "server_function", //"org_create",
                 {
-                    body: { title: org.title },
+                    body: {
+                        action: "org_create",
+                        payload: { title: org.title },
+                    },
                 },
             );
+            console.log("saveOrg data:", data);
+            console.log("saveOrg error:", error);
             let errorMessage = "";
             if (!error) {
                 return { data, error: null };

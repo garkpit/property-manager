@@ -10,6 +10,7 @@
   import { toast } from "svelte-sonner";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import CancelButton from "@/components/iconbuttons/CancelButton.svelte";
+  import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
 
   const { org } = $props<{
     org: Org;
@@ -37,7 +38,9 @@
       return;
     }
 
+    loadingState.show("Saving organization...");
     const { data, error } = await saveOrg(org);
+    loadingState.hide();
     if (error) {
       toast.error("ERROR", { description: (error as Error).message });
     } else {

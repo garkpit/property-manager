@@ -1,7 +1,14 @@
-import { corsHeaders } from "../_shared/cors.ts";
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { supabase } from "../_shared/supabase_client.ts";
+// import type { User } from "@supabase/supabase-js";
+import { corsHeaders } from "../_shared/cors.ts";
 import { getUser } from "../_shared/get_user.ts";
+
+import { org_create } from "../actions/org_create.ts";
+const actions = {
+    org_create,
+} as const;
+
+type ActionKey = keyof typeof actions;
 
 Deno.serve(async (req) => {
     // This is needed if you're planning to invoke your function from a browser.
@@ -23,9 +30,20 @@ Deno.serve(async (req) => {
         console.log("user", user);
 
         // call functions here...
+        const body = await req.json();
 
-        const data = {};
-        const error = null;
+        if (typeof body.action !== "string" || !(body.action in actions)) {
+            throw new Error("Missing or invalid action parameter");
+        }
+        if (typeof body.payload !== "object") {
+            throw new Error("Missing or invalid payload parameter");
+        }
+
+        // const { data, error } = await executeAction(action, payload, user);
+        const { data, error } = await actions[body.action as ActionKey](
+            body.payload,
+            user,
+        );
 
         return new Response(
             JSON.stringify({ data, error }),
