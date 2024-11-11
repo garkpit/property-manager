@@ -5,10 +5,12 @@ import { getUser } from "../_shared/get_user.ts";
 
 import { org_delete } from "../actions/org_delete.ts";
 import { org_upsert } from "../actions/org_upsert.ts";
+import { org_user_delete } from "../actions/org_user_delete.ts";
 
 const actions = {
     org_delete,
     org_upsert,
+    org_user_delete,
 } as const;
 
 type ActionKey = keyof typeof actions;
