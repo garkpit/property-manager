@@ -9,7 +9,7 @@
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
   import AddButton from "$lib/components/iconbuttons/AddButton.svelte";
-  import UserRole from "./UserRole.svelte";
+  import RoleSelector from "./RoleSelector.svelte";
   import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import { toast } from "svelte-sonner";
@@ -215,12 +215,13 @@
               class="pl-2 pr-0 mr-0 w-[180px] min-w-[180px] max-w-[180px] hidden md:table-cell"
             >
               <div class="flex">
-                <UserRole
-                  user={{ user_role: selectedRole }}
-                  classes="w-[110px] max-w-[110px]"
-                  on:roleChange={(event) => {
-                    selectedRole = event.detail;
+                <RoleSelector
+                  user={{
+                    user_role: selectedRole,
+                    new_user_role: selectedRole,
                   }}
+                  classes="w-[110px] max-w-[110px]"
+                  bind:value={selectedRole}
                 />
               </div>
             </Table.Cell>
