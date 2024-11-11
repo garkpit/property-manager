@@ -39,7 +39,9 @@
     }
 
     loadingState.show("Saving organization...");
-    const { data, error } = await saveOrg(org);
+    const {
+      data: { data, error },
+    } = await saveOrg(org);
     loadingState.hide();
     if (error) {
       toast.error("ERROR", { description: (error as Error).message });
@@ -67,7 +69,9 @@
     if (result === "delete") {
       // Handle delete action
       loadingState.show("Deleting organization...");
-      const { data, error } = await deleteOrg(org);
+      const {
+        data: { data, error },
+      } = await deleteOrg(org);
       console.log("orgDelete data", data);
       console.log("orgDelete error", error);
       loadingState.hide();

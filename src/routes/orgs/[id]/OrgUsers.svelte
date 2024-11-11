@@ -64,9 +64,14 @@
 
     if (result === "delete") {
       // Handle delete action
-      const { data, error } = await deleteOrgUser(user.id);
+      console.log("deleteOrgUser", user.id);
+      const {
+        data: { data, error },
+      } = await deleteOrgUser(user.id);
       if (error) {
-        toast.error("ERROR", { description: (error as Error).message });
+        toast.error("ERROR", {
+          description: (error as Error).message,
+        });
       } else {
         // refresh the page here
         toast.success("SUCCESS", {

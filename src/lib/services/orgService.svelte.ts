@@ -159,11 +159,12 @@ export const updateUserRole = async (
     }
 };
 export const deleteOrgUser = async (id: string) => {
+    console.log("*** deleteOrgUser", id);
     try {
         const { data, error } = await supabase.functions.invoke(
-            "org_user_delete",
+            "server_function",
             {
-                body: { id },
+                body: { action: "org_user_delete", payload: { id } },
             },
         );
         let errorMessage = "";
