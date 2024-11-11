@@ -55,53 +55,33 @@ export const getMyRoleInOrg = async (orgId: string) => {
 
 export const saveOrg = async (org: Org) => {
     try {
-        if (!org.id || org.id === "new") {
-            const { data, error } = await supabase.functions.invoke(
-                "server_function", //"org_create",
-                {
-                    body: {
-                        action: "org_create",
-                        payload: { title: org.title },
+        const { data, error } = await supabase.functions.invoke(
+            "server_function",
+            {
+                body: {
+                    action: "org_upsert",
+                    payload: {
+                        id: org.id === "new" ? null : org.id,
+                        title: org.title,
                     },
                 },
-            );
-            console.log("saveOrg data:", data);
-            console.log("saveOrg error:", error);
-            let errorMessage = "";
-            if (!error) {
-                return { data, error: null };
-            } else {
-                if (error instanceof FunctionsHttpError) {
-                    errorMessage = await error.context.json();
-                } else if (error instanceof FunctionsRelayError) {
-                    errorMessage = error.message;
-                } else if (error instanceof FunctionsFetchError) {
-                    errorMessage = error.message;
-                }
-                error.message = errorMessage;
-                return { data, error };
-            }
+            },
+        );
+        console.log("saveOrg data", data);
+        console.log("saveOrg error", error);
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
         } else {
-            const { data, error } = await supabase.functions.invoke(
-                "org_update",
-                {
-                    body: { id: org.id, title: org.title },
-                },
-            );
-            let errorMessage = "";
-            if (!error) {
-                return { data, error: null };
-            } else {
-                if (error instanceof FunctionsHttpError) {
-                    errorMessage = await error.context.json();
-                } else if (error instanceof FunctionsRelayError) {
-                    errorMessage = error.message;
-                } else if (error instanceof FunctionsFetchError) {
-                    errorMessage = error.message;
-                }
-                error.message = errorMessage;
-                return { data, error };
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = await error.context.json();
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
             }
+            error.message = errorMessage;
+            return { data, error };
         }
     } catch (e) {
         const error = e as Error;

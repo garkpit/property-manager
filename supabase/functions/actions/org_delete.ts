@@ -1,5 +1,6 @@
 import { supabase } from "../_shared/supabase_client.ts";
 import type { User } from "@supabase/supabase-js";
+import { getUserRole } from "../_shared/get_user_role.ts";
 interface Payload {
     id: string;
 }
@@ -17,18 +18,15 @@ export const org_delete = async (
         const id = payload.id;
 
         // Insert new org
-        const { data: userRoleData, error: userRoleError } = await supabase
-            .from("orgs_users")
-            .select("user_role")
-            .eq("orgid", id)
-            .eq("userid", user.id)
-            .single();
-        console.log("userRoleData", userRoleData);
-        console.log("userRoleError", userRoleError);
+
+        const { data: userRole, error: userRoleError } = await getUserRole(
+            id,
+            user.id,
+        );
         if (userRoleError) {
             return { data: null, error: userRoleError };
         }
-        if (userRoleData.user_role !== "Owner") {
+        if (userRole !== "Owner") {
             return {
                 data: null,
                 error: "User is not an owner of the organization",

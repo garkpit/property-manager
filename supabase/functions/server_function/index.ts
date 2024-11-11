@@ -3,12 +3,12 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { getUser } from "../_shared/get_user.ts";
 
-import { org_create } from "../actions/org_create.ts";
 import { org_delete } from "../actions/org_delete.ts";
+import { org_upsert } from "../actions/org_upsert.ts";
 
 const actions = {
-    org_create,
     org_delete,
+    org_upsert,
 } as const;
 
 type ActionKey = keyof typeof actions;
