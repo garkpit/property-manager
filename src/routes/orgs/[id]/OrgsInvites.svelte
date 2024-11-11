@@ -63,6 +63,7 @@
     console.log("Processing invite:", {
       email: newInviteEmail,
       role: selectedRole,
+      org_id: org.id,
     });
   }
 
