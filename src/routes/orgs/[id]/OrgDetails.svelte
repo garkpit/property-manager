@@ -37,6 +37,10 @@
         metadata: null,
       };
       return;
+    } else {
+      const { data, error } = await getOrgById(id);
+      org = data;
+      return data;
     }
   };
   $effect(() => {
@@ -79,9 +83,12 @@
     }
   }
   async function handleCancel() {
-    load();
+    const data = await load();
+    const titleInput: any = document.getElementById("title");
     isFormChanged = false;
-    //goto("/orgs");
+    if (titleInput) {
+      titleInput.value = data?.title ?? "";
+    }
   }
   async function handleDelete() {
     if (org === null) return;
@@ -130,7 +137,7 @@
         <div class="flex flex-col space-y-1.5">
           <Label for="name">Title</Label>
           <Input
-            id="name"
+            id="title"
             value={org?.title ?? ""}
             placeholder="Title of your organization"
             class={titleError ? "border-destructive" : ""}
