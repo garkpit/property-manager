@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { saveOrg, deleteOrg } from "$lib/services/orgService.svelte";
+  import {
+    saveOrg,
+    deleteOrg,
+    getOrgById,
+  } from "$lib/services/orgService.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
   import { goto } from "$app/navigation";
   import * as Card from "$lib/components/ui/card/index.js";
@@ -11,14 +15,39 @@
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import CancelButton from "@/components/iconbuttons/CancelButton.svelte";
   import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
+  import { page } from "$app/stores";
 
-  const { org } = $props<{
-    org: Org;
+  const id = $derived($page.params.id);
+
+  let { org } = $props<{
+    org: Org | null;
   }>();
   //let org = $state<Org | null>(null);
-  let id = $derived(org?.id);
   let titleError = $state("");
   let isFormChanged = $state(false);
+
+  // let org = $state<Org | null>(null);
+
+  const load = async () => {
+    console.log("load function, id:", id);
+    if (id === "new") {
+      console.log("new org");
+      org = {
+        title: "",
+        created_at: "",
+        id: "",
+        metadata: null,
+      };
+      return;
+    } else {
+      console.log("existing org");
+    }
+
+    console.log("end of load function");
+  };
+  $effect(() => {
+    load();
+  });
 
   function validateTitle(title: string) {
     if (!title.trim()) {
@@ -39,21 +68,28 @@
     }
 
     loadingState.show("Saving organization...");
-    const {
-      data: { data, error },
-    } = await saveOrg(org);
+    const { data, error } = await saveOrg(org);
+    console.log("aaa data", data);
+    console.log("aaa error", error);
     loadingState.hide();
     if (error) {
-      toast.error("ERROR", { description: (error as Error).message });
+      toast.error("ERROR", { description: (error as Error).message || error });
     } else {
-      setTimeout(() => {
-        toast.success("SUCCESS", { description: "Organization updated" });
-      }, 500);
-      goto("/orgs");
+      toast.success("SUCCESS", { description: "Organization updated" });
+      isFormChanged = false;
+      if (id === "new") {
+        if (data?.orgid) {
+          goto(`/orgs/${data.orgid}`);
+        } else {
+          goto("/orgs");
+        }
+      }
     }
   }
   async function handleCancel() {
-    goto("/orgs");
+    load();
+    isFormChanged = false;
+    //goto("/orgs");
   }
   async function handleDelete() {
     if (org === null) return;

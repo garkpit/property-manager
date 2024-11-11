@@ -14,9 +14,28 @@
 
   const id = $derived($page.params.id);
   let org = $state<Org | null>(null);
-  let users = $state<any[] | null>(null);
-  let loading = $state(true);
+  //let users = $state<any[] | null>(null);
 
+  const load = async () => {
+    if (id !== "new") {
+      const { data, error } = await getOrgById(id);
+      if (error) {
+        console.error("getOrgById error", error);
+        toast.error("ERROR", { description: (error as Error).message });
+      } else {
+        if (data) {
+          org = data;
+        } else {
+          org = null;
+        }
+      }
+    }
+  };
+  $effect(() => {
+    load();
+  });
+
+  /*
   const load = async () => {
     if (id === "new") {
       org = {
@@ -25,7 +44,6 @@
         id: "",
         metadata: null,
       };
-      loading = false;
       return;
     }
 
@@ -33,14 +51,12 @@
     if (error) {
       console.error("getOrgById error", error);
       toast.error("ERROR", { description: (error as Error).message });
-      loading = false;
     } else {
       if (data) {
         org = data;
       } else {
         org = null;
       }
-      loading = false;
     }
     if (org) {
       const { data: usersData, error: usersError } = await getOrgUsers(org);
@@ -72,6 +88,8 @@
   $effect(() => {
     load();
   });
+  */
+
   /*
 	const actionItems: any[] = [
 	  {
@@ -103,11 +121,7 @@
     </Button>
   {/snippet}
   {#snippet TopCenter()}
-    {#if loading}
-      Loading...
-    {:else}
-      {id === "new" ? "New Organization" : org?.title}
-    {/if}
+    {id === "new" ? "New Organization" : org?.title}
   {/snippet}
   {#snippet TopRight()}
     <!--
@@ -126,19 +140,13 @@
           <Tabs.Trigger value="invites">Invites</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="details">
-          {#if org}
-            <OrgDetails {org} />
-          {/if}
+          <OrgDetails {org} />
         </Tabs.Content>
         <Tabs.Content value="users">
-          {#if org && users}
-            <OrgUsers {org} {users} />
-          {/if}
+          <OrgUsers {org} />
         </Tabs.Content>
         <Tabs.Content value="invites">
-          {#if org}
-            <OrgsInvites {org} />
-          {/if}
+          <OrgsInvites {org} />
         </Tabs.Content>
       </Tabs.Root>
     </div>

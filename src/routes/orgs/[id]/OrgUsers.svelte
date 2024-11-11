@@ -15,11 +15,43 @@
   import { getUser } from "$lib/services/backend.svelte";
   const user = $derived(getUser());
 
-  let { org, users } = $props<{
-    org: Org;
-    users: any[];
+  let { org } = $props<{
+    org: Org | null;
   }>();
 
+  let users = $state<any[]>([]);
+
+  async function load() {
+    if (org) {
+      const { data: usersData, error: usersError } = await getOrgUsers(org);
+      if (usersError) {
+        console.error("getOrgUsers error", usersError);
+      } else {
+        console.log("got users data", usersData.data);
+        console.log("usersData.data.length", usersData.data.length);
+        const tempUsers = [];
+        for (let i = 0; i < usersData.data.length; i++) {
+          const u = usersData.data[i];
+          console.log("u", u);
+          tempUsers.push({
+            id: u.id,
+            created_at: new Date(u.created_at).toLocaleDateString(),
+            user_role: u.user_role,
+            email: u.email,
+            firstname: u.raw_user_meta_data.firstname || null,
+            lastname: u.raw_user_meta_data.lastname || null,
+            email_verified: u.raw_user_meta_data.email_verified,
+          });
+        }
+        users = tempUsers;
+        console.log("*** got users", users);
+        console.table(tempUsers);
+      }
+    }
+  }
+  $effect(() => {
+    load();
+  });
   async function handleUpdateRole(user: any) {
     if (user === null) return;
     if (!user.new_user_role) return;

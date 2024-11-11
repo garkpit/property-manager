@@ -34,8 +34,8 @@ export const createInvite = async (
                 },
             },
         );
-        console.log("saveOrg data", data);
-        console.log("saveOrg error", error);
+        console.log("invite create data", data);
+        console.log("invite create error", error);
         let errorMessage = "";
         if (!error) {
             return { data, error: null };
@@ -52,7 +52,7 @@ export const createInvite = async (
         }
     } catch (e) {
         const error = e as Error;
-        console.error("saveOrg unknown error", e);
+        console.error("create invite unknown error", e);
         if (error) error.message = "unknown error";
         return { data: null, error };
     }

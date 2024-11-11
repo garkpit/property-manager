@@ -11,12 +11,10 @@
   import { toast } from "svelte-sonner";
   import { Plus, CircleCheckBig, Circle } from "lucide-svelte";
   import { fetchOrgs } from "$lib/services/orgService.svelte";
-  import GenericList from "$lib/components/GenericList.svelte";
   import * as Table from "$lib/components/ui/table/index.js";
   import { goto } from "$app/navigation";
   import { Button } from "@/components/ui/button";
   import type { Org } from "$lib/services/orgService.svelte";
-  import Checkbox from "@/components/ui/checkbox/checkbox.svelte";
   const user = $derived(getUser());
 
   let orgs = $state([] as Org[]);

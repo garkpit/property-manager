@@ -19,11 +19,12 @@
   const user = $derived(getUser());
 
   let { org } = $props<{
-    org: Org;
+    org: Org | null;
   }>();
 
   let invites = $state<Invite[]>([]);
   const load = async () => {
+    if (!org) return;
     const { data, error } = await getInvites(org.id);
     invites = data || [];
     console.table(invites);
@@ -190,53 +191,55 @@
             </Table.Row>
           {/each}
 
-          <Table.Row>
-            <Table.Cell
-              class="w-[44px] max-w-[44px] m-0 p-0 hidden md:table-cell"
-            >
-              <AddButton
-                onclick={() => {
-                  handleAdd();
-                }}
-                classes="m-0 p-0"
-              />
-            </Table.Cell>
-            <Table.Cell class="pl-2 w-[280px] max-w-[280px]">
-              <div class="flex flex-col space-y-1">
-                <input
-                  type="email"
-                  placeholder="Enter email address"
-                  bind:value={newInviteEmail}
-                  class={cn(
-                    "w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary",
-                    showValidation && !isEmailValid && "border-destructive",
-                    showValidation && isEmailValid && "border-green-500",
-                  )}
-                />
-                {#if showValidation && !isEmailValid}
-                  <span
-                    class="text-xs text-destructive bg-destructive/10 p-1 rounded"
-                  >
-                    Please enter a valid email address
-                  </span>
-                {/if}
-              </div>
-            </Table.Cell>
-            <Table.Cell
-              class="pl-2 pr-0 mr-0 w-[180px] min-w-[180px] max-w-[180px] hidden md:table-cell"
-            >
-              <div class="flex">
-                <RoleSelector
-                  user={{
-                    user_role: selectedRole,
-                    new_user_role: selectedRole,
+          {#if org}
+            <Table.Row>
+              <Table.Cell
+                class="w-[44px] max-w-[44px] m-0 p-0 hidden md:table-cell"
+              >
+                <AddButton
+                  onclick={() => {
+                    handleAdd();
                   }}
-                  classes="w-[110px] max-w-[110px]"
-                  bind:value={selectedRole}
+                  classes="m-0 p-0"
                 />
-              </div>
-            </Table.Cell>
-          </Table.Row>
+              </Table.Cell>
+              <Table.Cell class="pl-2 w-[280px] max-w-[280px]">
+                <div class="flex flex-col space-y-1">
+                  <input
+                    type="email"
+                    placeholder="Enter email address"
+                    bind:value={newInviteEmail}
+                    class={cn(
+                      "w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary",
+                      showValidation && !isEmailValid && "border-destructive",
+                      showValidation && isEmailValid && "border-green-500",
+                    )}
+                  />
+                  {#if showValidation && !isEmailValid}
+                    <span
+                      class="text-xs text-destructive bg-destructive/10 p-1 rounded"
+                    >
+                      Please enter a valid email address
+                    </span>
+                  {/if}
+                </div>
+              </Table.Cell>
+              <Table.Cell
+                class="pl-2 pr-0 mr-0 w-[180px] min-w-[180px] max-w-[180px] hidden md:table-cell"
+              >
+                <div class="flex">
+                  <RoleSelector
+                    user={{
+                      user_role: selectedRole,
+                      new_user_role: selectedRole,
+                    }}
+                    classes="w-[110px] max-w-[110px]"
+                    bind:value={selectedRole}
+                  />
+                </div>
+              </Table.Cell>
+            </Table.Row>
+          {/if}
         {/if}
       </Table.Body>
     </Table.Root>

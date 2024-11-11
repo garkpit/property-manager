@@ -55,18 +55,19 @@ export const getMyRoleInOrg = async (orgId: string) => {
 
 export const saveOrg = async (org: Org) => {
     try {
-        const { data, error } = await supabase.functions.invoke(
-            "server_function",
-            {
-                body: {
-                    action: "org_upsert",
-                    payload: {
-                        id: org.id === "new" ? null : org.id,
-                        title: org.title,
+        const { data: { data, error }, error: saveOrgError } = await supabase
+            .functions.invoke(
+                "server_function",
+                {
+                    body: {
+                        action: "org_upsert",
+                        payload: {
+                            id: org.id === "new" ? null : org.id,
+                            title: org.title,
+                        },
                     },
                 },
-            },
-        );
+            );
         console.log("saveOrg data", data);
         console.log("saveOrg error", error);
         let errorMessage = "";
