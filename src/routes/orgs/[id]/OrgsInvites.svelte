@@ -16,6 +16,7 @@
   import { getUser } from "$lib/services/backend.svelte";
   import { getInvites } from "$lib/services/inviteService.svelte";
   import type { Invite } from "$lib/services/inviteService.svelte";
+  import { cn } from "$lib/utils";
   const user = $derived(getUser());
 
   let { org } = $props<{
@@ -32,8 +33,37 @@
     load();
   });
 
+  let newInviteEmail = $state("");
+  let isEmailValid = $derived(validateEmail(newInviteEmail));
+  let showValidation = $state(false);
+
+  let selectedRole = $state("Member"); // Default to 'Member'
+
+  function validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValid = emailRegex.test(email);
+    console.log("Email validation:", { email, isValid });
+    return isValid;
+  }
+
   async function handleAdd() {
-    console.log("handleAdd");
+    showValidation = true;
+    console.log("Handle Add:", {
+      newInviteEmail,
+      isEmailValid,
+      showValidation,
+      selectedRole,
+    });
+    if (!isEmailValid) {
+      toast.error("Invalid email", {
+        description: "Please enter a valid email address",
+      });
+      return;
+    }
+    console.log("Processing invite:", {
+      email: newInviteEmail,
+      role: selectedRole,
+    });
   }
 
   /*
@@ -154,32 +184,44 @@
             >
               <AddButton
                 onclick={() => {
-                  // handleAdd(inv);
+                  console.log("Add button clicked");
+                  handleAdd();
                 }}
                 classes="m-0 p-0"
               />
             </Table.Cell>
             <Table.Cell class="pl-2 w-[280px] max-w-[280px]">
-              enter email
+              <div class="flex flex-col space-y-1">
+                <input
+                  type="email"
+                  placeholder="Enter email address"
+                  bind:value={newInviteEmail}
+                  class={cn(
+                    "w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-primary",
+                    showValidation && !isEmailValid && "border-destructive",
+                    showValidation && isEmailValid && "border-green-500",
+                  )}
+                />
+                {#if showValidation && !isEmailValid}
+                  <span
+                    class="text-xs text-destructive bg-destructive/10 p-1 rounded"
+                  >
+                    Please enter a valid email address
+                  </span>
+                {/if}
+              </div>
             </Table.Cell>
             <Table.Cell
               class="pl-2 pr-0 mr-0 w-[180px] min-w-[180px] max-w-[180px] hidden md:table-cell"
             >
               <div class="flex">
                 <UserRole
-                  user={{ user_role: "Member" }}
+                  user={{ user_role: selectedRole }}
                   classes="w-[110px] max-w-[110px]"
+                  on:roleChange={(event) => {
+                    selectedRole = event.detail;
+                  }}
                 />
-                <!--
-                {#if inv.new_user_role && u.user_role !== u.new_user_role}
-                  <SaveButton
-                    onclick={() => {
-                      handleUpdateRole(u);
-                    }}
-                    classes="ml-4"
-                  />
-                {/if}
-                -->
               </div>
             </Table.Cell>
           </Table.Row>
