@@ -68,13 +68,14 @@
       return;
     }
     loadingState.show("Creating invite...");
+    console.log("handleAdd", org.id, newInviteEmail, selectedRole);
     const {
       data: { data, error },
       error: createError,
     } = await createInvite(org.id, newInviteEmail, selectedRole);
     loadingState.hide();
     if (error) {
-      toast.error("ERROR", { description: error });
+      toast.error("ERROR", { description: error.message || error });
     } else {
       load();
       newInviteEmail = "";

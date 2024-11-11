@@ -66,6 +66,7 @@ export const invite_insert = async (
                 error: "invite already exists for this email",
             };
         }
+
         // Insert new orgs_users row
         const { data: insertData, error: insertError } = await supabase
             .from("orgs_invites")

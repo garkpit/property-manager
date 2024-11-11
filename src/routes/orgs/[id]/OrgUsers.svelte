@@ -8,7 +8,6 @@
   } from "$lib/services/orgService.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import * as Table from "$lib/components/ui/table/index.js";
-  import UserRole from "./UserRole.svelte";
   import RoleSelector from "./RoleSelector.svelte";
   import SaveButton from "@/components/iconbuttons/SaveButton.svelte";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
@@ -65,7 +64,9 @@
       // Handle update action
       const { data, error } = await updateUserRole(user.id, user.new_user_role);
       if (error) {
-        toast.error("ERROR", { description: (error as Error).message });
+        toast.error("ERROR", {
+          description: (error as Error).message || error,
+        });
       } else {
         // refresh the page here
         toast.success("SUCCESS", {
