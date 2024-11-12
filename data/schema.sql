@@ -142,6 +142,25 @@ COMMENT ON FUNCTION "public"."get_org_users"("org_id" "uuid") IS 'Gets a list of
 
 
 
+CREATE OR REPLACE FUNCTION "public"."get_user_orgids"("p_userid" "uuid") RETURNS TABLE("orgid" "uuid")
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public', 'pg_temp'
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    ou.orgid
+  FROM
+    public.orgs_users AS ou
+  WHERE
+    ou.userid = p_userid;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_user_orgids"("p_userid" "uuid") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
@@ -420,14 +439,6 @@ CREATE POLICY "User must belong to org" ON "public"."contacts" TO "authenticated
 
 
 
-CREATE POLICY "Users can view their own profile and those of anyone in an org " ON "public"."profiles" FOR SELECT USING ((("id" = ( SELECT "auth"."uid"() AS "uid")) OR ("id" IN ( SELECT "orgs_users"."userid"
-   FROM "public"."orgs_users"
-  WHERE ("orgs_users"."orgid" IN ( SELECT "orgs_users_1"."orgid"
-           FROM "public"."orgs_users" "orgs_users_1"
-          WHERE ("orgs_users_1"."userid" = ( SELECT "auth"."uid"() AS "uid"))))))));
-
-
-
 ALTER TABLE "public"."contacts" ENABLE ROW LEVEL SECURITY;
 
 
@@ -476,7 +487,13 @@ CREATE POLICY "users can view orgs they belong to" ON "public"."orgs" FOR SELECT
 
 
 
-CREATE POLICY "users can view their own records" ON "public"."orgs_users" FOR SELECT USING (("userid" = "auth"."uid"()));
+CREATE POLICY "users can view their own profiles or those in their own orgs" ON "public"."profiles" FOR SELECT USING ((("id" = ( SELECT "auth"."uid"() AS "uid")) OR ("id" IN ( SELECT "orgs_users"."userid"
+   FROM "public"."orgs_users"))));
+
+
+
+CREATE POLICY "users can view their own records or records for orgs they belon" ON "public"."orgs_users" FOR SELECT USING ((("userid" = "auth"."uid"()) OR ("orgid" IN ( SELECT "get_user_orgids"."orgid"
+   FROM "public"."get_user_orgids"("auth"."uid"()) "get_user_orgids"("orgid")))));
 
 
 
@@ -504,6 +521,12 @@ GRANT ALL ON FUNCTION "public"."get_org_role_for_user"("org_id" "uuid", "user_id
 
 
 GRANT ALL ON FUNCTION "public"."get_org_users"("org_id" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_user_orgids"("p_userid" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."get_user_orgids"("p_userid" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_user_orgids"("p_userid" "uuid") TO "service_role";
 
 
 

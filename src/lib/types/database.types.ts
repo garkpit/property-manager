@@ -260,6 +260,14 @@ export type Database = {
           raw_user_meta_data: Json
         }[]
       }
+      get_user_orgids: {
+        Args: {
+          p_userid: string
+        }
+        Returns: {
+          orgid: string
+        }[]
+      }
       is_backup_running: {
         Args: Record<PropertyKey, never>
         Returns: boolean
