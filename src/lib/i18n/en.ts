@@ -1,10 +1,10 @@
 export default {
   language: {
-    change: 'Change Language',
-    choose: 'Choose Language',
+    change: "Change Language",
+    choose: "Choose Language",
     names: {
-      en: 'English',
-      es: 'Spanish',
+      en: "English",
+      es: "Spanish",
     },
   },
   darkModeToggle: {
@@ -12,7 +12,7 @@ export default {
     chooseTheme: "Choose theme",
     lightMode: "Light mode",
     darkMode: "Dark mode",
-    systemSetting: "Use system setting"
+    systemSetting: "Use system setting",
   },
   loginModal: {
     loginTitle: "Login",
@@ -33,7 +33,8 @@ export default {
     unexpectedError: "An unexpected error occurred. Please try again.",
     registerSuccess: "Registration successful. Please verify your email.",
     resetPasswordConfirmTitle: "Reset Password",
-    resetPasswordConfirmDescription: "Are you sure you want to send a password reset link to {email}?"
+    resetPasswordConfirmDescription:
+      "Are you sure you want to send a password reset link to {email}?",
   },
   resetPassword: {
     pageTitle: "Reset Password - Acme Inc",
@@ -43,14 +44,17 @@ export default {
     resetButton: "Reset Password",
     resetting: "Resetting...",
     passwordMismatch: "Passwords do not match",
-    successMessage: "Password successfully reset. You can now log in with your new password.",
-    unexpectedError: "An unexpected error occurred. Please try again."
+    successMessage:
+      "Password successfully reset. You can now log in with your new password.",
+    unexpectedError: "An unexpected error occurred. Please try again.",
   },
   dashboard: {
     title: "Welcome to your Dashboard",
-    description: "This is your main dashboard overview. Select an option from the sidebar to view specific sections.",
-    content: "Here you can add general statistics, recent activity, or quick access links.",
-    button: "Get Started"
+    description:
+      "This is your main dashboard overview. Select an option from the sidebar to view specific sections.",
+    content:
+      "Here you can add general statistics, recent activity, or quick access links.",
+    button: "Get Started",
   },
   contacts: {
     title: "Contacts",
@@ -69,7 +73,7 @@ export default {
     confirmDeleteSingle: "Are you sure you want to delete this contact?",
     confirmDeleteMultiple: "Are you sure you want to delete these contacts?",
     deleteContactError: "Error deleting contact",
-    deleteContactsError: "Error deleting contacts"
+    deleteContactsError: "Error deleting contacts",
   },
   sidebar: {
     companyName: "Acme Inc",
@@ -88,7 +92,7 @@ export default {
     upgrade: "Upgrade",
     termsOfService: "Terms of Service",
     privacyPolicy: "Privacy Policy",
-    orgs: "Organizations"
+    orgs: "Organizations",
   },
   account: {
     title: "Account Settings",
@@ -98,71 +102,85 @@ export default {
     lastName: "Last Name",
     bio: "Bio",
     updateProfile: "Update Profile",
-    updating: "Updating..."
+    updating: "Updating...",
   },
   terms: {
     pageTitle: "Terms of Service - Acme Inc",
-    metaDescription: "Read our Terms of Service to understand the rules and regulations governing the use of our services.",
+    metaDescription:
+      "Read our Terms of Service to understand the rules and regulations governing the use of our services.",
     title: "Terms of Service",
     sections: {
       acceptance: {
         title: "Acceptance of Terms",
-        content: "By accessing and using this service, you accept and agree to be bound by the terms and provisions of this agreement."
+        content:
+          "By accessing and using this service, you accept and agree to be bound by the terms and provisions of this agreement.",
       },
       useOfService: {
         title: "Use of Service",
-        content: "You agree to use this service only for purposes permitted by these Terms of Service and any applicable law, regulation, or generally accepted practices or guidelines in the relevant jurisdictions."
+        content:
+          "You agree to use this service only for purposes permitted by these Terms of Service and any applicable law, regulation, or generally accepted practices or guidelines in the relevant jurisdictions.",
       },
       privacy: {
         title: "Privacy Policy",
-        content: "Your use of the service is also governed by our Privacy Policy, which is incorporated into these terms by reference."
+        content:
+          "Your use of the service is also governed by our Privacy Policy, which is incorporated into these terms by reference.",
       },
       termination: {
         title: "Termination",
-        content: "We may terminate or suspend your access to the service immediately, without prior notice or liability, for any reason, including, without limitation, if you breach the Terms."
+        content:
+          "We may terminate or suspend your access to the service immediately, without prior notice or liability, for any reason, including, without limitation, if you breach the Terms.",
       },
       changes: {
         title: "Changes to Terms",
-        content: "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. It is your responsibility to check these Terms periodically for changes."
-      }
+        content:
+          "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. It is your responsibility to check these Terms periodically for changes.",
+      },
     },
-    lastUpdated: "Last updated: [Insert Date]"
+    lastUpdated: "Last updated: [Insert Date]",
   },
   privacy: {
     pageTitle: "Privacy Policy - Acme Inc",
-    metaDescription: "Read our Privacy Policy to understand how we collect, use, and protect your personal information.",
+    metaDescription:
+      "Read our Privacy Policy to understand how we collect, use, and protect your personal information.",
     title: "Privacy Policy",
     sections: {
       introduction: {
         title: "Introduction",
-        content: "This Privacy Policy describes how Acme Inc collects, uses, and shares your personal information when you use our services."
+        content:
+          "This Privacy Policy describes how Acme Inc collects, uses, and shares your personal information when you use our services.",
       },
       informationCollection: {
         title: "Information We Collect",
-        content: "We collect information that you provide directly to us, such as when you create an account, use our services, or contact us for support."
+        content:
+          "We collect information that you provide directly to us, such as when you create an account, use our services, or contact us for support.",
       },
       useOfInformation: {
         title: "How We Use Your Information",
-        content: "We use the information we collect to provide, maintain, and improve our services, to communicate with you, and to comply with legal obligations."
+        content:
+          "We use the information we collect to provide, maintain, and improve our services, to communicate with you, and to comply with legal obligations.",
       },
       dataProtection: {
         title: "Data Protection",
-        content: "We implement appropriate technical and organizational measures to protect the security of your personal information."
+        content:
+          "We implement appropriate technical and organizational measures to protect the security of your personal information.",
       },
       cookies: {
         title: "Cookies and Similar Technologies",
-        content: "We use cookies and similar tracking technologies to collect and store information about how you use our services."
+        content:
+          "We use cookies and similar tracking technologies to collect and store information about how you use our services.",
       },
       thirdPartyLinks: {
         title: "Third-Party Links",
-        content: "Our services may contain links to third-party websites. We are not responsible for the privacy practices of these external sites."
+        content:
+          "Our services may contain links to third-party websites. We are not responsible for the privacy practices of these external sites.",
       },
       changes: {
         title: "Changes to this Privacy Policy",
-        content: "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page."
-      }
+        content:
+          "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.",
+      },
     },
-    lastUpdated: "Last updated: [Insert Date]"
+    lastUpdated: "Last updated: [Insert Date]",
   },
   contactDetail: {
     editContact: "Edit Contact",
@@ -179,7 +197,7 @@ export default {
     emailMissing: "Email address is required",
     emailInvalid: "Please enter a valid email address",
     saveError: "Error saving contact",
-    saveSuccess: "Contact saved successfully"
+    saveSuccess: "Contact saved successfully",
   },
   common: {
     backButton: "Back",
@@ -190,7 +208,7 @@ export default {
     notLoggedIn: "Not logged in",
     noData: "No data found",
     loading: "Loading...",
-    continue: "Continue"
+    continue: "Continue",
   },
   org: {
     noCurrentOrg: "No organization selected",
@@ -206,10 +224,10 @@ export default {
     titleLabel: "Organization Title",
     titlePlaceholder: "Enter organization title",
     addButton: "Add New Org",
-    currentOrg: "Current Organization"
+    currentOrg: "Current Organization",
   },
   orgs: {
-    title: "Title"
+    title: "Title",
   },
   orgDetail: {
     titleMissing: "Organization title is required",
@@ -243,13 +261,25 @@ export default {
     loadError: "Error loading invites",
   },
   notifications: {
-    open: 'Open Notifications',
-    title: 'Notifications',
+    open: "Open Notifications",
+    title: "Notifications",
     inviteMessage: "You have been invited to join",
     join: "Join",
     reject: "Reject",
     defaultOrgTitle: "an organization",
     confirmReject: "Are you sure you want to reject this invitation?",
     noNotifications: "No notifications",
+  },
+  invitationsModal: {
+    title: "Organization Invitations",
+    description: "Review and manage your pending organization invitations",
+    noInvitations: "You have no pending invitations",
+    invitedBy: "Invited by {email}",
+    accept: "Accept",
+    reject: "Reject",
+    acceptSuccess: "Invitation accepted successfully",
+    acceptError: "Failed to accept invitation",
+    rejectSuccess: "Invitation rejected successfully",
+    rejectError: "Failed to reject invitation",
   },
 };

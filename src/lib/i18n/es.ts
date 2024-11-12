@@ -1,17 +1,19 @@
 export default {
   language: {
-    change: 'Cambiar Idioma',
-    choose: 'Elegir Idioma',
+    change: "Cambiar Idioma",
+    choose: "Elegir Idioma",
     names: {
-      en: 'Inglés',
-      es: 'Español',
+      en: "Inglés",
+      es: "Español",
     },
   },
   dashboard: {
     title: "Bienvenido a tu Panel de Control",
-    description: "Este es tu resumen principal del panel de control. Selecciona una opción de la barra lateral para ver secciones específicas.",
-    content: "Aquí puedes agregar estadísticas generales, actividad reciente o enlaces de acceso rápido.",
-    button: "Comenzar"
+    description:
+      "Este es tu resumen principal del panel de control. Selecciona una opción de la barra lateral para ver secciones específicas.",
+    content:
+      "Aquí puedes agregar estadísticas generales, actividad reciente o enlaces de acceso rápido.",
+    button: "Comenzar",
   },
   loginModal: {
     loginTitle: "Iniciar sesión",
@@ -27,12 +29,17 @@ export default {
     needAccount: "¿Necesita una cuenta?",
     alreadyHaveAccount: "¿Ya tiene una cuenta?",
     forgotPassword: "¿Olvidaste tu contraseña?",
-    emailRequired: "Se requiere el correo electrónico para restablecer la contraseña",
-    resetPasswordEmailSent: "Correo de restablecimiento de contraseña enviado. Revisa tu bandeja de entrada.",
-    unexpectedError: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
-    registerSuccess: "Registro exitoso. Por favor, verifica tu correo electrónico.",
+    emailRequired:
+      "Se requiere el correo electrónico para restablecer la contraseña",
+    resetPasswordEmailSent:
+      "Correo de restablecimiento de contraseña enviado. Revisa tu bandeja de entrada.",
+    unexpectedError:
+      "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+    registerSuccess:
+      "Registro exitoso. Por favor, verifica tu correo electrónico.",
     resetPasswordConfirmTitle: "Restablecer Contraseña",
-    resetPasswordConfirmDescription: "¿Estás seguro de que quieres enviar un enlace de restablecimiento de contraseña a {email}?"
+    resetPasswordConfirmDescription:
+      "¿Estás seguro de que quieres enviar un enlace de restablecimiento de contraseña a {email}?",
   },
   contacts: {
     title: "Contactos",
@@ -49,9 +56,10 @@ export default {
     addRandomContacts: "Agregar 20 Contactos Aleatorios",
     noOrgSelected: "No se ha seleccionado ninguna organización",
     confirmDeleteSingle: "¿Estás seguro de que quieres eliminar este contacto?",
-    confirmDeleteMultiple: "¿Estás seguro de que quieres eliminar estos contactos?",
+    confirmDeleteMultiple:
+      "¿Estás seguro de que quieres eliminar estos contactos?",
     deleteContactError: "Error al eliminar el contacto",
-    deleteContactsError: "Error al eliminar los contactos"
+    deleteContactsError: "Error al eliminar los contactos",
   },
   sidebar: {
     companyName: "Acme Inc",
@@ -70,7 +78,7 @@ export default {
     upgrade: "Mejorar",
     termsOfService: "Términos de Servicio",
     privacyPolicy: "Política de Privacidad",
-    orgs: "Organizaciones"
+    orgs: "Organizaciones",
   },
   account: {
     title: "Configuración de la Cuenta",
@@ -78,73 +86,87 @@ export default {
     email: "Correo Electrónico",
     firstName: "Nombre",
     lastName: "Apellido",
-    bio: 'Biografía', // Add this line
+    bio: "Biografía", // Add this line
     updateProfile: "Actualizar Perfil",
-    updating: "Actualizando..."
+    updating: "Actualizando...",
   },
   terms: {
     pageTitle: "Términos de Servicio - Acme Inc",
-    metaDescription: "Lea nuestros Términos de Servicio para comprender las reglas y regulaciones que rigen el uso de nuestros servicios.",
+    metaDescription:
+      "Lea nuestros Términos de Servicio para comprender las reglas y regulaciones que rigen el uso de nuestros servicios.",
     title: "Términos de Servicio",
     sections: {
       acceptance: {
         title: "Aceptación de Términos",
-        content: "Al acceder y utilizar este servicio, usted acepta y está de acuerdo en regirse por los términos y disposiciones de este acuerdo."
+        content:
+          "Al acceder y utilizar este servicio, usted acepta y está de acuerdo en regirse por los términos y disposiciones de este acuerdo.",
       },
       useOfService: {
         title: "Uso del Servicio",
-        content: "Usted se compromete a utilizar este servicio solo para los fines permitidos por estos Términos de Servicio y cualquier ley, regulación o práctica o directriz generalmente aceptada en las jurisdicciones relevantes."
+        content:
+          "Usted se compromete a utilizar este servicio solo para los fines permitidos por estos Términos de Servicio y cualquier ley, regulación o práctica o directriz generalmente aceptada en las jurisdicciones relevantes.",
       },
       privacy: {
         title: "Política de Privacidad",
-        content: "El uso del servicio también se rige por nuestra Política de Privacidad, que se incorpora a estos términos por referencia."
+        content:
+          "El uso del servicio también se rige por nuestra Política de Privacidad, que se incorpora a estos términos por referencia.",
       },
       termination: {
         title: "Terminación",
-        content: "Podemos terminar o suspender su acceso al servicio inmediatamente, sin previo aviso o responsabilidad, por cualquier motivo, incluyendo, sin limitación, si usted incumple los Términos."
+        content:
+          "Podemos terminar o suspender su acceso al servicio inmediatamente, sin previo aviso o responsabilidad, por cualquier motivo, incluyendo, sin limitación, si usted incumple los Términos.",
       },
       changes: {
         title: "Cambios en los Términos",
-        content: "Nos reservamos el derecho, a nuestra sola discreción, de modificar o reemplazar estos Términos en cualquier momento. Es su responsabilidad revisar estos Términos periódicamente para ver si hay cambios."
-      }
+        content:
+          "Nos reservamos el derecho, a nuestra sola discreción, de modificar o reemplazar estos Términos en cualquier momento. Es su responsabilidad revisar estos Términos periódicamente para ver si hay cambios.",
+      },
     },
-    lastUpdated: "Última actualización: [Insertar Fecha]"
+    lastUpdated: "Última actualización: [Insertar Fecha]",
   },
   privacy: {
     pageTitle: "Política de Privacidad - Acme Inc",
-    metaDescription: "Lea nuestra Política de Privacidad para entender cómo recopilamos, usamos y protegemos su información personal.",
+    metaDescription:
+      "Lea nuestra Política de Privacidad para entender cómo recopilamos, usamos y protegemos su información personal.",
     title: "Política de Privacidad",
     sections: {
       introduction: {
         title: "Introducción",
-        content: "Esta Política de Privacidad describe cómo Acme Inc recopila, utiliza y comparte su información personal cuando utiliza nuestros servicios."
+        content:
+          "Esta Política de Privacidad describe cómo Acme Inc recopila, utiliza y comparte su información personal cuando utiliza nuestros servicios.",
       },
       informationCollection: {
         title: "Información que Recopilamos",
-        content: "Recopilamos la información que nos proporciona directamente, como cuando crea una cuenta, utiliza nuestros servicios o se pone en contacto con nosotros para obtener asistencia."
+        content:
+          "Recopilamos la información que nos proporciona directamente, como cuando crea una cuenta, utiliza nuestros servicios o se pone en contacto con nosotros para obtener asistencia.",
       },
       useOfInformation: {
         title: "Cómo Utilizamos su Información",
-        content: "Utilizamos la información que recopilamos para proporcionar, mantener y mejorar nuestros servicios, para comunicarnos con usted y para cumplir con las obligaciones legales."
+        content:
+          "Utilizamos la información que recopilamos para proporcionar, mantener y mejorar nuestros servicios, para comunicarnos con usted y para cumplir con las obligaciones legales.",
       },
       dataProtection: {
         title: "Protección de Datos",
-        content: "Implementamos medidas técnicas y organizativas apropiadas para proteger la seguridad de su información personal."
+        content:
+          "Implementamos medidas técnicas y organizativas apropiadas para proteger la seguridad de su información personal.",
       },
       cookies: {
         title: "Cookies y Tecnologías Similares",
-        content: "Utilizamos cookies y tecnologías de seguimiento similares para recopilar y almacenar información sobre cómo utiliza nuestros servicios."
+        content:
+          "Utilizamos cookies y tecnologías de seguimiento similares para recopilar y almacenar información sobre cómo utiliza nuestros servicios.",
       },
       thirdPartyLinks: {
         title: "Enlaces de Terceros",
-        content: "Nuestros servicios pueden contener enlaces a sitios web de terceros. No somos responsables de las prácticas de privacidad de estos sitios externos."
+        content:
+          "Nuestros servicios pueden contener enlaces a sitios web de terceros. No somos responsables de las prácticas de privacidad de estos sitios externos.",
       },
       changes: {
         title: "Cambios en esta Política de Privacidad",
-        content: "Podemos actualizar esta Política de Privacidad de vez en cuando. Le notificaremos cualquier cambio publicando la nueva Política de Privacidad en esta página."
-      }
+        content:
+          "Podemos actualizar esta Política de Privacidad de vez en cuando. Le notificaremos cualquier cambio publicando la nueva Política de Privacidad en esta página.",
+      },
     },
-    lastUpdated: "Última actualización: [Insertar Fecha]"
+    lastUpdated: "Última actualización: [Insertar Fecha]",
   },
   contactDetail: {
     editContact: "Editar Contacto",
@@ -159,9 +181,10 @@ export default {
     backToContacts: "Volver a Contactos",
     createNew: "Crear Nuevo Contacto",
     emailMissing: "La dirección de correo electrónico es obligatoria",
-    emailInvalid: "Por favor, introduce una dirección de correo electrónico válida",
+    emailInvalid:
+      "Por favor, introduce una dirección de correo electrónico válida",
     saveError: "Error al guardar el contacto",
-    saveSuccess: "Contacto guardado exitosamente"
+    saveSuccess: "Contacto guardado exitosamente",
   },
   common: {
     backButton: "Atrás",
@@ -172,14 +195,14 @@ export default {
     notLoggedIn: "No has iniciado sesión",
     noData: "No se encontraron datos",
     loading: "Cargando...",
-    continue: "Continuar"
+    continue: "Continuar",
   },
   darkModeToggle: {
     toggleTheme: "Cambiar tema",
     chooseTheme: "Elegir tema",
     lightMode: "Modo claro",
     darkMode: "Modo oscuro",
-    systemSetting: "Ajuste del sistema"
+    systemSetting: "Ajuste del sistema",
   },
   resetPassword: {
     pageTitle: "Restablecer Contraseña - Acme Inc",
@@ -189,8 +212,10 @@ export default {
     resetButton: "Restablecer Contraseña",
     resetting: "Restableciendo...",
     passwordMismatch: "Las contraseñas no coinciden",
-    successMessage: "Contraseña restablecida con éxito. Ahora puedes iniciar sesión con tu nueva contraseña.",
-    unexpectedError: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+    successMessage:
+      "Contraseña restablecida con éxito. Ahora puedes iniciar sesión con tu nueva contraseña.",
+    unexpectedError:
+      "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
   },
   org: {
     noCurrentOrg: "No se ha seleccionado ninguna organización",
@@ -206,16 +231,17 @@ export default {
     titleLabel: "Título de la Organización",
     titlePlaceholder: "Ingrese el título de la organización",
     addButton: "Añadir Nueva Org",
-    currentOrg: "Organización Actual"
+    currentOrg: "Organización Actual",
   },
   orgs: {
-    title: "Título"
+    title: "Título",
   },
   orgDetail: {
     titleMissing: "El título de la organización es obligatorio",
     saveSuccess: "Organización guardada con éxito",
     saveError: "Error al guardar la organización",
-    deleteConfirmation: "¿Estás seguro de que quieres eliminar esta organización?",
+    deleteConfirmation:
+      "¿Estás seguro de que quieres eliminar esta organización?",
     deleteError: "Error al eliminar la organización",
     deleteSuccess: "Organización eliminada con éxito",
     createNew: "Crear Nueva Organización",
@@ -237,19 +263,33 @@ export default {
     roleRequired: "El rol es obligatorio",
     createError: "Error al crear la invitación",
     createSuccess: "Invitación creada con éxito",
-    deleteConfirmation: "¿Estás seguro de que quieres eliminar esta invitación?",
+    deleteConfirmation:
+      "¿Estás seguro de que quieres eliminar esta invitación?",
     deleteError: "Error al eliminar la invitación",
     deleteSuccess: "Invitación eliminada con éxito",
     loadError: "Error al cargar las invitaciones",
   },
   notifications: {
-    open: 'Abrir Notificaciones',
-    title: 'Notificaciones',
+    open: "Abrir Notificaciones",
+    title: "Notificaciones",
     inviteMessage: "Has sido invitado a unirte a",
     join: "Unirse",
     reject: "Rechazar",
     defaultOrgTitle: "una organización",
     confirmReject: "¿Estás seguro de que quieres rechazar esta invitación?",
     noNotifications: "No hay notificaciones",
+  },
+  invitationsModal: {
+    title: "Invitaciones de Organización",
+    description:
+      "Revisa y gestiona tus invitaciones pendientes de organización",
+    noInvitations: "No tienes invitaciones pendientes",
+    invitedBy: "Invitado por {email}",
+    accept: "Aceptar",
+    reject: "Rechazar",
+    acceptSuccess: "Invitación aceptada exitosamente",
+    acceptError: "Error al aceptar la invitación",
+    rejectSuccess: "Invitación rechazada exitosamente",
+    rejectError: "Error al rechazar la invitación",
   },
 };

@@ -6,13 +6,23 @@
   import * as Popover from "$lib/components/ui/popover";
   import { t } from "$lib/i18n";
   import AnimatedBell from "$lib/components/iconbuttons/AnimatedBell.svelte";
+  import InvitationsModal from "$lib/components/InvitationsModal.svelte";
+  let showInvitations = $state(false);
 
   let open = $state(false);
+
+  $effect.root(() => {
+    console.log("showInvitations:", showInvitations); // Debug log
+  });
 
   function setTheme(mode: "light" | "dark" | "system") {
     setMode(mode);
     open = false;
   }
+  const openInvitationsDialog = () => {
+    showInvitations = true;
+    open = false;
+  };
   // Bell class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
 </script>
 
@@ -26,8 +36,9 @@
   </Popover.Trigger>
   <Popover.Content class="w-56">
     <div class="grid gap-4 text-center">
-      <h4 class="font-medium leading-none">Waiting Messages</h4>
+      <h4 class="font-medium leading-none">Waiting For You</h4>
       <Button
+        onclick={openInvitationsDialog}
         variant="outline"
         class="flex items-center gap-2 w-full justify-start"
       >
@@ -44,3 +55,4 @@
     </div>
   </Popover.Content>
 </Popover.Root>
+<InvitationsModal bind:open={showInvitations} />
