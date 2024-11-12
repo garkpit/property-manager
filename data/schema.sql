@@ -142,6 +142,20 @@ COMMENT ON FUNCTION "public"."get_org_users"("org_id" "uuid") IS 'Gets a list of
 
 
 
+CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."is_backup_running"() RETURNS boolean
     LANGUAGE "plpgsql"
     AS $$
@@ -279,6 +293,21 @@ COMMENT ON TABLE "public"."orgs_users" IS 'Users belong to Orgs';
 
 
 
+CREATE TABLE IF NOT EXISTS "public"."profiles" (
+    "id" "uuid" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "email" "text" NOT NULL,
+    "metadata" "jsonb"
+);
+
+
+ALTER TABLE "public"."profiles" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."profiles" IS 'User profiles';
+
+
+
 ALTER TABLE ONLY "public"."contacts"
     ADD CONSTRAINT "contacts_pkey" PRIMARY KEY ("id");
 
@@ -301,6 +330,11 @@ ALTER TABLE ONLY "public"."orgs"
 
 ALTER TABLE ONLY "public"."orgs_users"
     ADD CONSTRAINT "orgs_users_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."profiles"
+    ADD CONSTRAINT "profile_pkey" PRIMARY KEY ("id");
 
 
 
@@ -357,11 +391,20 @@ ALTER TABLE ONLY "public"."orgs_users"
 
 
 
+ALTER TABLE ONLY "public"."profiles"
+    ADD CONSTRAINT "profile_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
 CREATE POLICY "Delete - must be recipient (or sender if not yet read)" ON "public"."messages" FOR DELETE USING ((("auth"."uid"() = "recipient") OR (("auth"."uid"() = "sender") AND ("read_at" IS NULL))));
 
 
 
 CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "sender"));
+
+
+
+CREATE POLICY "Profiles are created automatically by trigger" ON "public"."profiles" FOR INSERT WITH CHECK (false);
 
 
 
@@ -374,6 +417,14 @@ CREATE POLICY "Update - user must be sender or receipient" ON "public"."messages
 
 
 CREATE POLICY "User must belong to org" ON "public"."contacts" TO "authenticated" USING ((( SELECT "public"."get_org_role"("contacts"."orgid") AS "get_org_role") IS NOT NULL)) WITH CHECK ((( SELECT "public"."get_org_role"("contacts"."orgid") AS "get_org_role") IS NOT NULL));
+
+
+
+CREATE POLICY "Users can view their own profile and those of anyone in an org " ON "public"."profiles" FOR SELECT USING ((("id" = ( SELECT "auth"."uid"() AS "uid")) OR ("id" IN ( SELECT "orgs_users"."userid"
+   FROM "public"."orgs_users"
+  WHERE ("orgs_users"."orgid" IN ( SELECT "orgs_users_1"."orgid"
+           FROM "public"."orgs_users" "orgs_users_1"
+          WHERE ("orgs_users_1"."userid" = ( SELECT "auth"."uid"() AS "uid"))))))));
 
 
 
@@ -405,6 +456,17 @@ CREATE POLICY "owner or invitee can delete an invite" ON "public"."orgs_invites"
 
 
 CREATE POLICY "owner or invitee can view invite" ON "public"."orgs_invites" FOR SELECT TO "authenticated" USING ((("owner" = ( SELECT "auth"."uid"() AS "uid")) OR ("email" = ( SELECT "auth"."email"() AS "email"))));
+
+
+
+ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "profiles cannot be deleted" ON "public"."profiles" FOR DELETE USING (false);
+
+
+
+CREATE POLICY "users can modify their own profile" ON "public"."profiles" FOR UPDATE USING ((("id" = "auth"."uid"()) AND ("email" = "auth"."email"()))) WITH CHECK ((("id" = "auth"."uid"()) AND ("email" = "auth"."email"())));
 
 
 
@@ -445,6 +507,12 @@ GRANT ALL ON FUNCTION "public"."get_org_users"("org_id" "uuid") TO "service_role
 
 
 
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."is_backup_running"() TO "anon";
 GRANT ALL ON FUNCTION "public"."is_backup_running"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."is_backup_running"() TO "service_role";
@@ -482,6 +550,12 @@ GRANT ALL ON TABLE "public"."orgs_invites" TO "service_role";
 GRANT ALL ON TABLE "public"."orgs_users" TO "anon";
 GRANT ALL ON TABLE "public"."orgs_users" TO "authenticated";
 GRANT ALL ON TABLE "public"."orgs_users" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."profiles" TO "anon";
+GRANT ALL ON TABLE "public"."profiles" TO "authenticated";
+GRANT ALL ON TABLE "public"."profiles" TO "service_role";
 
 
 
