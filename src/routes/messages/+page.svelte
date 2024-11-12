@@ -1,5 +1,8 @@
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
+  import Inbox from "./Inbox.svelte";
+  import Outbox from "./Outbox.svelte";
+  import CreateMessage from "./CreateMessage.svelte";
   /*
   const actionItems: any[] = [
     {
@@ -25,7 +28,14 @@
   <!--{#snippet TopRight()}{/snippet}-->
 
   {#snippet Middle()}
-    Messages
+    <!--
+    <h2>Inbox</h2>
+    <Inbox />
+    <h2>Outbox</h2>
+    <Outbox />
+    -->
+    <h2>Create Message</h2>
+    <CreateMessage />
   {/snippet}
 
   <!--{#snippet BottomLeft()}{/snippet}-->

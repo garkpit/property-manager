@@ -8,7 +8,7 @@ import {
 import { getUser } from "$lib/services/backend.svelte.ts";
 const user = $derived(getUser());
 
-export type Message = Database["public"]["Tables"]["messages"]["Row"];
+export type Message = Database["public"]["Tables"]["messages"]["Insert"];
 
 export const getInboxMessages = async (
     start: number = 0,
@@ -17,7 +17,9 @@ export const getInboxMessages = async (
     if (!user) return { data: null, error: "User not logged in" };
     const { data, error } = await supabase
         .from("messages")
-        .select("id, subject, message, sender, recipient, metadata, read_at")
+        .select(
+            "id, created_at, subject, message, sender, recipient, metadata, read_at",
+        )
         .eq("recipient", user.id)
         .is("recipient_deleted_at", null)
         .range(start, start + count)
@@ -33,7 +35,9 @@ export const getSentMessages = async (
     if (!user) return { data: null, error: "User not logged in" };
     const { data, error } = await supabase
         .from("messages")
-        .select("id, subject, message, sender, recipient, metadata, read_at")
+        .select(
+            "id, created_at, subject, message, sender, recipient, metadata, read_at",
+        )
         .eq("sender", user.id)
         .is("sender_deleted_at", null)
         .range(start, start + count)
