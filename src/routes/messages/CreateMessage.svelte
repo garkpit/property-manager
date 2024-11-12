@@ -4,7 +4,26 @@
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
+  import { getProfiles } from "@/services/profileService.svelte";
+  import type { Profile } from "@/services/profileService.svelte";
   import { cn } from "$lib/utils";
+
+  let profiles: Profile[] = $state([]);
+
+  const load = async () => {
+    const { data, error } = await getProfiles();
+    console.log(data);
+    if (error) {
+      console.error(error);
+      profiles = [];
+      return;
+    }
+    if (data) {
+      profiles = data;
+      console.table(profiles);
+    }
+  };
+  load();
 
   let message: Message = $state({
     subject: "",
