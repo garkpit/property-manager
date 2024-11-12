@@ -9,6 +9,7 @@
   import type { Snippet } from "svelte";
   import LanguageSelector from "$lib/components/LanguageSelector.svelte";
   import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
+  import MessageIndicator from "$lib/components/MessageIndicator.svelte";
 
   /*
   let { Left, Center, Right, LeftData, CenterData, RightData } = $props<{
@@ -76,6 +77,7 @@
               {@render BottomLeft()}
             {:else}
               <LanguageSelector />
+              <DarkModeToggle />
             {/if}
           {/snippet}
           {#snippet Center()}
@@ -89,7 +91,7 @@
             {#if BottomRight}
               {@render BottomRight()}
             {:else}
-              <DarkModeToggle />
+              <MessageIndicator />
             {/if}
           {/snippet}
         </StatusBar>
