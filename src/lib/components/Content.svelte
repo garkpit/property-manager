@@ -9,7 +9,7 @@
 
 <main class="flex-1 overflow-y-auto relative">
   <div
-    class="container mx-auto relative px-4"
+    class="container mx-auto relative px-4 min-h-full"
     style="padding-top: calc(var(--header-height) + var(--safe-area-inset-top, 0px)); padding-bottom: calc(var(--footer-height) + var(--safe-area-inset-bottom, 0px));"
   >
     <div

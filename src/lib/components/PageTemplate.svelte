@@ -46,8 +46,8 @@
   <div class="flex min-h-screen w-full">
     <LeftDrawer />
 
-    <main class="flex-1 relative flex flex-col">
-      <div class="flex flex-col h-screen">
+    <main class="flex-1 relative flex flex-col h-[100dvh]">
+      <div class="flex flex-col h-full">
         <Navbar>
           {#snippet Left()}
             <Sidebar.Trigger />
