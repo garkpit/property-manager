@@ -56,6 +56,51 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          read_at: string | null
+          recipient: string | null
+          recipient_deleted_at: string | null
+          recipient_type: string | null
+          sender: string | null
+          sender_deleted_at: string | null
+          sender_type: string | null
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          recipient?: string | null
+          recipient_deleted_at?: string | null
+          recipient_type?: string | null
+          sender?: string | null
+          sender_deleted_at?: string | null
+          sender_type?: string | null
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          recipient?: string | null
+          recipient_deleted_at?: string | null
+          recipient_type?: string | null
+          sender?: string | null
+          sender_deleted_at?: string | null
+          sender_type?: string | null
+          subject?: string | null
+        }
+        Relationships: []
+      }
       orgs: {
         Row: {
           created_at: string

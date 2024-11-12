@@ -71,27 +71,7 @@ $$;
 ALTER FUNCTION "public"."accept_invite"("invite_id" "uuid") OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."delete_org"("org_id" "uuid") RETURNS "void"
-    LANGUAGE "plpgsql" SECURITY DEFINER
-    AS $$
-BEGIN
-    -- Delete the organization and let cascading constraints handle related data
-    DELETE FROM orgs
-    WHERE id = org_id;
-    -- If the deletion was successful, commit the transaction
-    IF FOUND THEN
-        RAISE NOTICE 'Organization with ID % has been deleted along with all related data.', org_id;
-    ELSE
-        RAISE EXCEPTION 'Organization with ID % not found.', org_id;
-    END IF;
-END;
-$$;
-
-
-ALTER FUNCTION "public"."delete_org"("org_id" "uuid") OWNER TO "postgres";
-
-
-COMMENT ON FUNCTION "public"."delete_org"("org_id" "uuid") IS 'Deletes an organization and all its related data. This function should only be accessible to highly privileged roles.';
+COMMENT ON FUNCTION "public"."accept_invite"("invite_id" "uuid") IS 'Accpets an org invite, creating a user entry in the orgs_users table and deleting the orgs_invite record. This function should only be accessible to highly privileged roles.';
 
 
 
@@ -134,13 +114,13 @@ $$;
 ALTER FUNCTION "public"."get_org_role_for_user"("org_id" "uuid", "user_id" "uuid") OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."get_org_users"("org_id" "uuid") RETURNS TABLE("userid" "uuid", "created_at" timestamp with time zone, "user_role" "text", "email" character varying, "last_sign_in_at" timestamp with time zone, "raw_user_meta_data" "jsonb")
+CREATE OR REPLACE FUNCTION "public"."get_org_users"("org_id" "uuid") RETURNS TABLE("id" "uuid", "created_at" timestamp with time zone, "user_role" "text", "email" character varying, "last_sign_in_at" timestamp with time zone, "raw_user_meta_data" "jsonb")
     LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
 BEGIN
     RETURN QUERY
     SELECT
-        orgs_users.userid,
+        orgs_users.id,
         orgs_users.created_at,
         orgs_users.user_role,
         auth.users.email,
@@ -177,6 +157,29 @@ $$;
 
 ALTER FUNCTION "public"."is_backup_running"() OWNER TO "postgres";
 
+
+CREATE OR REPLACE FUNCTION "public"."reject_invite"("invite_id" "uuid") RETURNS boolean
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    AS $$
+BEGIN
+    -- Delete the invite record
+    DELETE FROM public.orgs_invites
+    WHERE id = invite_id;
+    RETURN TRUE;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Error deleting invite: %', SQLERRM;
+END;
+
+$$;
+
+
+ALTER FUNCTION "public"."reject_invite"("invite_id" "uuid") OWNER TO "postgres";
+
+
+COMMENT ON FUNCTION "public"."reject_invite"("invite_id" "uuid") IS 'Deletes an org invite. This function should only be accessible to highly privileged roles.';
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = "heap";
@@ -200,6 +203,29 @@ ALTER TABLE "public"."contacts" OWNER TO "postgres";
 
 
 COMMENT ON TABLE "public"."contacts" IS 'List of Contacts (people)';
+
+
+
+CREATE TABLE IF NOT EXISTS "public"."messages" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "read_at" timestamp with time zone,
+    "sender" "uuid",
+    "sender_type" "text",
+    "recipient" "uuid",
+    "recipient_type" "text",
+    "subject" "text",
+    "message" "text",
+    "metadata" "jsonb",
+    "sender_deleted_at" timestamp with time zone,
+    "recipient_deleted_at" timestamp with time zone
+);
+
+
+ALTER TABLE "public"."messages" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."messages" IS 'Messages between users';
 
 
 
@@ -258,6 +284,11 @@ ALTER TABLE ONLY "public"."contacts"
 
 
 
+ALTER TABLE ONLY "public"."messages"
+    ADD CONSTRAINT "messages_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."orgs_invites"
     ADD CONSTRAINT "orgs_invites_pkey" PRIMARY KEY ("id");
 
@@ -291,6 +322,11 @@ ALTER TABLE ONLY "public"."contacts"
 
 
 
+ALTER TABLE ONLY "public"."messages"
+    ADD CONSTRAINT "messages_recipient_fkey" FOREIGN KEY ("recipient") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
 ALTER TABLE ONLY "public"."orgs_invites"
     ADD CONSTRAINT "orgs_invites_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id") ON DELETE CASCADE;
 
@@ -321,11 +357,30 @@ ALTER TABLE ONLY "public"."orgs_users"
 
 
 
+CREATE POLICY "Delete - must be recipient (or sender if not yet read)" ON "public"."messages" FOR DELETE USING ((("auth"."uid"() = "recipient") OR (("auth"."uid"() = "sender") AND ("read_at" IS NULL))));
+
+
+
+CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "sender"));
+
+
+
+CREATE POLICY "Select - user is sender or recipient" ON "public"."messages" FOR SELECT USING ((("auth"."uid"() = "sender") OR ("auth"."uid"() = "recipient")));
+
+
+
+CREATE POLICY "Update - user must be sender or receipient" ON "public"."messages" FOR UPDATE USING ((("auth"."uid"() = "sender") OR ("auth"."uid"() = "recipient"))) WITH CHECK ((("auth"."uid"() = "sender") OR ("auth"."uid"() = "recipient")));
+
+
+
 CREATE POLICY "User must belong to org" ON "public"."contacts" TO "authenticated" USING ((( SELECT "public"."get_org_role"("contacts"."orgid") AS "get_org_role") IS NOT NULL)) WITH CHECK ((( SELECT "public"."get_org_role"("contacts"."orgid") AS "get_org_role") IS NOT NULL));
 
 
 
 ALTER TABLE "public"."contacts" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."messages" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "org owners can create invites" ON "public"."orgs_invites" FOR INSERT TO "authenticated" WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid"))));
@@ -370,13 +425,7 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."accept_invite"("invite_id" "uuid") TO "anon";
-GRANT ALL ON FUNCTION "public"."accept_invite"("invite_id" "uuid") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."accept_invite"("invite_id" "uuid") TO "service_role";
-
-
-
-GRANT ALL ON FUNCTION "public"."delete_org"("org_id" "uuid") TO "service_role";
 
 
 
@@ -402,9 +451,19 @@ GRANT ALL ON FUNCTION "public"."is_backup_running"() TO "service_role";
 
 
 
+GRANT ALL ON FUNCTION "public"."reject_invite"("invite_id" "uuid") TO "service_role";
+
+
+
 GRANT ALL ON TABLE "public"."contacts" TO "anon";
 GRANT ALL ON TABLE "public"."contacts" TO "authenticated";
 GRANT ALL ON TABLE "public"."contacts" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."messages" TO "anon";
+GRANT ALL ON TABLE "public"."messages" TO "authenticated";
+GRANT ALL ON TABLE "public"."messages" TO "service_role";
 
 
 
