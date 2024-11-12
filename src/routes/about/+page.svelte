@@ -14,6 +14,7 @@
     }
   ];
   */
+  const arr = Array(50).fill("");
 </script>
 
 <!-- <PageTemplate {actionItems} /> -->
@@ -25,7 +26,17 @@
   <!--{#snippet TopRight()}{/snippet}-->
 
   {#snippet Middle()}
-    About this app
+    About this app<br /><br />
+    {#each arr as item}
+      <p>
+        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quam, in
+        praesentium. Similique voluptatem vero odio vitae aliquam sit, tenetur
+        neque dicta architecto sequi, nulla optio pariatur dolor, alias quaerat
+        perferendis.
+      </p>
+      <br />
+    {/each}
+    End of content
   {/snippet}
 
   <!--{#snippet BottomLeft()}{/snippet}-->
