@@ -26,6 +26,7 @@
   };
 
   function toggleSelection(profileId: string) {
+    selectedProfiles = new Set([...selectedProfiles]);
     if (selectedProfiles.has(profileId)) {
       selectedProfiles.delete(profileId);
     } else {
@@ -41,6 +42,7 @@
 
   $effect(() => {
     if (open) {
+      selectedProfiles = new Set();
       load();
     }
   });
