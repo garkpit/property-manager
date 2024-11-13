@@ -67,8 +67,12 @@
         >
           <div class="flex-1">
             <h4 class="text-sm font-medium">{profile.email}</h4>
-            {#if profile.email}
-              <p class="text-sm text-muted-foreground">{profile.email}</p>
+            {#if profile.firstname || profile.lastname}
+              <p class="text-sm text-muted-foreground">
+                {profile.firstname || ""}
+                {profile.lastname || ""}
+              </p>
+            {:else}<p class="text-sm text-muted-foreground">&nbsp;</p>
             {/if}
           </div>
           {#if selectedProfiles.has(profile.id)}

@@ -316,7 +316,10 @@ CREATE TABLE IF NOT EXISTS "public"."profiles" (
     "id" "uuid" NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "email" "text" NOT NULL,
-    "metadata" "jsonb"
+    "metadata" "jsonb",
+    "firstname" "text",
+    "lastname" "text",
+    "bio" "text"
 );
 
 
@@ -492,8 +495,7 @@ CREATE POLICY "users can view their own profiles or those in their own orgs" ON 
 
 
 
-CREATE POLICY "users can view their own records or records for orgs they belon" ON "public"."orgs_users" FOR SELECT USING ((("userid" = "auth"."uid"()) OR ("orgid" IN ( SELECT "get_user_orgids"."orgid"
-   FROM "public"."get_user_orgids"("auth"."uid"()) "get_user_orgids"("orgid")))));
+CREATE POLICY "users can view their own records or records for orgs they belon" ON "public"."orgs_users" FOR SELECT USING ((("userid" = ( SELECT "auth"."uid"() AS "uid")) OR ("orgid" IN ( SELECT "public"."get_user_orgids"("auth"."uid"()) AS "get_user_orgids"))));
 
 
 

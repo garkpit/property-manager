@@ -204,21 +204,30 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
           created_at: string
           email: string
+          firstname: string | null
           id: string
+          lastname: string | null
           metadata: Json | null
         }
         Insert: {
+          bio?: string | null
           created_at?: string
           email: string
+          firstname?: string | null
           id: string
+          lastname?: string | null
           metadata?: Json | null
         }
         Update: {
+          bio?: string | null
           created_at?: string
           email?: string
+          firstname?: string | null
           id?: string
+          lastname?: string | null
           metadata?: Json | null
         }
         Relationships: []

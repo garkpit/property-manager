@@ -11,7 +11,7 @@ export type Profile = Database["public"]["Tables"]["profiles"]["Insert"];
 
 export const getProfiles = async () => {
     const { data, error } = await supabase.from("profiles").select(
-        "id, email, metadata",
-    );
+        "id, email, firstname, lastname, bio, metadata",
+    ).order("email", { ascending: true });
     return { data, error };
 };
