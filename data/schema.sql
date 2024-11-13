@@ -245,13 +245,10 @@ CREATE TABLE IF NOT EXISTS "public"."messages" (
     "read_at" timestamp with time zone,
     "sender" "uuid",
     "sender_type" "text",
-    "recipient" "uuid",
-    "recipient_type" "text",
     "subject" "text",
     "message" "text",
     "metadata" "jsonb",
-    "sender_deleted_at" timestamp with time zone,
-    "recipient_deleted_at" timestamp with time zone
+    "sender_deleted_at" timestamp with time zone
 );
 
 
@@ -259,6 +256,22 @@ ALTER TABLE "public"."messages" OWNER TO "postgres";
 
 
 COMMENT ON TABLE "public"."messages" IS 'Messages between users';
+
+
+
+CREATE TABLE IF NOT EXISTS "public"."messages_recipients" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "recipient" "uuid",
+    "deleted_at" timestamp with time zone,
+    "read_at" timestamp with time zone
+);
+
+
+ALTER TABLE "public"."messages_recipients" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."messages_recipients" IS 'Recipent of a message';
 
 
 
@@ -340,6 +353,11 @@ ALTER TABLE ONLY "public"."messages"
 
 
 
+ALTER TABLE ONLY "public"."messages_recipients"
+    ADD CONSTRAINT "messages_recipients_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."orgs_invites"
     ADD CONSTRAINT "orgs_invites_pkey" PRIMARY KEY ("id");
 
@@ -378,8 +396,8 @@ ALTER TABLE ONLY "public"."contacts"
 
 
 
-ALTER TABLE ONLY "public"."messages"
-    ADD CONSTRAINT "messages_recipient_fkey" FOREIGN KEY ("recipient") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+ALTER TABLE ONLY "public"."messages_recipients"
+    ADD CONSTRAINT "messages_recipients_recipient_fkey" FOREIGN KEY ("recipient") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
 
 
@@ -418,23 +436,11 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
-CREATE POLICY "Delete - must be recipient (or sender if not yet read)" ON "public"."messages" FOR DELETE USING ((("auth"."uid"() = "recipient") OR (("auth"."uid"() = "sender") AND ("read_at" IS NULL))));
-
-
-
 CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "sender"));
 
 
 
 CREATE POLICY "Profiles are created automatically by trigger" ON "public"."profiles" FOR INSERT WITH CHECK (false);
-
-
-
-CREATE POLICY "Select - user is sender or recipient" ON "public"."messages" FOR SELECT USING ((("auth"."uid"() = "sender") OR ("auth"."uid"() = "recipient")));
-
-
-
-CREATE POLICY "Update - user must be sender or receipient" ON "public"."messages" FOR UPDATE USING ((("auth"."uid"() = "sender") OR ("auth"."uid"() = "recipient"))) WITH CHECK ((("auth"."uid"() = "sender") OR ("auth"."uid"() = "recipient")));
 
 
 
@@ -446,6 +452,9 @@ ALTER TABLE "public"."contacts" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."messages" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."messages_recipients" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "org owners can create invites" ON "public"."orgs_invites" FOR INSERT TO "authenticated" WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid"))));
@@ -557,6 +566,12 @@ GRANT ALL ON TABLE "public"."contacts" TO "service_role";
 GRANT ALL ON TABLE "public"."messages" TO "anon";
 GRANT ALL ON TABLE "public"."messages" TO "authenticated";
 GRANT ALL ON TABLE "public"."messages" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."messages_recipients" TO "anon";
+GRANT ALL ON TABLE "public"."messages_recipients" TO "authenticated";
+GRANT ALL ON TABLE "public"."messages_recipients" TO "service_role";
 
 
 
