@@ -210,11 +210,12 @@ export const getSession = async () => {
 };
 
 export const updateUser = async (obj: any) => {
-  const { data, error } = await supabase.auth.updateUser(obj);
-  return {
-    data,
-    error,
-  };
+  if (!user) return { data: null, error: "User not logged in" };
+  const { data, error } = await supabase
+    .from("profiles")
+    .update(obj)
+    .eq("id", user.id);
+  return { data, error };
 };
 
 export const signOut = async () => {

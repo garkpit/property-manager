@@ -56,15 +56,13 @@
   async function handleSubmit() {
     // TODO: Implement save functionality
     const { error } = await updateUser({
-      data: {
-        firstname,
-        lastname,
-        bio,
-      },
+      firstname,
+      lastname,
+      bio,
     });
     if (error) {
       toast.error("ERROR", {
-        description: error.message,
+        description: error?.toString() || "unknown error",
       });
     } else {
       toast.success("SUCCESS", {
