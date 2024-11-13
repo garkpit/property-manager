@@ -10,6 +10,8 @@ const user = $derived(getUser());
 export type Profile = Database["public"]["Tables"]["profiles"]["Insert"];
 
 export const getProfiles = async () => {
-    const { data, error } = await supabase.from("profiles").select("*");
+    const { data, error } = await supabase.from("profiles").select(
+        "id, email, metadata",
+    );
     return { data, error };
 };

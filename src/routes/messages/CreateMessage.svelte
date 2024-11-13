@@ -4,33 +4,21 @@
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
-  import { getProfiles } from "@/services/profileService.svelte";
-  import type { Profile } from "@/services/profileService.svelte";
+  import Recipients from "./Recipients.svelte";
+  import type { Profile } from "$lib/services/profileService.svelte";
   import { cn } from "$lib/utils";
-
+  let showRecipients = $state(false);
   let profiles: Profile[] = $state([]);
-
-  const load = async () => {
-    const { data, error } = await getProfiles();
-    console.log(data);
-    if (error) {
-      console.error(error);
-      profiles = [];
-      return;
-    }
-    if (data) {
-      profiles = data;
-      console.table(profiles);
-    }
-  };
-  load();
 
   let message: Message = $state({
     subject: "",
     message: "",
     recipient: "",
   });
-
+  function handleSelect(selected: Profile[]) {
+    console.log("Selected profiles:", selected);
+    // Handle the selected profiles
+  }
   async function handleSubmit() {
     try {
       await createMessage(message);
@@ -53,6 +41,9 @@
     handleSubmit();
   }}
 >
+  <Button onclick={() => (showRecipients = true)}>Select Recipients</Button>
+
+  <Recipients bind:open={showRecipients} onSelect={handleSelect} />
   <div class="space-y-2">
     <label for="recipient" class="text-sm font-medium">Recipient</label>
     <Input
