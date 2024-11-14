@@ -123,6 +123,22 @@ export const getSentMessages = async (
     return { data: transformedData, error };
 };
 
+export const markMessageAsRead = async (id: string) => {
+    if (!user) return { data: null, error: "User not logged in" };
+    const { error } = await supabase
+        .from("messages_recipients")
+        .update({ read_at: new Date().toISOString() })
+        .eq("messageid", id)
+        .eq("recipient", user.id);
+};
+export const markMessageAsUnread = async (id: string) => {
+    if (!user) return { data: null, error: "User not logged in" };
+    const { error } = await supabase
+        .from("messages_recipients")
+        .update({ read_at: null })
+        .eq("messageid", id)
+        .eq("recipient", user.id);
+};
 export const getMessage = async (id: string) => {
     if (!user) return { data: null, error: "User not logged in" };
     const { data, error } = await supabase
@@ -152,15 +168,6 @@ export const getMessage = async (id: string) => {
         `)
         .eq("id", id)
         .single();
-    /**
- *
-                email,
-                firstname,
-                lastname,
-                read_at,
-                deleted_at
-
- */
     // Transform the data to match the previous structure
     const transformedData = data
         ? {

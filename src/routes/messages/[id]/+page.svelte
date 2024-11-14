@@ -1,21 +1,67 @@
 <script lang="ts">
-  import { getMessage } from "$lib/services/messageService.svelte";
+  import {
+    getMessage,
+    markMessageAsUnread,
+    markMessageAsRead,
+  } from "$lib/services/messageService.svelte";
   import { page } from "$app/stores";
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
   import { ArrowLeft } from "lucide-svelte";
   import * as Table from "$lib/components/ui/table";
-
+  import { getUser } from "$lib/services/backend.svelte";
+  import { Mail, MailOpen } from "lucide-svelte";
+  const user = $derived(getUser());
   const id = $derived($page.params.id);
   let message = $state<any | null>(null);
+  const actionItems: any[] = [
+    {
+      groupName: "Manage Message",
+      groupItems: [
+        {
+          icon: Mail,
+          label: "Mark as unread",
+          onClick: async () => {
+            console.log("marking message as unread");
+            await markMessageAsUnread(id);
+            console.log("calling load(false)");
+            load(false); // don't mark as read
+          },
+        },
+        {
+          icon: MailOpen,
+          label: "Mark as read",
+          onClick: async () => {
+            await markMessageAsRead(id);
+            load(true); // mark as read
+          },
+        },
+      ],
+    },
+  ];
 
-  const load = async () => {
+  const load = async (markRead = true) => {
+    if (!user) {
+      console.log("message detail load: user not found, returning");
+      return;
+    }
     const { data, error } = await getMessage(id);
     if (error) {
       console.error("getMessage error", error);
     }
     message = data;
+    // find the recipient record for the current user then check if it's read_at is null
+    const recipient = message.messages_recipients.find(
+      (r: any) => r.recipient === user.id,
+    );
+    console.log("load: markRead", markRead);
+    if (markRead && !recipient.read_at) {
+      await markMessageAsRead(id);
+      recipient.read_at = new Date().toISOString().toLocaleString();
+    } else {
+      console.log("message already read");
+    }
   };
   $effect(() => {
     load();
@@ -27,7 +73,7 @@
   };
 </script>
 
-<PageTemplate>
+<PageTemplate {actionItems}>
   {#snippet TopLeft()}
     <Button
       variant="ghost"
