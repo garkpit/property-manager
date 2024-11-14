@@ -5,6 +5,7 @@
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
   import { ArrowLeft } from "lucide-svelte";
+  import * as Table from "$lib/components/ui/table";
 
   const id = $derived($page.params.id);
   let message = $state<any | null>(null);
@@ -19,9 +20,13 @@
   $effect(() => {
     load();
   });
+
+  // Format date helper
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
 </script>
 
-<!-- <PageTemplate {actionItems} /> -->
 <PageTemplate>
   {#snippet TopLeft()}
     <Button
@@ -39,13 +44,59 @@
     Message Details
   {/snippet}
 
-  <!--{#snippet TopRight()}{/snippet}-->
-
   {#snippet Middle()}
-    {JSON.stringify(message, null, 2)}
-  {/snippet}
+    {#if message}
+      <div class="space-y-6">
+        <!-- Message Content Section -->
+        <div class="mb-8">
+          <h2 class="text-lg font-semibold mb-2">{message.subject}</h2>
+          <div
+            class="flex items-center gap-x-4 text-sm text-muted-foreground mb-4"
+          >
+            <span
+              ><b>FROM:</b>
+              {message.sender_profile.email}
+              &lt;{message.sender_profile.firstname}
+              {message.sender_profile.lastname}&gt;</span
+            >
+            <span>•</span>
+            <span>{formatDate(message.created_at)}</span>
+          </div>
+          <div class="whitespace-pre-wrap rounded-lg bg-muted/50 p-4 w-full">
+            {message.message}
+          </div>
+        </div>
 
-  <!--{#snippet BottomLeft()}{/snippet}-->
-  <!--{#snippet BottomCenter()}{/snippet}-->
-  <!--{#snippet BottomRight()}{/snippet}-->
+        <!-- Recipients Table -->
+        <div>
+          <h3 class="text-sm font-semibold mb-2">Recipients</h3>
+          <Table.Root>
+            <Table.Header>
+              <Table.Row>
+                <Table.Head>Name</Table.Head>
+                <Table.Head>Email</Table.Head>
+                <Table.Head class="w-32">Status</Table.Head>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {#each message.messages_recipients as recipient}
+                <Table.Row>
+                  <Table.Cell
+                    >{recipient.profiles.firstname}
+                    {recipient.profiles.lastname}</Table.Cell
+                  >
+                  <Table.Cell>{recipient.profiles.email}</Table.Cell>
+                  <Table.Cell
+                    >{recipient.read_at
+                      ? formatDate(recipient.read_at)
+                      : "Unread"}</Table.Cell
+                  >
+                </Table.Row>
+              {/each}
+            </Table.Body>
+          </Table.Root>
+        </div>
+      </div>
+    {/if}
+  {/snippet}
 </PageTemplate>
