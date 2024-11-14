@@ -62,7 +62,6 @@ export type Database = {
           id: string
           message: string | null
           metadata: Json | null
-          read_at: string | null
           sender: string | null
           sender_deleted_at: string | null
           sender_type: string | null
@@ -73,7 +72,6 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
-          read_at?: string | null
           sender?: string | null
           sender_deleted_at?: string | null
           sender_type?: string | null
@@ -84,7 +82,6 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
-          read_at?: string | null
           sender?: string | null
           sender_deleted_at?: string | null
           sender_type?: string | null
@@ -97,6 +94,7 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           id: string
+          messageid: string | null
           read_at: string | null
           recipient: string | null
         }
@@ -104,6 +102,7 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           id?: string
+          messageid?: string | null
           read_at?: string | null
           recipient?: string | null
         }
@@ -111,10 +110,19 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           id?: string
+          messageid?: string | null
           read_at?: string | null
           recipient?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipients_messageid_fkey"
+            columns: ["messageid"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orgs: {
         Row: {

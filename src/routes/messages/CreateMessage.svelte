@@ -13,23 +13,40 @@
   let message: Message = $state({
     subject: "",
     message: "",
-    recipient: "",
+    metadata: {},
   });
-  function handleSelect(selected: Profile[]) {
+
+  let recipients: Profile[] = $state([]);
+  const recipientString = $derived(
+    recipients
+      .map(
+        (recipient) =>
+          `${recipient.email} <${recipient.firstname} ${recipient.lastname}>`,
+      )
+      .join(", "),
+  );
+
+  function handleSelectRecipients(selected: Profile[]) {
     console.log("Selected profiles:", selected);
-    // Handle the selected profiles
+    recipients = selected;
   }
   async function handleSubmit() {
     try {
-      await createMessage(message);
-      // Reset form after successful submission
-      message = {
-        subject: "",
-        message: "",
-        recipient: "",
-      };
-    } catch (error) {
-      console.error("Failed to send message:", error);
+      const { data, error } = await createMessage(
+        {
+          subject: message.subject,
+          message: message.message,
+          metadata: {},
+        },
+        recipients.map((recipient) => recipient.id),
+      );
+      if (error) {
+        console.error("Failed to send message (error):", error);
+      } else {
+        console.log("Message sent:", data);
+      }
+    } catch (e) {
+      console.error("Failed to send message (e):", e);
     }
   }
 </script>
@@ -43,16 +60,10 @@
 >
   <Button onclick={() => (showRecipients = true)}>Select Recipients</Button>
 
-  <Recipients bind:open={showRecipients} onSelect={handleSelect} />
+  <Recipients bind:open={showRecipients} onSelect={handleSelectRecipients} />
   <div class="space-y-2">
     <label for="recipient" class="text-sm font-medium">Recipient</label>
-    <Input
-      id="recipient"
-      type="text"
-      bind:value={message.recipient}
-      placeholder="Enter recipient"
-      required
-    />
+    {recipientString}
   </div>
 
   <div class="space-y-2">

@@ -242,7 +242,6 @@ COMMENT ON TABLE "public"."contacts" IS 'List of Contacts (people)';
 CREATE TABLE IF NOT EXISTS "public"."messages" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "read_at" timestamp with time zone,
     "sender" "uuid",
     "sender_type" "text",
     "subject" "text",
@@ -264,7 +263,8 @@ CREATE TABLE IF NOT EXISTS "public"."messages_recipients" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "recipient" "uuid",
     "deleted_at" timestamp with time zone,
-    "read_at" timestamp with time zone
+    "read_at" timestamp with time zone,
+    "messageid" "uuid"
 );
 
 
@@ -397,6 +397,11 @@ ALTER TABLE ONLY "public"."contacts"
 
 
 ALTER TABLE ONLY "public"."messages_recipients"
+    ADD CONSTRAINT "messages_recipients_messageid_fkey" FOREIGN KEY ("messageid") REFERENCES "public"."messages"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."messages_recipients"
     ADD CONSTRAINT "messages_recipients_recipient_fkey" FOREIGN KEY ("recipient") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
 
@@ -436,7 +441,7 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
-CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "sender"));
+CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "sender"));
 
 
 
@@ -455,6 +460,14 @@ ALTER TABLE "public"."messages" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."messages_recipients" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "must be sender to delete" ON "public"."messages" FOR DELETE USING (("sender" = ( SELECT "auth"."uid"() AS "uid")));
+
+
+
+CREATE POLICY "must be sender to update" ON "public"."messages" FOR UPDATE USING (("sender" = ( SELECT "auth"."uid"() AS "uid"))) WITH CHECK (("sender" = ( SELECT "auth"."uid"() AS "uid")));
+
 
 
 CREATE POLICY "org owners can create invites" ON "public"."orgs_invites" FOR INSERT TO "authenticated" WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid"))));
@@ -486,6 +499,12 @@ ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "profiles cannot be deleted" ON "public"."profiles" FOR DELETE USING (false);
+
+
+
+CREATE POLICY "sender or recipients can view" ON "public"."messages" FOR SELECT USING (((( SELECT "auth"."uid"() AS "uid") = "sender") OR (( SELECT "auth"."uid"() AS "uid") IN ( SELECT "messages_recipients"."recipient"
+   FROM "public"."messages_recipients"
+  WHERE ("messages_recipients"."messageid" = "messages"."id")))));
 
 
 

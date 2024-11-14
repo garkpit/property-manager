@@ -28,12 +28,12 @@
   <!--{#snippet TopRight()}{/snippet}-->
 
   {#snippet Middle()}
-    <!--
     <h2>Inbox</h2>
     <Inbox />
+
     <h2>Outbox</h2>
     <Outbox />
-    -->
+
     <h2>Create Message</h2>
     <CreateMessage />
   {/snippet}
