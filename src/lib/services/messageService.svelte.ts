@@ -12,6 +12,21 @@ export type Message = Database["public"]["Tables"]["messages"]["Insert"];
 export type MessageRecipient =
     Database["public"]["Tables"]["messages_recipients"]["Insert"];
 
+export const getNewInboxMessageCount = async () => {
+    if (!user) {
+        return {
+            data: null,
+            error: "getNewInboxMessageCount: User not logged in",
+        };
+    }
+    const { count, error } = await supabase
+        .from("messages_recipients")
+        .select("*", { count: "exact", head: true })
+        .eq("recipient", user.id)
+        .is("read_at", null);
+    return { data: count, error };
+};
+
 export const getInboxMessages = async (
     start: number = 0,
     count: number = 100,

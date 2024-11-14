@@ -7,14 +7,29 @@
   import { t } from "$lib/i18n";
   import AnimatedBell from "$lib/components/iconbuttons/AnimatedBell.svelte";
   import InvitationsModal from "$lib/components/InvitationsModal.svelte";
+  import { getNewInboxMessageCount } from "$lib/services/messageService.svelte";
   let showInvitations = $state(false);
 
   let open = $state(false);
+  let messageCount = $state(0);
+  const getCount = async () => {
+    const { data, error } = await getNewInboxMessageCount();
+    if (error) {
+      console.error("getNewInboxMessageCount error:", error);
+    } else {
+      messageCount = data || 0;
+      console.log("messageCount", messageCount);
+    }
+  };
 
+  $effect(() => {
+    getCount();
+  });
+  /*
   $effect.root(() => {
     console.log("showInvitations:", showInvitations); // Debug log
   });
-
+*/
   function setTheme(mode: "light" | "dark" | "system") {
     setMode(mode);
     open = false;
@@ -49,7 +64,7 @@
         variant="outline"
         class="flex items-center gap-2 w-full justify-start"
       >
-        <Badge variant="destructive">3</Badge>
+        <Badge variant="destructive">{messageCount}</Badge>
         <Mail class="h-4 w-4" /> new messages
       </Button>
     </div>
