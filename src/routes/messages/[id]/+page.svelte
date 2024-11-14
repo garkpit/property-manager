@@ -63,6 +63,7 @@
           icon: Trash2,
           label: "Delete Message",
           iconClasses: "stroke-destructive",
+          textClasses: "text-destructive",
           onClick: async () => {
             console.log("delete message");
             console.log("** NOT IMPLEMENTED **");
