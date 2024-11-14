@@ -3,6 +3,8 @@
   import Inbox from "./Inbox.svelte";
   import Outbox from "./Outbox.svelte";
   import CreateMessage from "./CreateMessage.svelte";
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
+
   /*
   const actionItems: any[] = [
     {
@@ -28,14 +30,24 @@
   <!--{#snippet TopRight()}{/snippet}-->
 
   {#snippet Middle()}
-    <h2>Inbox</h2>
-    <Inbox />
-
-    <h2>Outbox</h2>
-    <Outbox />
-
-    <h2>Create Message</h2>
-    <CreateMessage />
+    <div class="flex items-center justify-center">
+      <Tabs.Root value="inbox" class="w-[350px] md:w-[500px]">
+        <Tabs.List>
+          <Tabs.Trigger value="inbox">Inbox</Tabs.Trigger>
+          <Tabs.Trigger value="outbox">Sent Messages</Tabs.Trigger>
+          <Tabs.Trigger value="sendmessage">Send Message</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="inbox">
+          <Inbox />
+        </Tabs.Content>
+        <Tabs.Content value="outbox">
+          <Outbox />
+        </Tabs.Content>
+        <Tabs.Content value="sendmessage">
+          <CreateMessage />
+        </Tabs.Content>
+      </Tabs.Root>
+    </div>
   {/snippet}
 
   <!--{#snippet BottomLeft()}{/snippet}-->

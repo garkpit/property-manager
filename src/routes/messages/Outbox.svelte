@@ -24,7 +24,7 @@
   <Table.Header>
     <Table.Row>
       <Table.Head>Subject</Table.Head>
-      <Table.Head>Sender</Table.Head>
+      <Table.Head>Recipient(s)</Table.Head>
       <Table.Head>Date</Table.Head>
     </Table.Row>
   </Table.Header>
