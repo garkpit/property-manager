@@ -103,6 +103,9 @@
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
+
+  const reply = async () => {};
+  const replyAll = async () => {};
 </script>
 
 <PageTemplate {actionItems}>
