@@ -1,34 +1,40 @@
 <script lang="ts">
   import { getInboxMessages } from "$lib/services/messageService.svelte";
   import type { Message } from "$lib/services/messageService.svelte";
-  import GenericList from "$lib/components/GenericList.svelte";
-  let inboxMessages: Message[] = $state([]);
+  import * as Table from "$lib/components/ui/table";
+
+  let inboxMessages: any[] = $state([]);
+
   const load = async () => {
     const { data, error } = await getInboxMessages(0, 100);
     if (error) {
       console.error(error);
     } else if (data) {
       inboxMessages = data;
+      console.log(data);
     }
   };
+
   $effect(() => {
     load();
   });
-  /*
-    data: any[];
-    headers: Header[];
-    onRowClick?: (item: any) => void;
-    onSort?: (column: string, direction: "asc" | "desc") => Promise<void>;
-    showCheckboxes?: boolean;
-    onSelectionChange?: (selectedItems: Set<string>) => void;
-
-    id, subject, message, sender, recipient, metadata, read_at
-  */
-  const headers = [
-    { key: "subject", label: "Subject", sortable: true },
-    { key: "sender", label: "Sender", sortable: true },
-    { key: "created_at", label: "Date", sortable: true },
-  ];
 </script>
 
-<GenericList data={inboxMessages} {headers} />
+<Table.Root>
+  <Table.Header>
+    <Table.Row>
+      <Table.Head>Subject</Table.Head>
+      <Table.Head>Sender</Table.Head>
+      <Table.Head>Date</Table.Head>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    {#each inboxMessages as message}
+      <Table.Row>
+        <Table.Cell class="font-medium">{message.subject}</Table.Cell>
+        <Table.Cell>{message.sender_email}</Table.Cell>
+        <Table.Cell>{message.created_at}</Table.Cell>
+      </Table.Row>
+    {/each}
+  </Table.Body>
+</Table.Root>

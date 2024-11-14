@@ -25,6 +25,11 @@ export const getInboxMessages = async (
             subject,
             message,
             sender,
+            sender_profile:profiles!inner(
+                firstname,
+                lastname,
+                email
+            ),
             metadata,
             messages_recipients!inner (
                 recipient,
@@ -38,11 +43,17 @@ export const getInboxMessages = async (
         .limit(count)
         .order("created_at", { ascending: false });
 
-    // Transform the data to match the previous structure
-    const transformedData = data?.map((msg) => ({
+    // Transform remains the same
+    const transformedData = data?.map((msg: any) => ({
         ...msg,
-        recipient: msg.messages_recipients[0].recipient,
-        read_at: msg.messages_recipients[0].read_at,
+        // Start of Selection
+        created_at: new Date(msg.created_at).toLocaleString(),
+        read_at: new Date(msg.messages_recipients[0].read_at)
+            .toLocaleString(),
+        // Sender info
+        sender_firstname: msg.sender_profile?.firstname,
+        sender_lastname: msg.sender_profile?.lastname,
+        sender_email: msg.sender_profile?.email,
     }));
 
     return { data: transformedData, error };
@@ -62,10 +73,15 @@ export const getSentMessages = async (
             message,
             sender,
             metadata,
-            messages_recipients (
+            messages_recipients!inner (
                 recipient,
                 read_at,
-                deleted_at
+                deleted_at,
+                profiles:recipient (
+                    firstname,
+                    lastname,
+                    email
+                )
             )
         `)
         .eq("sender", user.id)
@@ -74,11 +90,19 @@ export const getSentMessages = async (
         .limit(count)
         .order("created_at", { ascending: false });
 
-    // Transform the data to match the previous structure
+    // Transform the data with renamed recipients array and flattened profile info
     const transformedData = data?.map((msg) => ({
         ...msg,
-        recipient: msg.messages_recipients[0].recipient,
-        read_at: msg.messages_recipients[0].read_at,
+        created_at: new Date(msg.created_at).toLocaleString(),
+
+        recipients: msg.messages_recipients.map((recipient: any) => ({
+            recipient: recipient.recipient,
+            read_at: new Date(recipient.read_at).toLocaleString(),
+            email: recipient.profiles.email,
+            firstname: recipient.profiles.firstname,
+            lastname: recipient.profiles.lastname,
+        })),
+        messages_recipients: undefined, // Remove the original messages_recipients array
     }));
 
     return { data: transformedData, error };
