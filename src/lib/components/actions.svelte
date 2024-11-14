@@ -41,7 +41,7 @@
           {#each item.groupItems as groupItem}
             <DropdownMenu.Item onclick={groupItem.onClick}>
               <div class="flex items-center">
-                <groupItem.icon class="mr-2 h-4 w-4" />
+                <groupItem.icon class="mr-2 h-4 w-4 {groupItem.iconClasses}" />
                 {groupItem.label}
               </div>
             </DropdownMenu.Item>

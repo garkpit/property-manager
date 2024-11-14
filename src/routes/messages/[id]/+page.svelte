@@ -8,10 +8,16 @@
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
-  import { ArrowLeft } from "lucide-svelte";
+  import {
+    ArrowLeft,
+    Reply,
+    ReplyAll,
+    Mail,
+    MailOpen,
+    Trash2,
+  } from "lucide-svelte";
   import * as Table from "$lib/components/ui/table";
   import { getUser } from "$lib/services/backend.svelte";
-  import { Mail, MailOpen } from "lucide-svelte";
   const user = $derived(getUser());
   const id = $derived($page.params.id);
   let message = $state<any | null>(null);
@@ -19,6 +25,22 @@
     {
       groupName: "Manage Message",
       groupItems: [
+        {
+          icon: Reply,
+          label: "Reply",
+          onClick: async () => {
+            console.log("replying to message");
+            console.log("** NOT IMPLEMENTED **");
+          },
+        },
+        {
+          icon: ReplyAll,
+          label: "Reply All",
+          onClick: async () => {
+            console.log("replying all to message");
+            console.log("** NOT IMPLEMENTED **");
+          },
+        },
         {
           icon: Mail,
           label: "Mark as unread",
@@ -35,6 +57,15 @@
           onClick: async () => {
             await markMessageAsRead(id);
             load(true); // mark as read
+          },
+        },
+        {
+          icon: Trash2,
+          label: "Delete Message",
+          iconClasses: "stroke-destructive",
+          onClick: async () => {
+            console.log("delete message");
+            console.log("** NOT IMPLEMENTED **");
           },
         },
       ],
