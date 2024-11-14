@@ -121,7 +121,7 @@
               <Table.Row>
                 <Table.Head>Name</Table.Head>
                 <Table.Head>Email</Table.Head>
-                <Table.Head class="w-32">Status</Table.Head>
+                <Table.Head class="w-32">Read</Table.Head>
               </Table.Row>
             </Table.Header>
             <Table.Body>
