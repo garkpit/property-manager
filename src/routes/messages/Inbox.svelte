@@ -2,6 +2,7 @@
   import { getInboxMessages } from "$lib/services/messageService.svelte";
   import type { Message } from "$lib/services/messageService.svelte";
   import * as Table from "$lib/components/ui/table";
+  import { goto } from "$app/navigation";
 
   let inboxMessages: any[] = $state([]);
 
@@ -30,7 +31,11 @@
   </Table.Header>
   <Table.Body>
     {#each inboxMessages as message}
-      <Table.Row>
+      <Table.Row
+        onclick={() => {
+          goto(`/messages/${message.id}`);
+        }}
+      >
         <Table.Cell class="font-medium">{message.subject}</Table.Cell>
         <Table.Cell>{message.sender_email}</Table.Cell>
         <Table.Cell>{message.created_at}</Table.Cell>

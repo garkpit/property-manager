@@ -118,16 +118,34 @@ export const getMessage = async (id: string) => {
             subject,
             message,
             sender,
+            sender_profile:profiles!inner(
+                firstname,
+                lastname,
+                email
+            ),            
             metadata,
-            messages_recipients (
+            messages_recipients!inner (
                 recipient,
                 read_at,
-                deleted_at
+                deleted_at,
+                profiles:recipient (
+                    firstname,
+                    lastname,
+                    email
+                )
             )
         `)
         .eq("id", id)
         .single();
+    /**
+ *
+                email,
+                firstname,
+                lastname,
+                read_at,
+                deleted_at
 
+ */
     // Transform the data to match the previous structure
     const transformedData = data
         ? {

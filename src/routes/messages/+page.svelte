@@ -31,7 +31,7 @@
 
   {#snippet Middle()}
     <div class="flex items-center justify-center">
-      <Tabs.Root value="inbox" class="w-[350px] md:w-[500px]">
+      <Tabs.Root value="inbox" class="w-[350px] md:w-full">
         <Tabs.List>
           <Tabs.Trigger value="inbox">Inbox</Tabs.Trigger>
           <Tabs.Trigger value="outbox">Sent Messages</Tabs.Trigger>
