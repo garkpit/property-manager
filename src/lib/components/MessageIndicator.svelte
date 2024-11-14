@@ -8,6 +8,8 @@
   import AnimatedBell from "$lib/components/iconbuttons/AnimatedBell.svelte";
   import InvitationsModal from "$lib/components/InvitationsModal.svelte";
   import { getNewInboxMessageCount } from "$lib/services/messageService.svelte";
+  import { getPendingInviteCount } from "$lib/services/inviteService.svelte";
+  import { goto } from "$app/navigation";
   let showInvitations = $state(false);
 
   let open = $state(false);
@@ -26,9 +28,17 @@
       }
     }
   };
-
+  const getInviteCount = async () => {
+    const { data, error } = await getPendingInviteCount();
+    if (error) {
+      console.error("getPendingInviteCount error:", error);
+    } else {
+      invitationCount = data || 0;
+    }
+  };
   $effect(() => {
     getUnreadMessageCount();
+    getInviteCount();
   });
   /*
   $effect.root(() => {
@@ -64,15 +74,26 @@
         variant="outline"
         class="flex items-center gap-2 w-full justify-start"
       >
-        <Badge variant="destructive">1</Badge>
-        <Building2 class="h-4 w-4" /> new invitation
+        {#if invitationCount > 0}
+          <Badge variant="destructive">{invitationCount}</Badge>
+          <Building2 class="h-4 w-4" /> new invitation
+        {:else}
+          <Building2 class="h-4 w-4" /> no pending invitations
+        {/if}
       </Button>
       <Button
         variant="outline"
         class="flex items-center gap-2 w-full justify-start"
+        onclick={() => {
+          goto("/messages");
+        }}
       >
-        <Badge variant="destructive">{messageCount}</Badge>
-        <Mail class="h-4 w-4" /> new messages
+        {#if messageCount > 0}
+          <Badge variant="destructive">{messageCount}</Badge>
+          <Mail class="h-4 w-4" /> new message{messageCount > 1 ? "s" : ""}
+        {:else}
+          <Mail class="h-4 w-4" /> no new messages
+        {/if}
       </Button>
     </div>
   </Popover.Content>

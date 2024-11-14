@@ -1,12 +1,23 @@
 import type { Database } from "$lib/types/database.types";
-import { supabase } from "./backend.svelte.ts";
+import { getUser, supabase } from "./backend.svelte.ts";
+const user = $derived(getUser());
 import {
     FunctionsFetchError,
     FunctionsHttpError,
     FunctionsRelayError,
 } from "@supabase/supabase-js";
-export type Invite = Database["public"]["Tables"]["orgs_invites"]["Row"];
+export type Invite = Database["public"]["Tables"]["orgs_invites"]["Insert"];
 
+export const getPendingInviteCount = async () => {
+    if (!user) {
+        return { data: 0, error: "user not found" };
+    }
+    const { count, error } = await supabase
+        .from("orgs_invites")
+        .select("*", { count: "exact", head: true })
+        .eq("email", user.email);
+    return { data: count, error };
+};
 export const getInvites = async (orgid: string) => {
     const { data, error } = await supabase.from("orgs_invites").select("*").eq(
         "orgid",
