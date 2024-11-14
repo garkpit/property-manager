@@ -12,18 +12,23 @@
 
   let open = $state(false);
   let messageCount = $state(0);
-  const getCount = async () => {
+  let invitationCount = $state(0);
+  const totalCount = $derived(messageCount + invitationCount);
+  const getUnreadMessageCount = async () => {
     const { data, error } = await getNewInboxMessageCount();
     if (error) {
       console.error("getNewInboxMessageCount error:", error);
     } else {
-      messageCount = data || 0;
-      console.log("messageCount", messageCount);
+      if (data) {
+        messageCount = data || 0;
+      } else {
+        messageCount = 0;
+      }
     }
   };
 
   $effect(() => {
-    getCount();
+    getUnreadMessageCount();
   });
   /*
   $effect.root(() => {
@@ -44,7 +49,9 @@
 <Popover.Root bind:open>
   <Popover.Trigger>
     <Button variant="ghost" class="ml-2">
-      <Badge variant="destructive">4</Badge>
+      {#if totalCount > 0}
+        <Badge variant="destructive">{totalCount}</Badge>
+      {/if}
       <AnimatedBell classes="h-4 w-4" fill="transparent" />
       <span class="sr-only">Message Indicator</span>
     </Button>
