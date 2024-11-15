@@ -3,26 +3,57 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import { t } from "$lib/i18n";
   import { toast } from "svelte-sonner";
+  import {
+    acceptInvite,
+    rejectInvite,
+    getPendingInvites,
+  } from "$lib/services/inviteService.svelte.ts";
 
-  interface Invitation {
+  type Invitation = {
     id: string;
-    organizationName: string;
-    inviterEmail: string;
-    createdAt: string;
-  }
-
+    orgs: { title: string }[];
+    owner: { email: string; firstname: string; lastname: string }[];
+    created_at: string;
+  };
   let { open = $bindable() } = $props<{ open: boolean }>();
   let invitations = $state<Invitation[]>([]);
   let loading = $state(false);
+  let error = $state<string | null>(null);
 
   function closeModal() {
     open = false;
   }
 
+  async function loadInvitations() {
+    console.log("loadInvitations");
+    loading = true;
+    try {
+      console.log("calling getPendingInvites");
+      const { data, error: inviteError } = await getPendingInvites();
+      console.log(
+        "loadInvitations data",
+        JSON.stringify(data, null, 2) || data,
+      );
+      console.log("loadInvitations error", inviteError);
+      if (inviteError) {
+        error = inviteError;
+        return;
+      }
+      invitations = data || [];
+    } catch (e) {
+      error = "Failed to load invitations";
+    } finally {
+      loading = false;
+    }
+  }
+
   async function handleAccept(invitationId: string) {
     loading = true;
     try {
-      // TODO: Implement accept invitation API call
+      const { error } = await acceptInvite(invitationId);
+      if (error) {
+        throw new Error(error);
+      }
       toast.success("SUCCESS", {
         description: $t("invitationsModal.acceptSuccess"),
       });
@@ -40,7 +71,10 @@
   async function handleReject(invitationId: string) {
     loading = true;
     try {
-      // TODO: Implement reject invitation API call
+      const { error } = await rejectInvite(invitationId);
+      if (error) {
+        throw new Error(error);
+      }
       toast.success("SUCCESS", {
         description: $t("invitationsModal.rejectSuccess"),
       });
@@ -55,19 +89,10 @@
     }
   }
 
-  // Load invitations when modal opens
+  // Load invitations when the modal opens
   $effect(() => {
     if (open) {
-      // TODO: Implement fetch invitations API call
-      // This is just example data
-      invitations = [
-        {
-          id: "1",
-          organizationName: "Acme Corp",
-          inviterEmail: "john@acme.com",
-          createdAt: new Date().toISOString(),
-        },
-      ];
+      loadInvitations();
     }
   });
 </script>
@@ -90,10 +115,10 @@
         {:else}
           {#each invitations as invitation}
             <div class="mb-4 rounded-lg border p-4">
-              <h3 class="font-medium">{invitation.organizationName}</h3>
+              <h3 class="font-medium">{invitation.orgs.title}</h3>
               <p class="text-sm text-muted-foreground">
                 {$t("invitationsModal.invitedBy", {
-                  email: invitation.inviterEmail,
+                  email: invitation.owner.email,
                 })}
               </p>
               <div class="mt-3 flex gap-2">

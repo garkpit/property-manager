@@ -18,10 +18,10 @@ export const getPendingInviteCount = async () => {
         .eq("email", user.email);
     return { data: count, error };
 };
-export const getInvites = async (orgid: string) => {
+export const getInvites = async (email: string) => {
     const { data, error } = await supabase.from("orgs_invites").select("*").eq(
-        "orgid",
-        orgid,
+        "email",
+        email,
     );
     return { data, error };
 };
@@ -102,4 +102,106 @@ export const deleteInvite = async (
         if (error) error.message = "unknown error";
         return { data: null, error };
     }
+};
+
+export const acceptInvite = async (id: string) => {
+    try {
+        const { data, error } = await supabase.functions.invoke(
+            "server_function",
+            {
+                body: {
+                    action: "invite_accept",
+                    payload: {
+                        id,
+                    },
+                },
+            },
+        );
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
+        } else {
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
+            }
+            return { data: null, error: errorMessage };
+        }
+    } catch (err) {
+        return { data: null, error: err };
+    }
+};
+
+export const rejectInvite = async (id: string) => {
+    try {
+        const { data, error } = await supabase.functions.invoke(
+            "server_function",
+            {
+                body: {
+                    action: "invite_reject",
+                    payload: {
+                        id,
+                    },
+                },
+            },
+        );
+        let errorMessage = "";
+        if (!error) {
+            return { data, error: null };
+        } else {
+            if (error instanceof FunctionsHttpError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsRelayError) {
+                errorMessage = error.message;
+            } else if (error instanceof FunctionsFetchError) {
+                errorMessage = error.message;
+            }
+            return { data: null, error: errorMessage };
+        }
+    } catch (err) {
+        return { data: null, error: err };
+    }
+};
+
+export const getPendingInvites = async () => {
+    console.log("getPendingInvites 1");
+    if (!user) {
+        return { data: null, error: "user not found" };
+    }
+    console.log("getPendingInvites 2");
+    const { data, error } = await supabase
+        .from("orgs_invites")
+        .select(`
+            id,            
+            orgs (
+                title
+            ),
+            owner:owner (
+                email, firstname, lastname
+            ),
+            created_at
+        `)
+        .eq("email", user.email);
+    console.log("getPendingInvites raw data:", JSON.stringify(data, null, 2));
+    console.log("getPendingInvites 3, data", data);
+    console.log("getPendingInvites 3, error", error);
+
+    if (error) {
+        return { data: null, error };
+    }
+
+    /*
+    // Transform the data to match the Invitation interface
+    const transformedData = data.map((invite) => ({
+        id: invite.id,
+        organizationName: invite.org.name,
+        inviterEmail: invite.owner.email,
+        createdAt: invite.created_at,
+    }));
+    console.log("transformedData", transformedData);
+    */
+    return { data, error: null };
 };
