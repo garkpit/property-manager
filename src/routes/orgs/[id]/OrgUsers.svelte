@@ -24,10 +24,16 @@
   async function load() {
     if (org) {
       const { data: usersData, error: usersError } = await getOrgUsers(org);
+      console.log("OrgUsers usersData", usersData);
+      console.log("OrgUsers usersError", usersError);
       if (usersError) {
         console.error("getOrgUsers error", usersError);
+        users = [];
       } else {
         const tempUsers = [];
+        if (!usersData.data) {
+          usersData.data = [];
+        }
         for (let i = 0; i < usersData.data.length; i++) {
           const u = usersData.data[i];
           tempUsers.push({

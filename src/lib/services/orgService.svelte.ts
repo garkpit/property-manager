@@ -7,7 +7,7 @@ import {
     FunctionsRelayError,
 } from "@supabase/supabase-js";
 
-export type Org = Database["public"]["Tables"]["orgs"]["Row"];
+export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
 
 //import type { Org } from "$lib/types/org.ts";
 //import type { Database } from "$lib/types/database.types";
@@ -30,7 +30,7 @@ export async function fetchOrgs(
 export const getOrgById = async (
     id: string,
 ): Promise<{
-    data: Database["public"]["Tables"]["orgs"]["Row"] | null;
+    data: Database["public"]["Tables"]["orgs"]["Insert"] | null;
     error: unknown | null;
 }> => {
     try {

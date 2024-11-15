@@ -30,15 +30,7 @@
     }
   };
   async function handleOrgClick(org: Org) {
-    try {
-      await setCurrentOrg(org);
-      await goto(`/orgs/${org.id}`);
-    } catch (error) {
-      console.error("Error handling org click:", error);
-      toast.error("ERROR", {
-        description: $t("org.navigationError"),
-      });
-    }
+    goto(`/orgs/${org.id}`);
   }
   $effect(() => {
     load();
@@ -49,6 +41,8 @@
       const { data, error } = await updateUser({
         data: { currentOrgId: org.id },
       });
+      console.log("setCurrentOrg data", data);
+      console.log("setCurrentOrg error", error);
 
       if (error) throw error;
 

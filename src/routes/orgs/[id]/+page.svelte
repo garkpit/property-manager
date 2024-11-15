@@ -18,6 +18,7 @@
 
   const load = async () => {
     if (id !== "new") {
+      console.log("loading org, calling getOrgById, id:", id);
       const { data, error } = await getOrgById(id);
       if (error) {
         console.error("getOrgById error", error);
