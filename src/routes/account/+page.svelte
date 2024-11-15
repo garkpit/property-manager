@@ -1,6 +1,11 @@
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
-  import { getUser, updateUser } from "$lib/services/backend.svelte";
+  import {
+    getUser,
+    getProfile,
+    updateProfile,
+  } from "$lib/services/backend.svelte";
+  import type { Profile } from "$lib/services/profileService.svelte";
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
   import { Label } from "$lib/components/ui/label";
@@ -11,10 +16,11 @@
   import SaveButton from "$lib/components/iconbuttons/SaveButton.svelte";
 
   const user = $derived(getUser());
+  const profile: Profile | null = $derived(getProfile());
 
-  let firstname = $state(user?.user_metadata?.firstname ?? "");
-  let lastname = $state(user?.user_metadata?.lastname ?? "");
-  let bio = $state(user?.user_metadata?.bio ?? "");
+  let firstname = $state("");
+  let lastname = $state("");
+  let bio = $state("");
 
   let isFormChanged = $state(false);
 
@@ -34,10 +40,11 @@
   function handleInput() {
     isFormChanged = true;
   }
+
   $effect(() => {
-    firstname = user?.user_metadata?.firstname ?? "";
-    lastname = user?.user_metadata?.lastname ?? "";
-    bio = user?.user_metadata?.bio ?? "";
+    firstname = profile?.firstname ?? "";
+    lastname = profile?.lastname ?? "";
+    bio = profile?.bio ?? "";
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isFormChanged) {
@@ -54,15 +61,14 @@
   });
 
   async function handleSubmit() {
-    // TODO: Implement save functionality
-    const { error } = await updateUser({
+    const { error } = await updateProfile({
       firstname,
       lastname,
       bio,
     });
     if (error) {
       toast.error("ERROR", {
-        description: error?.toString() || "unknown error",
+        description: error.message || "unknown error",
       });
     } else {
       toast.success("SUCCESS", {

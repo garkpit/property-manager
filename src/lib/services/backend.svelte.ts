@@ -6,11 +6,18 @@ import type { User } from "@supabase/supabase-js";
 import { supabase } from "$lib/services/supabase.ts";
 export { supabase }; // Add this line to export the supabase object
 import { locale } from "$lib/i18n/index.ts";
+import type { Database } from "$lib/types/database.types";
+export type Profile = Database["public"]["Tables"]["profiles"]["Insert"];
+
 let user = $state<User | null>(null);
+let profile = $state<Profile | null>(null);
 // Add this getter function
 export function getUser() {
   return user;
 }
+export const getProfile = () => {
+  return profile;
+};
 export const setUser = (newUser: User | null) => {
   user = newUser;
 };
@@ -18,12 +25,13 @@ export function initializeUser() {
   $effect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       user = session?.user ?? null;
+      if (user) loadProfile();
     });
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_, session) => {
         user = session?.user ?? null;
-
+        if (user) loadProfile();
         const userLocale = user?.user_metadata?.i18n;
         if (userLocale) {
           locale.set(userLocale);
@@ -208,6 +216,47 @@ export const getSession = async () => {
     error,
   };
 };
+
+export async function loadProfile() {
+  if (!user?.id) {
+    console.log("loadProfile:No user logged in");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+  if (error) {
+    console.error("loadProfile error", error);
+    profile = null;
+  }
+  if (data) {
+    profile = data;
+  }
+}
+
+export async function updateProfile(
+  { firstname, lastname, bio }: {
+    firstname?: string;
+    lastname?: string;
+    bio?: string;
+  },
+) {
+  if (!user?.id) return { error: new Error("No user logged in") };
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({
+      firstname,
+      lastname,
+      bio,
+    })
+    .eq("id", user.id)
+    .select()
+    .single();
+  return { data, error };
+}
 
 export const updateUser = async (obj: any) => {
   if (!user) return { data: null, error: "User not logged in" };
