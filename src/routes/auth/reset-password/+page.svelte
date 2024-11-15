@@ -29,7 +29,10 @@
       });
 
       if (resetError) {
-        error = resetError.message;
+        // error = resetError?.valueOf() || resetError?.toString();
+        toast.error("ERROR", {
+          description: resetError?.toString(),
+        });
       } else {
         // Password reset successful
         toast.success("SUCCESS", {

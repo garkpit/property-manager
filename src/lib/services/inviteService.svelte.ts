@@ -18,10 +18,10 @@ export const getPendingInviteCount = async () => {
         .eq("email", user.email);
     return { data: count, error };
 };
-export const getInvites = async (email: string) => {
+export const getInvites = async (orgid: string) => {
     const { data, error } = await supabase.from("orgs_invites").select("*").eq(
-        "email",
-        email,
+        "orgid",
+        orgid,
     );
     return { data, error };
 };
@@ -106,7 +106,7 @@ export const deleteInvite = async (
 
 export const acceptInvite = async (id: string) => {
     try {
-        const { data, error } = await supabase.functions.invoke(
+        const { data: { data, error } } = await supabase.functions.invoke(
             "server_function",
             {
                 body: {

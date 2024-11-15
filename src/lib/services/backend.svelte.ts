@@ -259,12 +259,11 @@ export async function updateProfile(
 }
 
 export const updateUser = async (obj: any) => {
-  if (!user) return { data: null, error: "User not logged in" };
-  const { data, error } = await supabase
-    .from("profiles")
-    .update(obj)
-    .eq("id", user.id);
-  return { data, error };
+  const { data, error } = await supabase.auth.updateUser(obj);
+  return {
+    data,
+    error,
+  };
 };
 
 export const signOut = async () => {
