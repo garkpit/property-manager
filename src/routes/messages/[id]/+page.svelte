@@ -16,6 +16,7 @@
     MailOpen,
     Trash2,
     MailPlus,
+    Forward,
   } from "lucide-svelte";
   import * as Table from "$lib/components/ui/table";
   import { getUser } from "$lib/services/backend.svelte";
@@ -25,6 +26,7 @@
   const id = $derived($page.params.id);
   let message = $state<any | null>(null);
   let composeModalOpen = $state(false);
+  let forwardModalOpen = $state(false);
 
   const actionItems: any[] = [
     {
@@ -35,6 +37,13 @@
           label: "Reply",
           onClick: async () => {
             composeModalOpen = true;
+          },
+        },
+        {
+          icon: Forward,
+          label: "Forward",
+          onClick: async () => {
+            forwardModalOpen = true;
           },
         },
         {
@@ -192,4 +201,9 @@
 <ComposeMessageModal 
   bind:open={composeModalOpen} 
   replyToMessage={message} 
+/>
+
+<ComposeMessageModal 
+  bind:open={forwardModalOpen} 
+  forwardMessage={message} 
 />

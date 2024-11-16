@@ -25,9 +25,11 @@
   let {
     open = $bindable(false),
     replyToMessage = $bindable<MessageWithProfile | null>(null),
+    forwardMessage = $bindable<MessageWithProfile | null>(null),
   } = $props();
   let showRecipients = $state(false);
   let hasSetupReply = $state(false);
+  let hasSetupForward = $state(false);
 
   let message: Message = $state({
     subject: "",
@@ -47,14 +49,12 @@
   let recipients: Profile[] = $state([]);
   const recipientString = $derived(
     recipients
-      .map(
-        (recipient) => {
-          const name = [recipient.firstname, recipient.lastname]
-            .filter(Boolean)
-            .join(" ");
-          return `${recipient.email}${name ? ` <${name}>` : " <>"}`
-        }
-      )
+      .map((recipient) => {
+        const name = [recipient.firstname, recipient.lastname]
+          .filter(Boolean)
+          .join(" ");
+        return `${recipient.email}${name ? ` <${name}>` : " <>"}`;
+      })
       .join(", "),
   );
 
@@ -99,9 +99,10 @@
   }
 
   $effect(() => {
-    // Reset the setup flag when the modal closes
+    // Reset the setup flags when the modal closes
     if (!open) {
       hasSetupReply = false;
+      hasSetupForward = false;
       // Clear form data
       message.subject = "";
       message.message = "";
@@ -138,6 +139,30 @@
         lastname: msg.sender_profile.lastname,
       },
     ];
+  });
+
+  $effect(() => {
+    // Only set up forward once when the modal opens and we have a message to forward
+    if (!open || !forwardMessage || hasSetupForward) return;
+
+    hasSetupForward = true;
+
+    // Store the non-null message in a const to help TypeScript
+    const msg = forwardMessage as MessageWithProfile;
+
+    // Set subject with Fwd: prefix if not already present
+    message.subject = msg.subject?.startsWith("Fwd:")
+      ? msg.subject
+      : `Fwd: ${msg.subject || ""}`;
+
+    // Format original message in the forward
+    const originalDate = new Date(
+      msg.created_at ? msg.created_at : "",
+    ).toLocaleString();
+    message.message = `---------- Forwarded message ----------\nFrom: ${msg.sender_profile.email}\nDate: ${originalDate}\nSubject: ${msg.subject}\n\n${msg.message || ""}`;
+
+    // Clear recipients for forward
+    recipients = [];
   });
 </script>
 
