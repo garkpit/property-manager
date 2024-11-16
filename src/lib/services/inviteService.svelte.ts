@@ -6,6 +6,7 @@ import {
     FunctionsHttpError,
     FunctionsRelayError,
 } from "@supabase/supabase-js";
+import { handleServerFunctionResponse } from "$lib/utils/errorHandling";
 export type Invite = Database["public"]["Tables"]["orgs_invites"]["Insert"];
 
 export const getPendingInviteCount = async () => {
@@ -31,139 +32,65 @@ export const createInvite = async (
     email: string,
     user_role: string,
 ) => {
-    try {
-        const { data, error } = await supabase.functions.invoke(
-            "server_function",
-            {
-                body: {
-                    action: "invite_insert",
-                    payload: {
-                        orgid,
-                        email,
-                        user_role,
-                    },
+    const response = await supabase.functions.invoke(
+        "server_function",
+        {
+            body: {
+                action: "invite_insert",
+                payload: {
+                    orgid,
+                    email,
+                    user_role,
                 },
             },
-        );
-        let errorMessage = "";
-        if (!error) {
-            return { data, error: null };
-        } else {
-            if (error instanceof FunctionsHttpError) {
-                errorMessage = await error.context.json();
-            } else if (error instanceof FunctionsRelayError) {
-                errorMessage = error.message;
-            } else if (error instanceof FunctionsFetchError) {
-                errorMessage = error.message;
-            }
-            error.message = errorMessage;
-            return { data, error };
-        }
-    } catch (e) {
-        const error = e as Error;
-        console.error("create invite unknown error", e);
-        if (error) error.message = "unknown error";
-        return { data: null, error };
-    }
+        },
+    );
+    return handleServerFunctionResponse(response);
 };
 
-export const deleteInvite = async (
-    id: string, // orgs_invites id
-) => {
-    try {
-        const { data, error } = await supabase.functions.invoke(
-            "server_function",
-            {
-                body: {
-                    action: "invite_delete",
-                    payload: {
-                        id,
-                    },
+export const deleteInvite = async (id: string) => {
+    const response = await supabase.functions.invoke(
+        "server_function",
+        {
+            body: {
+                action: "invite_delete",
+                payload: {
+                    id,
                 },
             },
-        );
-        let errorMessage = "";
-        if (!error) {
-            return { data, error: null };
-        } else {
-            if (error instanceof FunctionsHttpError) {
-                errorMessage = await error.context.json();
-            } else if (error instanceof FunctionsRelayError) {
-                errorMessage = error.message;
-            } else if (error instanceof FunctionsFetchError) {
-                errorMessage = error.message;
-            }
-            error.message = errorMessage;
-            return { data, error };
-        }
-    } catch (e) {
-        const error = e as Error;
-        console.error("saveOrg unknown error", e);
-        if (error) error.message = "unknown error";
-        return { data: null, error };
-    }
+        },
+    );
+    return handleServerFunctionResponse(response);
 };
 
 export const acceptInvite = async (id: string) => {
-    try {
-        const { data: { data, error } } = await supabase.functions.invoke(
-            "server_function",
-            {
-                body: {
-                    action: "invite_accept",
-                    payload: {
-                        id,
-                    },
+    const response = await supabase.functions.invoke(
+        "server_function",
+        {
+            body: {
+                action: "invite_accept",
+                payload: {
+                    id,
                 },
             },
-        );
-        let errorMessage = "";
-        if (!error) {
-            return { data, error: null };
-        } else {
-            if (error instanceof FunctionsHttpError) {
-                errorMessage = error.message;
-            } else if (error instanceof FunctionsRelayError) {
-                errorMessage = error.message;
-            } else if (error instanceof FunctionsFetchError) {
-                errorMessage = error.message;
-            }
-            return { data: null, error: errorMessage };
-        }
-    } catch (err) {
-        return { data: null, error: err };
-    }
+        },
+    );
+    return handleServerFunctionResponse(response);
 };
 
 export const rejectInvite = async (id: string) => {
-    try {
-        const { data, error } = await supabase.functions.invoke(
-            "server_function",
-            {
-                body: {
-                    action: "invite_reject",
-                    payload: {
-                        id,
-                    },
+    const response = await supabase.functions.invoke(
+        "server_function",
+        {
+            body: {
+                action: "invite_reject",
+                payload: {
+                    id,
                 },
             },
-        );
-        let errorMessage = "";
-        if (!error) {
-            return { data, error: null };
-        } else {
-            if (error instanceof FunctionsHttpError) {
-                errorMessage = error.message;
-            } else if (error instanceof FunctionsRelayError) {
-                errorMessage = error.message;
-            } else if (error instanceof FunctionsFetchError) {
-                errorMessage = error.message;
-            }
-            return { data: null, error: errorMessage };
-        }
-    } catch (err) {
-        return { data: null, error: err };
-    }
+        },
+    );
+    return handleServerFunctionResponse(response);
 };
 
 export const getPendingInvites = async () => {
