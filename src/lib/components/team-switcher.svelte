@@ -10,6 +10,7 @@
   } from "$lib/services/backend.svelte";
   import { fetchOrgs } from "$lib/services/orgService.svelte";
   import { Star } from "lucide-svelte";
+  import { goto } from "$app/navigation";
   interface Org {
     id: string;
     title: string;
@@ -108,13 +109,18 @@
           </DropdownMenu.Item>
         {/each}
         <DropdownMenu.Separator />
-        <DropdownMenu.Item class="gap-2 p-2">
+        <DropdownMenu.Item
+          class="gap-2 p-2"
+          onclick={() => {
+            goto("/orgs/new");
+          }}
+        >
           <div
             class="bg-background flex size-6 items-center justify-center rounded-md border"
           >
             <Plus class="size-4" />
           </div>
-          <div class="text-muted-foreground font-medium">Add team</div>
+          <div class="text-muted-foreground font-medium">Add New Org</div>
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>

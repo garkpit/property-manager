@@ -16,6 +16,7 @@
   import CancelButton from "@/components/iconbuttons/CancelButton.svelte";
   import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
   import { page } from "$app/stores";
+  import { setCurrentOrgId, updateCurrentOrg } from "@/services/backend.svelte";
 
   const id = $derived($page.params.id);
 
@@ -73,12 +74,26 @@
     } else {
       toast.success("SUCCESS", { description: "Organization updated" });
       isFormChanged = false;
-      if (id === "new") {
-        if (data?.orgid) {
+      if (id === "new" && data && data.orgid) {
+        if (data.orgid) {
+          const result = await setCurrentOrgId(data.orgid);
+          if (!result) {
+            console.error("Error selecting new org");
+          } else {
+            await updateCurrentOrg(data.orgid);
+          }
           goto(`/orgs/${data.orgid}`);
         } else {
           goto("/orgs");
         }
+      } else {
+        const result = await setCurrentOrgId(id);
+        if (!result) {
+          console.error("Error selecting org");
+        } else {
+          await updateCurrentOrg(id);
+        }
+        goto(`/orgs/${id}`);
       }
     }
   }
