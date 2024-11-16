@@ -59,7 +59,7 @@
             class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <div
-              class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"
+              class="flex aspect-square size-8 items-center justify-center rounded-lg"
             >
               <Star class="size-4" />
             </div>
@@ -89,9 +89,7 @@
             }}
             class="gap-2 p-2"
           >
-            <div
-              class="flex size-6 items-center justify-center rounded-sm border"
-            >
+            <div class="flex size-6 items-center justify-center rounded-sm">
               <Star class="size-4 shrink-0" />
             </div>
             {o.title} [{o.user_role}]
