@@ -16,6 +16,7 @@
     Mail,
     MailOpen,
     Trash2,
+    MailPlus,
   } from "lucide-svelte";
   import * as Table from "$lib/components/ui/table";
   import { getUser } from "$lib/services/backend.svelte";

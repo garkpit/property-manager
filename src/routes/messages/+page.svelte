@@ -2,8 +2,9 @@
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import Inbox from "./Inbox.svelte";
   import Outbox from "./Outbox.svelte";
-  import CreateMessage from "./CreateMessage.svelte";
+  import CreateMessage from "./compose/CreateMessage.svelte";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import AddNewMessageButton from "$lib/components/iconbuttons/AddNewMessageButton.svelte";
 
   /*
   const actionItems: any[] = [
@@ -27,7 +28,9 @@
   {#snippet TopCenter()}
     Messages
   {/snippet}
-  <!--{#snippet TopRight()}{/snippet}-->
+  {#snippet TopRight()}
+    <AddNewMessageButton onclick={() => {}} classes="" />
+  {/snippet}
 
   {#snippet Middle()}
     <div class="flex items-center justify-center">
@@ -35,16 +38,12 @@
         <Tabs.List>
           <Tabs.Trigger value="inbox">Inbox</Tabs.Trigger>
           <Tabs.Trigger value="outbox">Sent Messages</Tabs.Trigger>
-          <Tabs.Trigger value="sendmessage">Send Message</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="inbox">
           <Inbox />
         </Tabs.Content>
         <Tabs.Content value="outbox">
           <Outbox />
-        </Tabs.Content>
-        <Tabs.Content value="sendmessage">
-          <CreateMessage />
         </Tabs.Content>
       </Tabs.Root>
     </div>
