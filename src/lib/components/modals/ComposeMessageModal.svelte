@@ -27,7 +27,6 @@
     replyToMessage = $bindable<MessageWithProfile | null>(null),
   } = $props();
   let showRecipients = $state(false);
-  let profiles: Profile[] = $state([]);
   let hasSetupReply = $state(false);
 
   let message: Message = $state({
@@ -56,8 +55,8 @@
   );
 
   function handleSelectRecipients(selected: Profile[]): void {
-    console.log("Selected profiles:", selected);
     recipients = selected;
+    showRecipients = false;
   }
 
   async function handleSubmit() {
@@ -146,24 +145,27 @@
 
     <div class="py-4">
       <form
-        class="space-y-4 w-full max-w-md"
+        class="space-y-4 w-full"
         onsubmit={(e) => {
           e.preventDefault();
           handleSubmit();
         }}
       >
-        <Button onclick={() => (showRecipients = true)}
-          >Select Recipients</Button
-        >
+        <div class="flex items-center gap-4 w-full">
+          <Button onclick={() => (showRecipients = true)}
+            >Select Recipients</Button
+          >
+          {#if recipients.length > 0}
+            <div class="text-sm flex-1">
+              {recipientString}
+            </div>
+          {/if}
+        </div>
 
         <Recipients
           bind:open={showRecipients}
           onSelect={handleSelectRecipients}
         />
-        <div class="space-y-2">
-          <label for="recipient" class="text-sm font-medium">Recipient</label>
-          {recipientString}
-        </div>
 
         <div class="space-y-2">
           <label for="subject" class="text-sm font-medium">Subject</label>
@@ -182,17 +184,19 @@
             id="message"
             bind:value={message.message}
             placeholder="Type your message here"
-            rows={4}
+            rows={8}
             required
+            class="min-h-[200px]"
           />
         </div>
 
-        <Button type="submit" class="w-full">Send Message</Button>
+        <div class="flex justify-end space-x-2">
+          <Button variant="outline" onclick={() => (open = false)}
+            >Cancel</Button
+          >
+          <Button type="submit">Send Message</Button>
+        </div>
       </form>
     </div>
-
-    <Dialog.Footer>
-      <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
-    </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
