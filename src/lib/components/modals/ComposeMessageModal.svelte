@@ -170,11 +170,12 @@
 
 <Dialog.Root bind:open>
   <Dialog.Content class={cn(
-    "sm:max-w-[600px] transition-all duration-200",
-    isFullscreen && "sm:max-w-[100vw] w-screen h-screen m-0 rounded-none border-none"
+    "max-w-[95vw] w-full transition-all duration-200 sm:max-w-[800px]",
+    isFullscreen && "max-w-[100vw] w-screen h-screen m-0 rounded-none border-none"
   )}>
     <Dialog.Header class={cn(
-      isFullscreen && "px-6 py-4"
+      "pb-2",
+      isFullscreen && "px-4 sm:px-6 pt-4"
     )}>
       <div class="flex justify-center items-center">
         <Dialog.Title>Compose Message</Dialog.Title>
@@ -182,12 +183,12 @@
     </Dialog.Header>
 
     <div class={cn(
-      "py-4",
-      isFullscreen && "flex-1 px-6 flex flex-col h-[calc(100vh-80px)]"
+      "pt-4 px-4 sm:px-6",
+      isFullscreen && "flex-1 pb-4 flex flex-col h-[calc(100vh-80px)]"
     )}>
       <form
         class={cn(
-          "space-y-4 w-full",
+          "space-y-3 w-full",
           isFullscreen && "flex flex-col flex-1"
         )}
         onsubmit={(e) => {
@@ -195,12 +196,12 @@
           handleSubmit();
         }}
       >
-        <div class="flex items-center gap-4 w-full">
-          <Button onclick={() => (showRecipients = true)}
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full">
+          <Button class="w-full sm:w-auto" onclick={() => (showRecipients = true)}
             >Select Recipients</Button
           >
           {#if recipients.length > 0}
-            <div class="text-sm flex-1">
+            <div class="text-sm flex-1 break-words">
               {recipientString}
             </div>
           {/if}
@@ -215,14 +216,13 @@
           <label for="subject" class="text-sm font-medium">Subject</label>
           <Input
             id="subject"
-            type="text"
             bind:value={message.subject}
             placeholder="Enter subject"
           />
         </div>
 
         <div class={cn(
-          "space-y-2",
+          "space-y-2 mb-2",
           isFullscreen && "flex-1 flex flex-col"
         )}>
           <label for="message" class="text-sm font-medium">Message</label>
@@ -231,17 +231,16 @@
             bind:value={message.message}
             placeholder="Type your message here"
             class={cn(
-              "resize-none",
+              "resize-none min-h-[200px] sm:min-h-[300px]",
               isFullscreen && "flex-1"
             )}
           />
         </div>
 
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col-reverse sm:flex-row justify-between items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
-            class="mr-2"
             onclick={() => (isFullscreen = !isFullscreen)}
           >
             {#if isFullscreen}
@@ -250,9 +249,9 @@
               <Maximize class="h-4 w-4" />
             {/if}
           </Button>
-          <div class="space-x-2">
-            <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
-            <Button type="submit">Send Message</Button>
+          <div class="w-full sm:w-auto flex gap-2">
+            <Button class="flex-1 sm:flex-none" variant="outline" onclick={() => (open = false)}>Cancel</Button>
+            <Button class="flex-1 sm:flex-none" type="submit">Send Message</Button>
           </div>
         </div>
       </form>
