@@ -2,9 +2,11 @@
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import Inbox from "./Inbox.svelte";
   import Outbox from "./Outbox.svelte";
-  import CreateMessage from "./compose/CreateMessage.svelte";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
   import AddNewMessageButton from "$lib/components/iconbuttons/AddNewMessageButton.svelte";
+  import ComposeMessageModal from "$lib/components/modals/ComposeMessageModal.svelte";
+
+  let composeModalOpen = $state(false);
 
   /*
   const actionItems: any[] = [
@@ -29,7 +31,7 @@
     Messages
   {/snippet}
   {#snippet TopRight()}
-    <AddNewMessageButton onclick={() => {}} classes="" />
+    <AddNewMessageButton onclick={() => (composeModalOpen = true)} classes="" />
   {/snippet}
 
   {#snippet Middle()}
@@ -53,3 +55,5 @@
   <!--{#snippet BottomCenter()}{/snippet}-->
   <!--{#snippet BottomRight()}{/snippet}-->
 </PageTemplate>
+
+<ComposeMessageModal bind:open={composeModalOpen} />
