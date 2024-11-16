@@ -11,6 +11,7 @@
   import { triggerMessageRefresh } from "$lib/state/messageState.svelte.ts";
   import { toast } from "svelte-sonner";
   import { getUser } from "$lib/services/backend.svelte";
+  import { Maximize, Minimize } from "lucide-svelte";
 
   // Define extended message type that includes joined fields
   type MessageWithProfile = Message & {
@@ -30,6 +31,7 @@
   let showRecipients = $state(false);
   let hasSetupReply = $state(false);
   let hasSetupForward = $state(false);
+  let isFullscreen = $state(false);
 
   let message: Message = $state({
     subject: "",
@@ -167,14 +169,27 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="sm:max-w-[600px]">
-    <Dialog.Header>
-      <Dialog.Title>Compose Message</Dialog.Title>
+  <Dialog.Content class={cn(
+    "sm:max-w-[600px] transition-all duration-200",
+    isFullscreen && "sm:max-w-[100vw] w-screen h-screen m-0 rounded-none border-none"
+  )}>
+    <Dialog.Header class={cn(
+      isFullscreen && "px-6 py-4"
+    )}>
+      <div class="flex justify-center items-center">
+        <Dialog.Title>Compose Message</Dialog.Title>
+      </div>
     </Dialog.Header>
 
-    <div class="py-4">
+    <div class={cn(
+      "py-4",
+      isFullscreen && "flex-1 px-6 flex flex-col h-[calc(100vh-80px)]"
+    )}>
       <form
-        class="space-y-4 w-full"
+        class={cn(
+          "space-y-4 w-full",
+          isFullscreen && "flex flex-col flex-1"
+        )}
         onsubmit={(e) => {
           e.preventDefault();
           handleSubmit();
@@ -203,27 +218,42 @@
             type="text"
             bind:value={message.subject}
             placeholder="Enter subject"
-            required
           />
         </div>
 
-        <div class="space-y-2">
+        <div class={cn(
+          "space-y-2",
+          isFullscreen && "flex-1 flex flex-col"
+        )}>
           <label for="message" class="text-sm font-medium">Message</label>
           <Textarea
             id="message"
             bind:value={message.message}
             placeholder="Type your message here"
-            rows={8}
-            required
-            class="min-h-[200px]"
+            class={cn(
+              "resize-none",
+              isFullscreen && "flex-1"
+            )}
           />
         </div>
 
-        <div class="flex justify-end space-x-2">
-          <Button variant="outline" onclick={() => (open = false)}
-            >Cancel</Button
+        <div class="flex justify-between items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            class="mr-2"
+            onclick={() => (isFullscreen = !isFullscreen)}
           >
-          <Button type="submit">Send Message</Button>
+            {#if isFullscreen}
+              <Minimize class="h-4 w-4" />
+            {:else}
+              <Maximize class="h-4 w-4" />
+            {/if}
+          </Button>
+          <div class="space-x-2">
+            <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
+            <Button type="submit">Send Message</Button>
+          </div>
         </div>
       </form>
     </div>
