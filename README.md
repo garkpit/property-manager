@@ -134,20 +134,18 @@ An opinionated development template designed to create large-scale business apps
 ### Deploy Supabase Edge Functions
 
 - from the root of your project, run:
-  - `supabase functions deploy org_create`
-  - `supabase functions deploy org_delete`
-  - `supabase functions deploy org_update`
   - `supabase functions deploy send-email`
+  - `supabase functions deploy server_function`
 
-## Scripts
+## Utility Scripts
 
-- `dev.sh`
-- `deploy-cloudflare.sh`
-- `dump_schema.sh`
+- `dev.sh`: run the local development server and open in browser
+- `deploy-cloudflare.sh`: build and deploy to Cloudflare Pages
+- `dump_schema.sh`: dump the database schema from Supabase to `./data/schema.sql`
 - `fix_macos_app.sh`: to run a downloaded MacOS app version that's unsigned, run `fix_macos_app.sh <app-name>` such as `fix_macos_app.sh svelte5-template_macos.app`. This runs `xattr -cr svelte5-template_macos.app` to enable the app to be run even though it's not signed.
-- `generate-types.sh`
-- `lock-up-keys.sh`
-- `make-icons.sh`
-- `setup-apps.sh`
-- `shadcn-add-component.sh`
-- `update-app-icons.sh`
+- `generate-types.sh`: generate typescript types from Supabase to `./src/lib/types/database.types.ts`
+- `lock-up-keys.sh`: encrypt keys in `.keys.json` and write them to encrypted values in `.env`
+- `make-icons.sh`: generate all app icons from the original icon svg in `./static/icon.svg`
+- `setup-apps.sh`: initialize Capacitor apps for iOS and Android and create all app icons
+- `shadcn-add-component.sh`: add a new component from the shadcn-svelte library into the project
+- `update-app-icons.sh`: copy all app icons for iOS and Android
