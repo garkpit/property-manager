@@ -3,8 +3,8 @@
 
   import {
     updateUser,
-    getCurrentOrgId,
-    setCurrentOrgId,
+    getCurrentOrg,
+    updateCurrentOrg,
     getUser,
   } from "$lib/services/backend.svelte";
   import { t } from "$lib/i18n/index";
@@ -24,9 +24,7 @@
   const user = $derived(getUser());
 
   let orgs = $state([] as Org[]);
-  const currentOrgId = $derived(getCurrentOrgId());
-  const currentOrg = $derived(orgs.find((org: Org) => org.id === currentOrgId));
-
+  const currentOrg = $derived(getCurrentOrg());
   const load = async () => {
     // const { data, error } = await getAllOrgs();
     const { data, error } = await fetchOrgs();
@@ -42,37 +40,12 @@
     load();
   });
 
-  async function setCurrentOrg(org: Org) {
-    try {
-      const { data, error } = await updateUser({
-        data: { currentOrgId: org.id },
-      });
-      console.log("setCurrentOrg data", data);
-      console.log("setCurrentOrg error", error);
-
-      if (error) throw error;
-
-      setCurrentOrgId(org.id);
-
-      toast.success("SUCCESS", {
-        description: $t("org.currentOrgUpdated"),
-      });
-    } catch (error) {
-      console.error("Error setting current org:", error);
-      toast.error("ERROR", {
-        description: $t("org.currentOrgUpdateError"),
-      });
-
-      throw error;
-    }
-  }
-
   async function handleNewOrgClick() {
     await goto("/orgs/new");
   }
 
   async function handleSelectOrg(org: Org) {
-    setCurrentOrgId(org.id);
+    await updateCurrentOrg(org.id);
   }
 
   const headers = [{ key: "title", label: "orgs.title", sortable: true }];
@@ -161,7 +134,7 @@
                       class="h-12 w-12"
                       aria-label={$t("org.addNew")}
                     >
-                      {#if org.id === currentOrgId}
+                      {#if org.id === currentOrg?.id}
                         <CircleCheckBig class="w-6 h-6" />
                       {:else}
                         <Circle class="w-6 h-6" />

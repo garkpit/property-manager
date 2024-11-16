@@ -20,7 +20,6 @@ interface Org {
 
 let user = $state<User | null>(null);
 let profile = $state<Profile | null>(null);
-let currentOrgId = $state<string | null>(null);
 let currentOrg = $state<Org | null>(null);
 // Add this getter function
 export function getUser() {
@@ -54,8 +53,7 @@ export function initializeUser() {
         // Fetch currentOrgId from user metadata and set it
         const newCurrentOrgId = user?.user_metadata?.currentOrgId;
         if (newCurrentOrgId) {
-          currentOrgId = newCurrentOrgId;
-          updateCurrentOrg(currentOrgId);
+          updateCurrentOrg(newCurrentOrgId);
         }
       },
     );
@@ -65,49 +63,30 @@ export function initializeUser() {
     };
   });
 }
-export async function updateCurrentOrg(currentOrgId: string | null) {
-  if (!currentOrgId) {
+export async function updateCurrentOrg(orgId: string | null) {
+  if (!orgId) {
     currentOrg = null;
     return;
-  } else {
-    const org = localStorage.getItem("currentOrg");
-    if (org) {
-      try {
-        const newOrg = JSON.parse(org);
-        if (newOrg.id !== currentOrgId) {
-          currentOrg = null;
-        } else {
-          currentOrg = newOrg;
-          return;
-        }
-      } catch (error) {
-        console.error("Error parsing currentOrg:", error);
+  }
+
+  try {
+    if (currentOrg) {
+      const newOrg = { ...currentOrg };
+      if (newOrg.id !== orgId) {
+        currentOrg = null;
       }
     }
-    const { data, error } = await getOrgById(currentOrgId);
+
+    const { data, error } = await getOrgById(orgId);
     if (error) {
-      console.error("updateCurrentOrg error:", error);
-      currentOrg = null;
-    } else {
-      currentOrg = data;
-      localStorage.setItem("currentOrg", JSON.stringify(currentOrg));
+      console.error('Error fetching org:', error);
+      return;
     }
+    currentOrg = data;
+  } catch (error) {
+    console.error('Error updating current org:', error);
   }
 }
-export function getCurrentOrgId() {
-  return currentOrgId;
-}
-export const setCurrentOrgId = async (newOrgId: string | null) => {
-  currentOrgId = newOrgId;
-  const { data: updateUserData, error: updateUserError } = await updateUser({
-    data: { currentOrgId: newOrgId },
-  });
-  if (updateUserError) {
-    return false;
-  } else {
-    return true;
-  }
-};
 
 // **************************
 // **** DATABASE ACTIONS ****

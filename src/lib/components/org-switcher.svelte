@@ -5,7 +5,6 @@
   import { ChevronsUpDown, Plus } from "lucide-svelte";
   import {
     getCurrentOrg,
-    setCurrentOrgId,
     updateCurrentOrg,
   } from "$lib/services/backend.svelte";
   import { fetchOrgs } from "$lib/services/orgService.svelte";
@@ -38,12 +37,13 @@
   $effect(() => {
     load();
   });
+  async function handleOrgChange(id: string) {
+    await updateCurrentOrg(id);
+  }
   const handleSelectOrg = async (id: string) => {
-    const result = await setCurrentOrgId(id);
+    const result = await handleOrgChange(id);
     if (!result) {
       console.error("Error in handleSelectOrg");
-    } else {
-      await updateCurrentOrg(id);
     }
   };
 </script>
