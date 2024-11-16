@@ -14,7 +14,13 @@
   import * as Table from "$lib/components/ui/table/index.js";
   import { goto } from "$app/navigation";
   import { Button } from "@/components/ui/button";
-  import type { Org } from "$lib/services/orgService.svelte";
+  interface Org {
+    id: string;
+    title: string;
+    created_at: string;
+    metadata: any;
+    user_role: string;
+  }
   const user = $derived(getUser());
 
   let orgs = $state([] as Org[]);
@@ -23,7 +29,7 @@
 
   const load = async () => {
     // const { data, error } = await getAllOrgs();
-    const { data, error } = await fetchOrgs("title", "asc");
+    const { data, error } = await fetchOrgs();
     if (error) {
     } else {
       orgs = data;
@@ -138,7 +144,7 @@
               <Table.Row>
                 <Table.Head>Active</Table.Head>
                 <Table.Head>Title</Table.Head>
-                <Table.Head class="w-[100px]">Created</Table.Head>
+                <Table.Head>Role</Table.Head>
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -163,9 +169,7 @@
                     </Button>
                   </Table.Cell>
                   <Table.Cell class="font-medium">{org.title}</Table.Cell>
-                  <Table.Cell
-                    >{new Date(org.created_at).toLocaleDateString()}</Table.Cell
-                  >
+                  <Table.Cell class="font-medium">{org.user_role}</Table.Cell>
                 </Table.Row>
               {/each}
             </Table.Body>

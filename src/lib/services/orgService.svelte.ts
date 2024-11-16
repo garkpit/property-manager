@@ -8,33 +8,16 @@ export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
 //import type { Org } from "$lib/types/org.ts";
 //import type { Database } from "$lib/types/database.types";
 
-export const getAllOrgs = async () => {
-    return fetchOrgs("title", "asc");
-};
-
-export async function fetchOrgs(
-    column: string,
-    direction: "asc" | "desc",
-): Promise<{
-    data: Database["public"]["Tables"]["orgs"]["Row"][];
-    error: unknown | null;
-}> {
-    const { data, error } = await getList("orgs", 1, 50, column, direction);
-    return { data: data ?? [], error };
+export async function fetchOrgs() {
+    const { data, error } = await supabase.rpc("get_my_orgs");
+    console.log("fetchOrgs data", data);
+    console.log("fetchOrgs error", error);
+    return { data, error };
 }
 
-export const getOrgById = async (
-    id: string,
-): Promise<{
-    data: Database["public"]["Tables"]["orgs"]["Insert"] | null;
-    error: unknown | null;
-}> => {
-    try {
-        const { data } = await getItemById("orgs", id);
-        return { data, error: null };
-    } catch (error) {
-        return { data: null, error };
-    }
+export const getOrgById = async (id: string) => {
+    const { data, error } = await getItemById("orgs", id);
+    return { data, error };
 };
 
 export const getMyRoleInOrg = async (orgId: string) => {

@@ -87,7 +87,15 @@ export type Database = {
           sender_type?: string | null
           subject?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_sender_fkey"
+            columns: ["sender"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages_recipients: {
         Row: {
@@ -120,6 +128,13 @@ export type Database = {
             columns: ["messageid"]
             isOneToOne: false
             referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipients_recipient_fkey1"
+            columns: ["recipient"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -185,10 +200,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "orgs_invites_orgid_fkey1"
-            columns: ["orgid"]
+            foreignKeyName: "orgs_invites_owner_fkey2"
+            columns: ["owner"]
             isOneToOne: false
-            referencedRelation: "orgs"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -265,6 +280,22 @@ export type Database = {
           invite_id: string
         }
         Returns: boolean
+      }
+      get_my_orgids: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          orgid: string
+        }[]
+      }
+      get_my_orgs: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          title: string
+          created_at: string
+          metadata: Json
+          user_role: string
+        }[]
       }
       get_org_role: {
         Args: {

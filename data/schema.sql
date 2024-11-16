@@ -75,6 +75,49 @@ COMMENT ON FUNCTION "public"."accept_invite"("invite_id" "uuid") IS 'Accpets an 
 
 
 
+CREATE OR REPLACE FUNCTION "public"."get_my_orgids"() RETURNS TABLE("orgid" "uuid")
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public', 'pg_temp'
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    ou.orgid
+  FROM
+    public.orgs_users AS ou
+  WHERE
+    ou.userid = auth.uid();
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_my_orgids"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_my_orgs"() RETURNS TABLE("id" "uuid", "title" "text", "created_at" timestamp with time zone, "metadata" "jsonb", "user_role" "text")
+    LANGUAGE "plpgsql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public', 'pg_temp'
+    AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    orgs.id,
+    orgs.title,
+    orgs.created_at,
+    orgs.metadata,
+    orgs_users.user_role
+  FROM
+    orgs
+    JOIN orgs_users ON orgs.id = orgs_users.orgid
+  WHERE
+    orgs_users.userid = auth.uid();
+END;
+$$;
+
+
+ALTER FUNCTION "public"."get_my_orgs"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."get_org_role"("org_id" "uuid") RETURNS "text"
     LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
@@ -406,23 +449,23 @@ ALTER TABLE ONLY "public"."messages_recipients"
 
 
 
-ALTER TABLE ONLY "public"."orgs_invites"
-    ADD CONSTRAINT "orgs_invites_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id") ON DELETE CASCADE;
+ALTER TABLE ONLY "public"."messages_recipients"
+    ADD CONSTRAINT "messages_recipients_recipient_fkey1" FOREIGN KEY ("recipient") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."messages"
+    ADD CONSTRAINT "messages_sender_fkey" FOREIGN KEY ("sender") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
 
 
 
 ALTER TABLE ONLY "public"."orgs_invites"
-    ADD CONSTRAINT "orgs_invites_orgid_fkey1" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id");
+    ADD CONSTRAINT "orgs_invites_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id");
 
 
 
 ALTER TABLE ONLY "public"."orgs_invites"
-    ADD CONSTRAINT "orgs_invites_owner_fkey" FOREIGN KEY ("owner") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
-
-
-
-ALTER TABLE ONLY "public"."orgs_invites"
-    ADD CONSTRAINT "orgs_invites_owner_fkey1" FOREIGN KEY ("owner") REFERENCES "auth"."users"("id");
+    ADD CONSTRAINT "orgs_invites_owner_fkey2" FOREIGN KEY ("owner") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
 
 
 
@@ -441,11 +484,15 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
-CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK ((( SELECT "auth"."uid"() AS "uid") = "sender"));
+CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "sender"));
 
 
 
 CREATE POLICY "Profiles are created automatically by trigger" ON "public"."profiles" FOR INSERT WITH CHECK (false);
+
+
+
+CREATE POLICY "TEMPORARY - open viewing" ON "public"."orgs" FOR SELECT USING (true);
 
 
 
@@ -502,19 +549,33 @@ CREATE POLICY "profiles cannot be deleted" ON "public"."profiles" FOR DELETE USI
 
 
 
-CREATE POLICY "sender or recipients can view" ON "public"."messages" FOR SELECT USING (((( SELECT "auth"."uid"() AS "uid") = "sender") OR (( SELECT "auth"."uid"() AS "uid") IN ( SELECT "messages_recipients"."recipient"
-   FROM "public"."messages_recipients"
-  WHERE ("messages_recipients"."messageid" = "messages"."id")))));
+CREATE POLICY "recipient can update" ON "public"."messages_recipients" FOR UPDATE USING (("recipient" = ( SELECT "auth"."uid"() AS "uid"))) WITH CHECK (("recipient" = ( SELECT "auth"."uid"() AS "uid")));
 
 
 
-CREATE POLICY "users can modify their own profile" ON "public"."profiles" FOR UPDATE USING ((("id" = "auth"."uid"()) AND ("email" = "auth"."email"()))) WITH CHECK ((("id" = "auth"."uid"()) AND ("email" = "auth"."email"())));
+CREATE POLICY "sender can delete" ON "public"."messages_recipients" FOR SELECT USING ((( SELECT "messages"."sender"
+   FROM "public"."messages"
+  WHERE ("messages"."id" = "messages_recipients"."messageid")) = ( SELECT "auth"."uid"() AS "uid")));
 
 
 
-CREATE POLICY "users can view orgs they belong to" ON "public"."orgs" FOR SELECT USING (("id" IN ( SELECT "orgs_users"."orgid"
-   FROM "public"."orgs_users"
-  WHERE ("orgs_users"."userid" = ( SELECT "auth"."uid"() AS "uid")))));
+CREATE POLICY "sender can insert" ON "public"."messages_recipients" FOR INSERT WITH CHECK ((( SELECT "messages"."sender"
+   FROM "public"."messages"
+  WHERE ("messages"."id" = "messages_recipients"."messageid")) = ( SELECT "auth"."uid"() AS "uid")));
+
+
+
+CREATE POLICY "sender or recipient can select" ON "public"."messages_recipients" FOR SELECT USING (((( SELECT "messages"."sender"
+   FROM "public"."messages"
+  WHERE ("messages"."id" = "messages_recipients"."messageid")) = ( SELECT "auth"."uid"() AS "uid")) OR (( SELECT "auth"."uid"() AS "uid") = "recipient")));
+
+
+
+CREATE POLICY "sender or recipients can view" ON "public"."messages" FOR SELECT USING (true);
+
+
+
+CREATE POLICY "users can modify their own profile" ON "public"."profiles" FOR UPDATE USING (("id" = "auth"."uid"())) WITH CHECK (("id" = "auth"."uid"()));
 
 
 
@@ -535,6 +596,18 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 GRANT ALL ON FUNCTION "public"."accept_invite"("invite_id" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_my_orgids"() TO "anon";
+GRANT ALL ON FUNCTION "public"."get_my_orgids"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_my_orgids"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_my_orgs"() TO "anon";
+GRANT ALL ON FUNCTION "public"."get_my_orgs"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_my_orgs"() TO "service_role";
 
 
 
