@@ -9,7 +9,14 @@ import { locale } from "$lib/i18n/index.ts";
 import type { Database } from "$lib/types/database.types";
 import { getOrgById } from "./orgService.svelte";
 export type Profile = Database["public"]["Tables"]["profiles"]["Insert"];
-export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
+//export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
+interface Org {
+  id: string;
+  title: string;
+  created_at: string;
+  metadata: any;
+  user_role: string;
+}
 
 let user = $state<User | null>(null);
 let profile = $state<Profile | null>(null);
@@ -21,6 +28,9 @@ export function getUser() {
 }
 export const getProfile = () => {
   return profile;
+};
+export const getCurrentOrg = () => {
+  return currentOrg;
 };
 export const setUser = (newUser: User | null) => {
   user = newUser;
@@ -55,7 +65,7 @@ export function initializeUser() {
     };
   });
 }
-async function updateCurrentOrg(currentOrgId: string | null) {
+export async function updateCurrentOrg(currentOrgId: string | null) {
   if (!currentOrgId) {
     currentOrg = null;
     return;
@@ -63,8 +73,13 @@ async function updateCurrentOrg(currentOrgId: string | null) {
     const org = localStorage.getItem("currentOrg");
     if (org) {
       try {
-        currentOrg = JSON.parse(org);
-        return;
+        const newOrg = JSON.parse(org);
+        if (newOrg.id !== currentOrgId) {
+          currentOrg = null;
+        } else {
+          currentOrg = newOrg;
+          return;
+        }
       } catch (error) {
         console.error("Error parsing currentOrg:", error);
       }
