@@ -76,7 +76,10 @@
       );
       if (error) {
         console.error("Failed to send message (error):", error);
-        toast.error(error);
+        toast.error(
+          error.toString() ||
+            "An unexpected error occurred while sending the message",
+        );
       } else {
         console.log("Message sent:", data);
         // Clear form data after successful send
@@ -118,7 +121,9 @@
       : `Re: ${msg.subject || ""}`;
 
     // Format original message in the reply
-    const originalDate = new Date(msg.created_at).toLocaleString();
+    const originalDate = new Date(
+      msg.created_at ? msg.created_at : "",
+    ).toLocaleString();
     message.message = `On ${originalDate}, ${msg.sender_profile.email} wrote:\n${msg.message || ""}`;
 
     // Add original sender to recipients
