@@ -80,7 +80,9 @@
       >
         {#if invitationCount > 0}
           <Badge variant="destructive">{invitationCount}</Badge>
-          <Building2 class="h-4 w-4" /> new invitation
+          <Building2 class="h-4 w-4" /> new invitation{invitationCount > 1
+            ? "s"
+            : ""}
         {:else}
           <Building2 class="h-4 w-4" /> no pending invitations
         {/if}

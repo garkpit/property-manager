@@ -94,11 +94,9 @@ export const rejectInvite = async (id: string) => {
 };
 
 export const getPendingInvites = async () => {
-    console.log("getPendingInvites 1");
     if (!user) {
         return { data: null, error: "user not found" };
     }
-    console.log("getPendingInvites 2");
     const { data, error } = await supabase
         .from("orgs_invites")
         .select(`
@@ -112,23 +110,10 @@ export const getPendingInvites = async () => {
             created_at
         `)
         .eq("email", user.email);
-    console.log("getPendingInvites raw data:", JSON.stringify(data, null, 2));
-    console.log("getPendingInvites 3, data", data);
-    console.log("getPendingInvites 3, error", error);
 
     if (error) {
         return { data: null, error };
     }
 
-    /*
-    // Transform the data to match the Invitation interface
-    const transformedData = data.map((invite) => ({
-        id: invite.id,
-        organizationName: invite.org.name,
-        inviterEmail: invite.owner.email,
-        createdAt: invite.created_at,
-    }));
-    console.log("transformedData", transformedData);
-    */
     return { data, error: null };
 };

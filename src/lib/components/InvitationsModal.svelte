@@ -25,16 +25,9 @@
   }
 
   async function loadInvitations() {
-    console.log("loadInvitations");
     loading = true;
     try {
-      console.log("calling getPendingInvites");
       const { data, error: inviteError } = await getPendingInvites();
-      console.log(
-        "loadInvitations data",
-        JSON.stringify(data, null, 2) || data,
-      );
-      console.log("loadInvitations error", inviteError);
       if (inviteError) {
         error = inviteError;
         return;

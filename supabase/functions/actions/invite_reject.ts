@@ -24,7 +24,7 @@ export const invite_reject = async (
             .from("orgs_invites")
             .select("*")
             .eq("id", id)
-            .eq("invitee", user.id)
+            .eq("email", user.email)
             .single();
 
         if (inviteError) {
@@ -32,7 +32,10 @@ export const invite_reject = async (
         }
 
         if (!inviteData) {
-            return { data: null, error: "Invite not found or not for this user" };
+            return {
+                data: null,
+                error: "Invite not found or not for this user",
+            };
         }
 
         // Delete the invitation
