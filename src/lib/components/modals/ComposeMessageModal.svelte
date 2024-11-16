@@ -4,10 +4,11 @@
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
   import Recipients from "./Recipients.svelte";
-  import { createMessage } from "$lib/services/messageService.svelte";
-  import type { Message } from "$lib/services/messageService.svelte";
-  import type { Profile } from "$lib/services/profileService.svelte";
+  import { createMessage } from "$lib/services/messageService.svelte.ts";
+  import type { Message } from "$lib/services/messageService.svelte.ts";
+  import type { Profile } from "$lib/services/profileService.svelte.ts";
   import { cn } from "$lib/utils";
+  import { triggerMessageRefresh } from "$lib/state/messageState.svelte.ts";
 
   let { open = $bindable(false) } = $props();
   let showRecipients = $state(false);
@@ -48,6 +49,7 @@
         console.error("Failed to send message (error):", error);
       } else {
         console.log("Message sent:", data);
+        triggerMessageRefresh();
         open = false;
       }
     } catch (e) {
@@ -56,7 +58,7 @@
   }
 </script>
 
-<Dialog.Root bind:open={open}>
+<Dialog.Root bind:open>
   <Dialog.Content class="sm:max-w-[600px]">
     <Dialog.Header>
       <Dialog.Title>Compose Message</Dialog.Title>
@@ -110,9 +112,7 @@
     </div>
 
     <Dialog.Footer>
-      <Button variant="outline" onclick={() => (open = false)}
-        >Cancel</Button
-      >
+      <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>

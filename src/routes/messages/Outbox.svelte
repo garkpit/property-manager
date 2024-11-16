@@ -4,10 +4,12 @@
   import GenericList from "$lib/components/GenericList.svelte";
   import * as Table from "$lib/components/ui/table";
   import { getUser } from "$lib/services/backend.svelte";
+  import { getMessageRefreshCounter } from "$lib/state/messageState.svelte";
   import { goto } from "$app/navigation";
   const user = $derived(getUser());
+  const refreshCounter = $derived(getMessageRefreshCounter());
 
-  let sentMessages: any[] = $state([]);
+  let sentMessages = $state<any[]>([]);
   const load = async () => {
     if (!user) {
       return;
@@ -21,6 +23,7 @@
   };
   $effect(() => {
     load();
+    refreshCounter; // Reference the counter to make the effect reactive to it
   });
 </script>
 

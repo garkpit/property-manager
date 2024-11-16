@@ -4,9 +4,11 @@
   import * as Table from "$lib/components/ui/table";
   import { goto } from "$app/navigation";
   import { getUser } from "$lib/services/backend.svelte";
+  import { getMessageRefreshCounter } from "$lib/state/messageState.svelte";
   const user = $derived(getUser());
+  const refreshCounter = $derived(getMessageRefreshCounter());
 
-  let inboxMessages: any[] = $state([]);
+  let inboxMessages = $state<any[]>([]);
 
   const load = async () => {
     if (!user) {
@@ -22,6 +24,7 @@
 
   $effect(() => {
     load();
+    refreshCounter; // Reference the counter to make the effect reactive to it
   });
 </script>
 
