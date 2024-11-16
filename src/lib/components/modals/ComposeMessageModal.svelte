@@ -48,8 +48,12 @@
   const recipientString = $derived(
     recipients
       .map(
-        (recipient) =>
-          `${recipient.email} <${recipient.firstname} ${recipient.lastname}>`,
+        (recipient) => {
+          const name = [recipient.firstname, recipient.lastname]
+            .filter(Boolean)
+            .join(" ");
+          return `${recipient.email}${name ? ` <${name}>` : " <>"}`
+        }
       )
       .join(", "),
   );
