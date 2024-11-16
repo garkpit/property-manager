@@ -7,10 +7,14 @@ import { supabase } from "$lib/services/supabase.ts";
 export { supabase }; // Add this line to export the supabase object
 import { locale } from "$lib/i18n/index.ts";
 import type { Database } from "$lib/types/database.types";
+import { getOrgById } from "./orgService.svelte";
 export type Profile = Database["public"]["Tables"]["profiles"]["Insert"];
+export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
 
 let user = $state<User | null>(null);
 let profile = $state<Profile | null>(null);
+let currentOrgId = $state<string | null>(null);
+let currentOrg = $state<Org | null>(null);
 // Add this getter function
 export function getUser() {
   return user;
@@ -41,6 +45,7 @@ export function initializeUser() {
         const newCurrentOrgId = user?.user_metadata?.currentOrgId;
         if (newCurrentOrgId) {
           currentOrgId = newCurrentOrgId;
+          updateCurrentOrg(currentOrgId);
         }
       },
     );
@@ -50,8 +55,30 @@ export function initializeUser() {
     };
   });
 }
-// Add this new store for the currently selected orgid
-let currentOrgId = $state<string | null>(null);
+async function updateCurrentOrg(currentOrgId: string | null) {
+  if (!currentOrgId) {
+    currentOrg = null;
+    return;
+  } else {
+    const org = localStorage.getItem("currentOrg");
+    if (org) {
+      try {
+        currentOrg = JSON.parse(org);
+        return;
+      } catch (error) {
+        console.error("Error parsing currentOrg:", error);
+      }
+    }
+    const { data, error } = await getOrgById(currentOrgId);
+    if (error) {
+      console.error("updateCurrentOrg error:", error);
+      currentOrg = null;
+    } else {
+      currentOrg = data;
+      localStorage.setItem("currentOrg", JSON.stringify(currentOrg));
+    }
+  }
+}
 export function getCurrentOrgId() {
   return currentOrgId;
 }
