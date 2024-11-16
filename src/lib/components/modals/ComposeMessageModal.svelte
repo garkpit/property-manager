@@ -169,36 +169,38 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class={cn(
-    "max-w-[95vw] w-full transition-all duration-200 sm:max-w-[800px]",
-    isFullscreen && "max-w-[100vw] w-screen h-screen m-0 rounded-none border-none"
-  )}>
-    <Dialog.Header class={cn(
-      "pb-2",
-      isFullscreen && "px-4 sm:px-6 pt-4"
-    )}>
+  <Dialog.Content
+    class={cn(
+      "max-w-[95vw] w-full transition-all duration-200 sm:max-w-[800px]",
+      isFullscreen &&
+        "!max-w-none !w-screen !h-screen m-0 rounded-none border-none",
+    )}
+  >
+    <Dialog.Header class={cn("pb-2", isFullscreen && "px-4 sm:px-6 pt-4")}>
       <div class="flex justify-center items-center">
         <Dialog.Title>Compose Message</Dialog.Title>
       </div>
     </Dialog.Header>
 
-    <div class={cn(
-      "pt-4 px-4 sm:px-6",
-      isFullscreen && "flex-1 pb-4 flex flex-col h-[calc(100vh-80px)]"
-    )}>
+    <div
+      class={cn(
+        "pt-4 px-4 sm:px-6",
+        isFullscreen && "flex-1 pb-4 flex flex-col h-[calc(100vh-80px)]",
+      )}
+    >
       <form
-        class={cn(
-          "space-y-3 w-full",
-          isFullscreen && "flex flex-col flex-1"
-        )}
+        class={cn("space-y-3 w-full", isFullscreen && "flex flex-col flex-1")}
         onsubmit={(e) => {
           e.preventDefault();
           handleSubmit();
         }}
       >
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full">
-          <Button class="w-full sm:w-auto" onclick={() => (showRecipients = true)}
-            >Select Recipients</Button
+        <div
+          class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full"
+        >
+          <Button
+            class="w-full sm:w-auto"
+            onclick={() => (showRecipients = true)}>Select Recipients</Button
           >
           {#if recipients.length > 0}
             <div class="text-sm flex-1 break-words">
@@ -221,10 +223,9 @@
           />
         </div>
 
-        <div class={cn(
-          "space-y-2 mb-2",
-          isFullscreen && "flex-1 flex flex-col"
-        )}>
+        <div
+          class={cn("space-y-2 mb-2", isFullscreen && "flex-1 flex flex-col")}
+        >
           <label for="message" class="text-sm font-medium">Message</label>
           <Textarea
             id="message"
@@ -232,12 +233,14 @@
             placeholder="Type your message here"
             class={cn(
               "resize-none min-h-[200px] sm:min-h-[300px]",
-              isFullscreen && "flex-1"
+              isFullscreen && "flex-1",
             )}
           />
         </div>
 
-        <div class="flex flex-col-reverse sm:flex-row justify-between items-center gap-2">
+        <div
+          class="flex flex-col-reverse sm:flex-row justify-between items-center gap-2"
+        >
           <Button
             variant="ghost"
             size="icon"
@@ -250,8 +253,14 @@
             {/if}
           </Button>
           <div class="w-full sm:w-auto flex gap-2">
-            <Button class="flex-1 sm:flex-none" variant="outline" onclick={() => (open = false)}>Cancel</Button>
-            <Button class="flex-1 sm:flex-none" type="submit">Send Message</Button>
+            <Button
+              class="flex-1 sm:flex-none"
+              variant="outline"
+              onclick={() => (open = false)}>Cancel</Button
+            >
+            <Button class="flex-1 sm:flex-none" type="submit"
+              >Send Message</Button
+            >
           </div>
         </div>
       </form>
