@@ -39,9 +39,7 @@
   async function handleSubmit() {
     try {
       if (recipients.length === 0) {
-        toast.error("ERROR", {
-          description: "At least one recipient is required",
-        });
+        toast.error("At least one recipient is required");
         return;
       }
       const { data, error } = await createMessage(
@@ -54,19 +52,19 @@
       );
       if (error) {
         console.error("Failed to send message (error):", error);
-        toast.error("ERROR", {
-          description: error,
-        });
+        toast.error(error);
       } else {
         console.log("Message sent:", data);
+        // Clear form data after successful send
+        message.subject = "";
+        message.message = "";
+        recipients = [];
         triggerMessageRefresh();
         open = false;
       }
     } catch (e) {
       console.error("Failed to send message (e):", e);
-      toast.error("ERROR", {
-        description: "An unexpected error occurred while sending the message",
-      });
+      toast.error("An unexpected error occurred while sending the message");
     }
   }
 </script>
