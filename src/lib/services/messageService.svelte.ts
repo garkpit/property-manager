@@ -108,14 +108,13 @@ export const getSentMessages = async (
     // Transform the data with renamed recipients array and flattened profile info
     const transformedData = data?.map((msg) => ({
         ...msg,
-        created_at: new Date(msg.created_at).toLocaleString(),
-
+        created_at: msg.created_at ? new Date(msg.created_at).toLocaleString() : '',
         recipients: msg.messages_recipients.map((recipient: any) => ({
             recipient: recipient.recipient,
-            read_at: new Date(recipient.read_at).toLocaleString(),
-            email: recipient.profiles.email,
-            firstname: recipient.profiles.firstname,
-            lastname: recipient.profiles.lastname,
+            read_at: recipient.read_at ? new Date(recipient.read_at).toLocaleString() : 'Unread',
+            email: recipient.profiles?.email ?? 'Unknown',
+            firstname: recipient.profiles?.firstname ?? '',
+            lastname: recipient.profiles?.lastname ?? '',
         })),
         messages_recipients: undefined, // Remove the original messages_recipients array
     }));

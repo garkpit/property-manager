@@ -12,7 +12,6 @@
   import {
     ArrowLeft,
     Reply,
-    ReplyAll,
     Mail,
     MailOpen,
     Trash2,
@@ -20,10 +19,13 @@
   } from "lucide-svelte";
   import * as Table from "$lib/components/ui/table";
   import { getUser } from "$lib/services/backend.svelte";
+  import ComposeMessageModal from "$lib/components/modals/ComposeMessageModal.svelte";
   import { toast } from "svelte-sonner";
   const user = $derived(getUser());
   const id = $derived($page.params.id);
   let message = $state<any | null>(null);
+  let composeModalOpen = $state(false);
+
   const actionItems: any[] = [
     {
       groupName: "Manage Message",
@@ -32,16 +34,7 @@
           icon: Reply,
           label: "Reply",
           onClick: async () => {
-            console.log("replying to message");
-            console.log("** NOT IMPLEMENTED **");
-          },
-        },
-        {
-          icon: ReplyAll,
-          label: "Reply All",
-          onClick: async () => {
-            console.log("replying all to message");
-            console.log("** NOT IMPLEMENTED **");
+            composeModalOpen = true;
           },
         },
         {
@@ -195,3 +188,8 @@
     {/if}
   {/snippet}
 </PageTemplate>
+
+<ComposeMessageModal 
+  bind:open={composeModalOpen} 
+  replyToMessage={message} 
+/>

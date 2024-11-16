@@ -10,10 +10,15 @@
   import { cn } from "$lib/utils";
   import { triggerMessageRefresh } from "$lib/state/messageState.svelte.ts";
   import { toast } from "svelte-sonner";
+  import { getUser } from "$lib/services/backend.svelte";
 
-  let { open = $bindable(false) } = $props();
+  let {
+    open = $bindable(false),
+    replyToMessage = $bindable<any | null>(null),
+  } = $props();
   let showRecipients = $state(false);
   let profiles: Profile[] = $state([]);
+  let hasSetupReply = $state(false);
 
   let message: Message = $state({
     subject: "",
@@ -67,6 +72,42 @@
       toast.error("An unexpected error occurred while sending the message");
     }
   }
+
+  $effect(() => {
+    // Reset the setup flag when the modal closes
+    if (!open) {
+      hasSetupReply = false;
+      // Clear form data
+      message.subject = "";
+      message.message = "";
+      recipients = [];
+    }
+  });
+
+  $effect(() => {
+    // Only set up reply once when the modal opens and we have a message to reply to
+    if (open && replyToMessage && !hasSetupReply) {
+      hasSetupReply = true;
+
+      // Set subject with Re: prefix if not already present
+      message.subject = replyToMessage.subject.startsWith("Re:")
+        ? replyToMessage.subject
+        : `Re: ${replyToMessage.subject}`;
+
+      // Format original message in the reply
+      const originalDate = new Date(replyToMessage.created_at).toLocaleString();
+      message.message = `On ${originalDate}, ${replyToMessage.sender_profile.email} wrote:\n${replyToMessage.message}`;
+
+      // Add original sender to recipients
+      const senderProfile = {
+        id: replyToMessage.sender, // Use the sender ID from the message
+        email: replyToMessage.sender_profile.email,
+        firstname: replyToMessage.sender_profile.firstname,
+        lastname: replyToMessage.sender_profile.lastname,
+      };
+      recipients = [senderProfile];
+    }
+  });
 </script>
 
 <Dialog.Root bind:open>
