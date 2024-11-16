@@ -11,6 +11,8 @@
   import OrgUsers from "./OrgUsers.svelte";
   import OrgsInvites from "./OrgsInvites.svelte";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import { getUser } from "$lib/services/backend.svelte";
+  const user = $derived(getUser());
 
   interface Org {
     id: string;
@@ -24,6 +26,7 @@
   //let users = $state<any[] | null>(null);
 
   const load = async () => {
+    if (!user) return;
     if (id !== "new") {
       const { data, error } = await getOrgById(id);
       if (error) {

@@ -1,8 +1,9 @@
 <script lang="ts">
+  // import { Org } from "./../services/orgService.svelte.ts";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import SearchForm from "$lib/components/search-form.svelte";
   import * as Collapsible from "$lib/components/ui/collapsible/index.js";
-  import TeamSwitcher from "$lib/components/team-switcher.svelte";
+  import OrgSwitcher from "@/components/org-switcher.svelte";
   import {
     GalleryVerticalEnd,
     Minus,
@@ -124,7 +125,7 @@
 <Sidebar.Root class="z-50">
   <Sidebar.Header>
     <div class="pt-[var(--safe-area-inset-top,0px)]">
-      <TeamSwitcher teams={data.teams} />
+      <OrgSwitcher />
     </div>
   </Sidebar.Header>
   <Sidebar.Content>
