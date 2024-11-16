@@ -9,6 +9,7 @@
   import type { Profile } from "$lib/services/profileService.svelte.ts";
   import { cn } from "$lib/utils";
   import { triggerMessageRefresh } from "$lib/state/messageState.svelte.ts";
+  import { toast } from "svelte-sonner";
 
   let { open = $bindable(false) } = $props();
   let showRecipients = $state(false);
@@ -37,6 +38,12 @@
 
   async function handleSubmit() {
     try {
+      if (recipients.length === 0) {
+        toast.error("ERROR", {
+          description: "At least one recipient is required",
+        });
+        return;
+      }
       const { data, error } = await createMessage(
         {
           subject: message.subject,
@@ -47,6 +54,9 @@
       );
       if (error) {
         console.error("Failed to send message (error):", error);
+        toast.error("ERROR", {
+          description: error,
+        });
       } else {
         console.log("Message sent:", data);
         triggerMessageRefresh();
@@ -54,6 +64,9 @@
       }
     } catch (e) {
       console.error("Failed to send message (e):", e);
+      toast.error("ERROR", {
+        description: "An unexpected error occurred while sending the message",
+      });
     }
   }
 </script>
