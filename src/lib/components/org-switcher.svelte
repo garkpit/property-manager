@@ -94,16 +94,6 @@
             </div>
             {o.title} [{o.user_role}]
             <!--<DropdownMenu.Shortcut>⌘{index + 1}</DropdownMenu.Shortcut>-->
-            <!--
-            <Star class="gap-2 p-2" />
-            <div
-              class="flex size-6 items-center justify-center rounded-sm border"
-            >
-              <Star class="size-4 shrink-0" />
-            </div>
-            {org?.title}
-            <DropdownMenu.Shortcut>⌘{index + 1}</DropdownMenu.Shortcut>
-			-->
           </DropdownMenu.Item>
         {/each}
         <DropdownMenu.Separator />
