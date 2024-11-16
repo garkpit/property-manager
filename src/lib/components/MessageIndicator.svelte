@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getUser } from "$lib/services/backend.svelte";
   import { Bell, Mail, Building2 } from "lucide-svelte";
   import { setMode } from "mode-watcher";
   import { Button } from "$lib/components/ui/button";
@@ -10,6 +11,7 @@
   import { getNewInboxMessageCount } from "$lib/services/messageService.svelte";
   import { getPendingInviteCount } from "$lib/services/inviteService.svelte";
   import { goto } from "$app/navigation";
+  const user = $derived(getUser());
   let showInvitations = $state(false);
 
   let open = $state(false);
@@ -17,6 +19,7 @@
   let invitationCount = $state(0);
   const totalCount = $derived(messageCount + invitationCount);
   const getUnreadMessageCount = async () => {
+    if (!user) return;
     const { data, error } = await getNewInboxMessageCount();
     if (error) {
       console.error("getNewInboxMessageCount error:", error);
@@ -29,6 +32,7 @@
     }
   };
   const getInviteCount = async () => {
+    if (!user) return;
     const { data, error } = await getPendingInviteCount();
     if (error) {
       console.error("getPendingInviteCount error:", error);

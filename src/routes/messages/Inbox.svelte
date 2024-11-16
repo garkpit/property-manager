@@ -3,16 +3,20 @@
   import type { Message } from "$lib/services/messageService.svelte";
   import * as Table from "$lib/components/ui/table";
   import { goto } from "$app/navigation";
+  import { getUser } from "$lib/services/backend.svelte";
+  const user = $derived(getUser());
 
   let inboxMessages: any[] = $state([]);
 
   const load = async () => {
+    if (!user) {
+      return;
+    }
     const { data, error } = await getInboxMessages(0, 100);
     if (error) {
       console.error(error);
     } else if (data) {
       inboxMessages = data;
-      console.log(data);
     }
   };
 

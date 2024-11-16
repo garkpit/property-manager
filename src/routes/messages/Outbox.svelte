@@ -3,16 +3,19 @@
   import type { Message } from "$lib/services/messageService.svelte";
   import GenericList from "$lib/components/GenericList.svelte";
   import * as Table from "$lib/components/ui/table";
+  import { getUser } from "$lib/services/backend.svelte";
+  const user = $derived(getUser());
 
   let sentMessages: any[] = $state([]);
   const load = async () => {
+    if (!user) {
+      return;
+    }
     const { data, error } = await getSentMessages(0, 100);
     if (error) {
       console.error(error);
     } else if (data) {
       sentMessages = data;
-      console.log("outbox");
-      console.log(data);
     }
   };
   $effect(() => {

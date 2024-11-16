@@ -1,23 +1,56 @@
-import { getItemById, getList, getSession } from "./backend.svelte.ts";
+import { getItemById, getList, getSession, getUser } from "./backend.svelte.ts";
 import { supabase } from "./backend.svelte.ts";
 import type { Database } from "$lib/types/database.types";
 import { handleServerFunctionResponse } from "$lib/utils/errorHandling";
-
-export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
-
+//export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
+interface Org {
+    id: string;
+    title: string;
+    created_at: string;
+    metadata: any;
+    user_role: string;
+}
+const user = $derived(getUser());
 //import type { Org } from "$lib/types/org.ts";
 //import type { Database } from "$lib/types/database.types";
 
 export async function fetchOrgs() {
     const { data, error } = await supabase.rpc("get_my_orgs");
-    console.log("fetchOrgs data", data);
-    console.log("fetchOrgs error", error);
     return { data, error };
 }
 
-export const getOrgById = async (id: string) => {
-    const { data, error } = await getItemById("orgs", id);
-    return { data, error };
+export const getOrgById: any = async (id: string) => {
+    if (!user) {
+        return { data: null, error: "user not found" };
+    }
+    const { data, error } = await supabase
+        .from("orgs_users")
+        .select(`
+            user_role,
+            orgs (
+                id,
+                title,
+                created_at,
+                metadata
+            )
+            `)
+        .eq("orgid", id)
+        .eq("userid", user.id);
+    if (error) {
+        return { data: null, error };
+    } else if (data) {
+        // transform the data to match the Org interface
+        const transformedData = data.map((org: any) => ({
+            id: org.orgs.id,
+            title: org.orgs.title,
+            created_at: org.orgs.created_at,
+            metadata: org.orgs.metadata,
+            user_role: org.user_role,
+        }));
+        return { data: transformedData[0], error };
+    } else {
+        return { data: null, error: "Org not found" };
+    }
 };
 
 export const getMyRoleInOrg = async (orgId: string) => {

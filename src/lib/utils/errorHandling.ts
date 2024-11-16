@@ -9,15 +9,15 @@ export type ServerFunctionResponse<T> = {
     error: string | null;
 };
 
-export async function handleServerFunctionResponse<T>(
-    response: { data: { data: T; error: any } | null; error: any },
-): Promise<ServerFunctionResponse<T>> {
+export function handleServerFunctionResponse<T>(
+    response: { data: any; error: any },
+) {
     try {
         // First check for Supabase function invocation errors
         if (response.error) {
             let errorMessage = "";
             if (response.error instanceof FunctionsHttpError) {
-                errorMessage = await response.error.context.json();
+                errorMessage = response.error.context.json();
             } else if (response.error instanceof FunctionsRelayError) {
                 errorMessage = response.error.message;
             } else if (response.error instanceof FunctionsFetchError) {

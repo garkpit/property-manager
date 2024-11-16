@@ -23,29 +23,26 @@
 
   async function load() {
     if (org) {
-      const { data: usersData, error: usersError } = await getOrgUsers(org);
-      console.log("OrgUsers usersData", usersData);
-      console.log("OrgUsers usersError", usersError);
-      if (usersError) {
-        console.error("getOrgUsers error", usersError);
+      const { data, error } = await getOrgUsers(org);
+      if (error) {
+        console.error("getOrgUsers error", error);
         users = [];
       } else {
         const tempUsers = [];
-        if (!usersData.data) {
-          usersData.data = [];
-        }
-        for (let i = 0; i < usersData.data.length; i++) {
-          const u = usersData.data[i];
-          tempUsers.push({
-            id: u.id,
-            created_at: new Date(u.created_at).toLocaleDateString(),
-            user_role: u.user_role,
-            new_user_role: u.user_role,
-            email: u.email,
-            firstname: u.raw_user_meta_data.firstname || null,
-            lastname: u.raw_user_meta_data.lastname || null,
-            email_verified: u.raw_user_meta_data.email_verified,
-          });
+        if (data) {
+          for (let i = 0; i < data.length; i++) {
+            const u = data[i];
+            tempUsers.push({
+              id: u.id,
+              created_at: new Date(u.created_at).toLocaleDateString(),
+              user_role: u.user_role,
+              new_user_role: u.user_role,
+              email: u.email,
+              firstname: u.raw_user_meta_data.firstname || null,
+              lastname: u.raw_user_meta_data.lastname || null,
+              email_verified: u.raw_user_meta_data.email_verified,
+            });
+          }
         }
         users = tempUsers;
       }

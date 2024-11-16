@@ -45,9 +45,7 @@
           icon: Mail,
           label: "Mark as unread",
           onClick: async () => {
-            console.log("marking message as unread");
             await markMessageAsUnread(id);
-            console.log("calling load(false)");
             load(false); // don't mark as read
           },
         },
@@ -75,7 +73,6 @@
 
   const load = async (markRead = true) => {
     if (!user) {
-      console.log("message detail load: user not found, returning");
       return;
     }
     const { data, error } = await getMessage(id);
@@ -87,12 +84,11 @@
     const recipient = message.messages_recipients.find(
       (r: any) => r.recipient === user.id,
     );
-    console.log("load: markRead", markRead);
     if (markRead && !recipient.read_at) {
       await markMessageAsRead(id);
       recipient.read_at = new Date().toISOString().toLocaleString();
     } else {
-      console.log("message already read");
+      // message already read
     }
   };
   $effect(() => {
