@@ -4,6 +4,7 @@
   import GenericList from "$lib/components/GenericList.svelte";
   import * as Table from "$lib/components/ui/table";
   import { getUser } from "$lib/services/backend.svelte";
+  import { goto } from "$app/navigation";
   const user = $derived(getUser());
 
   let sentMessages: any[] = $state([]);
@@ -33,7 +34,11 @@
   </Table.Header>
   <Table.Body>
     {#each sentMessages as message}
-      <Table.Row>
+      <Table.Row
+        onclick={() => {
+          goto(`/messages/${message.id}`);
+        }}
+      >
         <Table.Cell class="font-medium">{message.subject}</Table.Cell>
         <Table.Cell
           >{message.recipients.map((recipient: any) => {

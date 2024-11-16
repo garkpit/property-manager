@@ -180,23 +180,25 @@ export const getMessage = async (id: string) => {
     return { data: transformedData, error };
 };
 
-export const deleteReceivedMessage = async (id: string) => {
+export const deleteMessage = async (id: string) => {
+    let errorMessage = "";
     if (!user) return { data: null, error: "User not logged in" };
-    const { error } = await supabase
+    // delete the message as a recipeient
+    const { error: error1 } = await supabase
         .from("messages_recipients")
         .update({ deleted_at: new Date().toISOString() })
         .eq("messageid", id)
         .eq("recipient", user.id);
-    return { data: null, error };
-};
+    if (error1) errorMessage = error1.message;
 
-export const deleteSentMessage = async (id: string) => {
-    if (!user) return { data: null, error: "User not logged in" };
-    const { error } = await supabase
+    // delete the message as a sender
+    const { error: error2 } = await supabase
         .from("messages")
         .update({ sender_deleted_at: (new Date()).toISOString() })
         .eq("id", id);
-    return { data: null, error };
+    if (error2) errorMessage += " " + error2.message;
+
+    return { data: null, error: errorMessage.length > 0 ? errorMessage : null };
 };
 
 export const createMessage = async (

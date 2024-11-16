@@ -3,6 +3,7 @@
     getMessage,
     markMessageAsUnread,
     markMessageAsRead,
+    deleteMessage,
   } from "$lib/services/messageService.svelte";
   import { page } from "$app/stores";
   import PageTemplate from "$lib/components/PageTemplate.svelte";
@@ -18,6 +19,7 @@
   } from "lucide-svelte";
   import * as Table from "$lib/components/ui/table";
   import { getUser } from "$lib/services/backend.svelte";
+  import { toast } from "svelte-sonner";
   const user = $derived(getUser());
   const id = $derived($page.params.id);
   let message = $state<any | null>(null);
@@ -63,8 +65,20 @@
           iconClasses: "stroke-destructive",
           textClasses: "text-destructive",
           onClick: async () => {
-            console.log("delete message");
-            console.log("** NOT IMPLEMENTED **");
+            const { error } = await deleteMessage(id);
+            if (error) {
+              console.error("deleteMessage error", error);
+              toast.error("ERROR", {
+                description: error,
+              });
+            } else {
+              setTimeout(() => {
+                toast.success("SUCCESS", {
+                  description: "Message deleted",
+                });
+              }, 250);
+              goto("/messages");
+            }
           },
         },
       ],
@@ -84,11 +98,14 @@
     const recipient = message.messages_recipients.find(
       (r: any) => r.recipient === user.id,
     );
-    if (markRead && !recipient.read_at) {
-      await markMessageAsRead(id);
-      recipient.read_at = new Date().toISOString().toLocaleString();
-    } else {
-      // message already read
+    if (recipient) {
+      // I am a recipient
+      if (markRead && !recipient.read_at) {
+        await markMessageAsRead(id);
+        recipient.read_at = new Date().toISOString().toLocaleString();
+      } else {
+        // message already read
+      }
     }
   };
   $effect(() => {
