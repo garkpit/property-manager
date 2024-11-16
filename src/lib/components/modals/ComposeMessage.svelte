@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { component } from "./../../../../.svelte-kit/output/server/nodes/0.js";
   import { createMessage } from "$lib/services/messageService.svelte";
   import type { Message } from "$lib/services/messageService.svelte";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
-  import Recipients from "../Recipients.svelte";
+  import Recipients from "$lib/components/modals/Recipients.svelte";
   import type { Profile } from "$lib/services/profileService.svelte";
   import { cn } from "$lib/utils";
   let showRecipients = $state(false);
@@ -44,6 +45,7 @@
         console.error("Failed to send message (error):", error);
       } else {
         console.log("Message sent:", data);
+        // close modal
       }
     } catch (e) {
       console.error("Failed to send message (e):", e);

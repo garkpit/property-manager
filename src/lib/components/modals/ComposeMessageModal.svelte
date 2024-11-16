@@ -1,23 +1,118 @@
 <script lang="ts">
   import * as Dialog from "$lib/components/ui/dialog";
   import { Button } from "$lib/components/ui/button";
-  import CreateMessage from "../../../routes/messages/compose/CreateMessage.svelte";
+  import { Input } from "$lib/components/ui/input";
+  import { Textarea } from "$lib/components/ui/textarea";
+  import Recipients from "./Recipients.svelte";
+  import { createMessage } from "$lib/services/messageService.svelte";
+  import type { Message } from "$lib/services/messageService.svelte";
+  import type { Profile } from "$lib/services/profileService.svelte";
+  import { cn } from "$lib/utils";
 
-  export let open = false;
+  let { open = $bindable(false) } = $props();
+  let showRecipients = $state(false);
+  let profiles: Profile[] = $state([]);
+
+  let message: Message = $state({
+    subject: "",
+    message: "",
+    metadata: {},
+  });
+
+  let recipients: Profile[] = $state([]);
+  const recipientString = $derived(
+    recipients
+      .map(
+        (recipient) =>
+          `${recipient.email} <${recipient.firstname} ${recipient.lastname}>`,
+      )
+      .join(", "),
+  );
+
+  function handleSelectRecipients(selected: Profile[]) {
+    console.log("Selected profiles:", selected);
+    recipients = selected;
+  }
+
+  async function handleSubmit() {
+    try {
+      const { data, error } = await createMessage(
+        {
+          subject: message.subject,
+          message: message.message,
+          metadata: {},
+        },
+        recipients.map((recipient) => recipient.id),
+      );
+      if (error) {
+        console.error("Failed to send message (error):", error);
+      } else {
+        console.log("Message sent:", data);
+        open = false;
+      }
+    } catch (e) {
+      console.error("Failed to send message (e):", e);
+    }
+  }
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root bind:open={open}>
   <Dialog.Content class="sm:max-w-[600px]">
     <Dialog.Header>
       <Dialog.Title>Compose Message</Dialog.Title>
     </Dialog.Header>
 
     <div class="py-4">
-      <CreateMessage />
+      <form
+        class="space-y-4 w-full max-w-md"
+        onsubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
+        <Button onclick={() => (showRecipients = true)}
+          >Select Recipients</Button
+        >
+
+        <Recipients
+          bind:open={showRecipients}
+          onSelect={handleSelectRecipients}
+        />
+        <div class="space-y-2">
+          <label for="recipient" class="text-sm font-medium">Recipient</label>
+          {recipientString}
+        </div>
+
+        <div class="space-y-2">
+          <label for="subject" class="text-sm font-medium">Subject</label>
+          <Input
+            id="subject"
+            type="text"
+            bind:value={message.subject}
+            placeholder="Enter subject"
+            required
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label for="message" class="text-sm font-medium">Message</label>
+          <Textarea
+            id="message"
+            bind:value={message.message}
+            placeholder="Type your message here"
+            rows={4}
+            required
+          />
+        </div>
+
+        <Button type="submit" class="w-full">Send Message</Button>
+      </form>
     </div>
 
     <Dialog.Footer>
-      <Button variant="outline" on:click={() => (open = false)}>Cancel</Button>
+      <Button variant="outline" onclick={() => (open = false)}
+        >Cancel</Button
+      >
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
