@@ -10,13 +10,47 @@
   onMount(() => {
     map = new maplibregl.Map({
       container: mapContainer,
-      style: 'https://demotiles.maplibre.org/style.json',
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '&copy; OpenStreetMap Contributors',
+            maxzoom: 19
+          }
+        },
+        layers: [
+          {
+            id: 'osm',
+            type: 'raster',
+            source: 'osm',
+            minzoom: 0,
+            maxzoom: 19
+          }
+        ]
+      },
       center: [-74.5, 40], // Default center (New York)
-      zoom: 9
+      zoom: 13,
+      pitch: 45,
+      bearing: -17.6,
+      antialias: true
     });
 
-    // Add navigation controls
-    map.addControl(new maplibregl.NavigationControl());
+    // Add navigation controls (including rotation)
+    map.addControl(new maplibregl.NavigationControl({
+      visualizePitch: true
+    }));
+
+    // Add scale control
+    map.addControl(new maplibregl.ScaleControl({
+      maxWidth: 80,
+      unit: 'metric'
+    }));
+
+    // Add fullscreen control
+    map.addControl(new maplibregl.FullscreenControl());
 
     // Ensure map fills container after initialization
     map.resize();
