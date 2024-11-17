@@ -4,8 +4,21 @@
   import Map from "$lib/components/Map.svelte";
   import MapPins from "$lib/components/MapPins.svelte";
   import type maplibregl from "maplibre-gl";
+  import { OverpassService } from "$lib/services/overpass";
 
-  let map: maplibregl.Map;
+  let map = $state<maplibregl.Map>();
+
+  const load = async () => {
+    const overpass = new OverpassService();
+    const places = await overpass.findNearbyPlaces(
+      { lat: 37.7749, lon: -122.4194 }, // San Francisco coordinates
+      "coffee shop",
+    );
+    console.log(places);
+  };
+  $effect(() => {
+    load();
+  });
 
   // Example locations
   const locations = [
