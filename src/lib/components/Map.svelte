@@ -2,6 +2,21 @@
 <script lang="ts">
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
+  import type { Snippet } from "svelte";
+
+  let { 
+    map = $bindable<maplibregl.Map | undefined>(undefined), 
+    content = () => null 
+  } = $props<{
+    map?: maplibregl.Map;
+    content?: Snippet;
+  }>();
+  
+  let mapInstance: maplibregl.Map | undefined;
+  let mapContainer: HTMLDivElement;
+  let isDefaultView = $state(true);
+  const defaultView = { pitch: 0, bearing: 0 };
+  const tiltedView = { pitch: 45, bearing: -17.6 };
 
   // Default location (New York) as fallback
   const DEFAULT_CENTER = [-74.5, 40];
@@ -217,113 +232,122 @@
     }
   }
 
-  let mapContainer: HTMLDivElement;
-  let map: maplibregl.Map | null = null;
-  let isDefaultView = $state(true);
-  const defaultView = { pitch: 0, bearing: 0 };
-  const tiltedView = { pitch: 45, bearing: -17.6 };
-
   $effect(() => {
     if (!mapContainer) return;
 
     // Initialize map with saved state or defaults
     const savedState = loadSavedState();
-    map = new maplibregl.Map({
-      container: mapContainer,
-      style: {
-        version: 8,
-        sources: {
-          osm: {
-            type: "raster",
-            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-            tileSize: 256,
-            attribution: "&copy; OpenStreetMap Contributors",
-            maxzoom: 19,
+    const initialState = savedState || {
+      lng: DEFAULT_CENTER[0],
+      lat: DEFAULT_CENTER[1],
+      zoom: DEFAULT_ZOOM,
+      pitch: 0,
+      bearing: 0,
+    };
+
+    if (!mapInstance) {
+      mapInstance = new maplibregl.Map({
+        container: mapContainer,
+        style: {
+          version: 8,
+          sources: {
+            osm: {
+              type: "raster",
+              tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+              tileSize: 256,
+              attribution: "&copy; OpenStreetMap Contributors",
+              maxzoom: 19,
+            },
           },
+          layers: [
+            {
+              id: "osm",
+              type: "raster",
+              source: "osm",
+              minzoom: 0,
+              maxzoom: 19,
+            },
+          ],
         },
-        layers: [
-          {
-            id: "osm",
-            type: "raster",
-            source: "osm",
-            minzoom: 0,
-            maxzoom: 19,
-          },
-        ],
-      },
-      center: savedState ? [savedState.lng, savedState.lat] : DEFAULT_CENTER,
-      zoom: savedState ? savedState.zoom : DEFAULT_ZOOM,
-      pitch: savedState ? savedState.pitch : defaultView.pitch,
-      bearing: savedState ? savedState.bearing : defaultView.bearing,
-      antialias: true,
-    });
+        center: [initialState.lng, initialState.lat],
+        zoom: initialState.zoom,
+        pitch: initialState.pitch,
+        bearing: initialState.bearing,
+        antialias: true,
+      });
 
-    // Create debounced save function
-    const saveState = createDebouncedSaveState(map, 1000);
+      // Create debounced save function
+      const saveState = createDebouncedSaveState(mapInstance, 1000);
 
-    // Add event listeners for map movement
-    map.on("moveend", saveState);
-    map.on("zoomend", saveState);
-    map.on("pitchend", saveState);
-    map.on("rotateend", saveState);
+      // Add event listeners for map movement
+      mapInstance.on("moveend", saveState);
+      mapInstance.on("zoomend", saveState);
+      mapInstance.on("pitchend", saveState);
+      mapInstance.on("rotateend", saveState);
 
-    // Add geolocate control
-    const geolocate = new maplibregl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      trackUserLocation: true,
-      showUserHeading: true,
-    });
-    map.addControl(geolocate, "top-right");
+      // Add geolocate control
+      const geolocate = new maplibregl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+        showUserHeading: true,
+      });
+      mapInstance.addControl(geolocate, "top-right");
 
-    // Only trigger geolocation if there's no saved state
-    map.on("load", () => {
-      if (!savedState) {
-        geolocate.trigger();
-      }
-    });
+      // Only trigger geolocation if there's no saved state
+      mapInstance.on("load", () => {
+        if (!savedState) {
+          geolocate.trigger();
+        }
+      });
 
-    // Add custom reset north control
-    map.addControl(new ResetNorthControl(), "top-right");
+      // Add custom reset north control
+      mapInstance.addControl(new ResetNorthControl(), "top-right");
 
-    // Add custom search control
-    map.addControl(new SearchControl(), "top-right");
+      // Add custom search control
+      mapInstance.addControl(new SearchControl(), "top-right");
 
-    // Add navigation controls (without compass since we have our custom one)
-    map.addControl(
-      new maplibregl.NavigationControl({
-        visualizePitch: true,
-        showCompass: false,
-      }),
-      "top-right",
-    );
+      // Add navigation controls (without compass since we have our custom one)
+      mapInstance.addControl(
+        new maplibregl.NavigationControl({
+          visualizePitch: true,
+          showCompass: false,
+        }),
+        "top-right",
+      );
 
-    // Add scale control
-    map.addControl(
-      new maplibregl.ScaleControl({
-        maxWidth: 80,
-        unit: "metric",
-      }),
-      "bottom-left",
-    );
+      // Add scale control
+      mapInstance.addControl(
+        new maplibregl.ScaleControl({
+          maxWidth: 80,
+          unit: "metric",
+        }),
+        "bottom-left",
+      );
 
-    // Add fullscreen control
-    map.addControl(new maplibregl.FullscreenControl(), "top-right");
+      // Add fullscreen control
+      mapInstance.addControl(new maplibregl.FullscreenControl(), "top-right");
 
-    // Ensure map fills container after initialization
-    map.resize();
+      // Ensure map fills container after initialization
+      mapInstance.resize();
+
+      map = mapInstance;
+    }
 
     return () => {
-      if (map) {
-        map.remove();
-        map = null;
+      if (mapInstance) {
+        mapInstance.remove();
+        mapInstance = null;
+        map = undefined;
       }
     };
   });
 </script>
 
-<div bind:this={mapContainer} class="map-container" />
+<div bind:this={mapContainer} class="map-container">
+  {@render content?.()}
+</div>
 
 <style>
   .map-container {

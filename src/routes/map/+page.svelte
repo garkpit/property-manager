@@ -1,7 +1,18 @@
 <!-- +page.svelte -->
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
-  import Map from '$lib/components/Map.svelte';
+  import Map from "$lib/components/Map.svelte";
+  import MapPins from "$lib/components/MapPins.svelte";
+  import type maplibregl from "maplibre-gl";
+
+  let map: maplibregl.Map;
+
+  // Example locations
+  const locations = [
+    { lat: 40.7128, lng: -74.006, title: "New York City" },
+    { lat: 34.0522, lng: -118.2437, title: "Los Angeles" },
+    { lat: 41.8781, lng: -87.6298, title: "Chicago" },
+  ];
 </script>
 
 <PageTemplate>
@@ -11,7 +22,11 @@
 
   {#snippet Middle()}
     <div class="map-wrapper">
-      <Map />
+      <Map bind:map>
+        {#snippet content()}
+          <MapPins {locations} {map} />
+        {/snippet}
+      </Map>
     </div>
   {/snippet}
 </PageTemplate>
