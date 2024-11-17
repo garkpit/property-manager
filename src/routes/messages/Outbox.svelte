@@ -19,6 +19,7 @@
       console.error(error);
     } else if (data) {
       sentMessages = data;
+      console.log("sentMessages", sentMessages);
     }
   };
   $effect(() => {
@@ -45,10 +46,20 @@
         <Table.Cell class="font-medium">{message.subject}</Table.Cell>
         <Table.Cell
           >{message.recipients.map((recipient: any) => {
-            return " " + recipient.email;
+            return (
+              " " +
+              recipient.email +
+              (recipient.firstname || recipient.lastname
+                ? " <" +
+                  (recipient.firstname + " " + recipient.lastname).trim() +
+                  ">"
+                : "")
+            );
           })}</Table.Cell
         >
-        <Table.Cell>{message.created_at}</Table.Cell>
+        <Table.Cell>
+          {@html message.created_at.replace(", ", "<br/>")}
+        </Table.Cell>
       </Table.Row>
     {/each}
   </Table.Body>

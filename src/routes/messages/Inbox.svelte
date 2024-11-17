@@ -50,8 +50,14 @@
             <StarNew iconClasses="text-red-500 fill-current" />
           {/if}{message.subject}</Table.Cell
         >
-        <Table.Cell>{message.sender_email}</Table.Cell>
-        <Table.Cell>{message.created_at}</Table.Cell>
+        <Table.Cell
+          >{message.sender_email}<br />
+          {message.sender_firstname}
+          {message.sender_lastname}</Table.Cell
+        >
+        <Table.Cell
+          >{@html message.created_at.replace(", ", "<br/>")}</Table.Cell
+        >
       </Table.Row>
     {/each}
   </Table.Body>
