@@ -1,58 +1,98 @@
 <!-- Map.svelte -->
 <script lang="ts">
-  import maplibregl from 'maplibre-gl';
-  import 'maplibre-gl/dist/maplibre-gl.css';
-  import { Compass } from 'lucide-svelte';
+  import maplibregl from "maplibre-gl";
+  import "maplibre-gl/dist/maplibre-gl.css";
+  import { Compass } from "lucide-svelte";
+  import { onMount } from "svelte";
+
+  // Default location (New York) as fallback
+  const DEFAULT_CENTER = [-74.5, 40];
+  const DEFAULT_ZOOM = 13;
+
+  // Function to save map state with debouncing
+  function createDebouncedSaveState(map: maplibregl.Map, delay: number) {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    
+    return () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const center = map.getCenter();
+        const state = {
+          lng: center.lng,
+          lat: center.lat,
+          zoom: map.getZoom(),
+          pitch: map.getPitch(),
+          bearing: map.getBearing()
+        };
+        localStorage.setItem('mapState', JSON.stringify(state));
+      }, delay);
+    };
+  }
+
+  // Function to load saved state
+  function loadSavedState() {
+    try {
+      const saved = localStorage.getItem('mapState');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.warn('Error loading saved map state:', e);
+    }
+    return null;
+  }
 
   class ResetNorthControl {
-    _map: maplibregl.Map;
-    _container: HTMLDivElement;
-    _button: HTMLButtonElement;
+    _map!: maplibregl.Map;
+    _container!: HTMLDivElement;
+    _button!: HTMLButtonElement;
 
     onAdd(map: maplibregl.Map) {
       this._map = map;
-      this._container = document.createElement('div');
-      this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-      
-      this._button = document.createElement('button');
-      this._button.className = 'maplibregl-ctrl-icon reset-north-control';
-      this._button.setAttribute('aria-label', 'Toggle tilted view');
-      this._button.title = 'Switch to tilted view';
-      
+      this._container = document.createElement("div");
+      this._container.className = "maplibregl-ctrl maplibregl-ctrl-group";
+
+      this._button = document.createElement("button");
+      this._button.className = "maplibregl-ctrl-icon reset-north-control";
+      this._button.setAttribute("aria-label", "Toggle tilted view");
+      this._button.title = "Switch to tilted view";
+
       // Create the compass icon using Lucide's SVG
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-      svg.setAttribute('width', '16');
-      svg.setAttribute('height', '16');
-      svg.setAttribute('viewBox', '0 0 24 24');
-      svg.setAttribute('fill', 'none');
-      svg.setAttribute('stroke', 'currentColor');
-      svg.setAttribute('stroke-width', '2');
-      svg.setAttribute('stroke-linecap', 'round');
-      svg.setAttribute('stroke-linejoin', 'round');
-      
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      svg.setAttribute("width", "16");
+      svg.setAttribute("height", "16");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      svg.setAttribute("stroke", "currentColor");
+      svg.setAttribute("stroke-width", "2");
+      svg.setAttribute("stroke-linecap", "round");
+      svg.setAttribute("stroke-linejoin", "round");
+
       // Compass path
       svg.innerHTML = `
         <circle cx="12" cy="12" r="10"/>
         <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
       `;
-      
+
       this._button.appendChild(svg);
-      
-      this._button.addEventListener('click', () => {
+
+      this._button.addEventListener("click", () => {
         isDefaultView = !isDefaultView;
         const view = isDefaultView ? defaultView : tiltedView;
-        
+
         map.easeTo({
           pitch: view.pitch,
           bearing: view.bearing,
-          duration: 300
+          duration: 300,
         });
 
         // Update tooltip based on current state
-        this._button.title = isDefaultView ? 'Switch to tilted view' : 'Reset to normal view';
+        this._button.title = isDefaultView
+          ? "Switch to tilted view"
+          : "Reset to normal view";
       });
-      
+
       this._container.appendChild(this._button);
       return this._container;
     }
@@ -71,68 +111,87 @@
   $effect(() => {
     if (!mapContainer) return;
 
+    // Initialize map with saved state or defaults
+    const savedState = loadSavedState();
     map = new maplibregl.Map({
       container: mapContainer,
       style: {
         version: 8,
         sources: {
           osm: {
-            type: 'raster',
-            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
             tileSize: 256,
-            attribution: '&copy; OpenStreetMap Contributors',
-            maxzoom: 19
-          }
+            attribution: "&copy; OpenStreetMap Contributors",
+            maxzoom: 19,
+          },
         },
         layers: [
           {
-            id: 'osm',
-            type: 'raster',
-            source: 'osm',
+            id: "osm",
+            type: "raster",
+            source: "osm",
             minzoom: 0,
-            maxzoom: 19
-          }
-        ]
+            maxzoom: 19,
+          },
+        ],
       },
-      center: [-74.5, 40], // Default center (New York)
-      zoom: 13,
-      pitch: defaultView.pitch,
-      bearing: defaultView.bearing,
-      antialias: true
+      center: savedState ? [savedState.lng, savedState.lat] : DEFAULT_CENTER,
+      zoom: savedState ? savedState.zoom : DEFAULT_ZOOM,
+      pitch: savedState ? savedState.pitch : defaultView.pitch,
+      bearing: savedState ? savedState.bearing : defaultView.bearing,
+      antialias: true,
     });
+
+    // Create debounced save function
+    const saveState = createDebouncedSaveState(map, 1000);
+
+    // Add event listeners for map movement
+    map.on('moveend', saveState);
+    map.on('zoomend', saveState);
+    map.on('pitchend', saveState);
+    map.on('rotateend', saveState);
 
     // Add geolocate control
     const geolocate = new maplibregl.GeolocateControl({
       positionOptions: {
-        enableHighAccuracy: true
+        enableHighAccuracy: true,
       },
       trackUserLocation: true,
-      showUserHeading: true
+      showUserHeading: true,
     });
-    map.addControl(geolocate, 'top-right');
+    map.addControl(geolocate, "top-right");
 
-    // Trigger geolocation after map loads
-    map.on('load', () => {
-      geolocate.trigger();
+    // Only trigger geolocation if there's no saved state
+    map.on("load", () => {
+      if (!savedState) {
+        geolocate.trigger();
+      }
     });
 
     // Add custom reset north control
-    map.addControl(new ResetNorthControl(), 'top-right');
+    map.addControl(new ResetNorthControl(), "top-right");
 
     // Add navigation controls (without compass since we have our custom one)
-    map.addControl(new maplibregl.NavigationControl({
-      visualizePitch: true,
-      showCompass: false
-    }), 'top-right');
+    map.addControl(
+      new maplibregl.NavigationControl({
+        visualizePitch: true,
+        showCompass: false,
+      }),
+      "top-right",
+    );
 
     // Add scale control
-    map.addControl(new maplibregl.ScaleControl({
-      maxWidth: 80,
-      unit: 'metric'
-    }), 'bottom-left');
+    map.addControl(
+      new maplibregl.ScaleControl({
+        maxWidth: 80,
+        unit: "metric",
+      }),
+      "bottom-left",
+    );
 
     // Add fullscreen control
-    map.addControl(new maplibregl.FullscreenControl(), 'top-right');
+    map.addControl(new maplibregl.FullscreenControl(), "top-right");
 
     // Ensure map fills container after initialization
     map.resize();
