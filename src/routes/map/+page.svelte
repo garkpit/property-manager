@@ -6,26 +6,46 @@
   import type maplibregl from "maplibre-gl";
   import { OverpassService } from "$lib/services/overpass";
 
+  interface MapLocation {
+    lat: number;
+    lng: number;
+    title?: string;
+    details?: {
+      [key: string]: string | undefined;
+      "addr:housenumber"?: string;
+      "addr:street"?: string;
+      "addr:postcode"?: string;
+      name?: string;
+      opening_hours?: string;
+      phone?: string;
+    };
+  }
+
   let map = $state<maplibregl.Map>();
+  let places = $state<Array<any>>([]);
+  let locations = $derived(
+    places.map(
+      (place): MapLocation => ({
+        lat: Number(place.lat),
+        lng: Number(place.lon),
+        title: place.tags?.name ?? undefined,
+        details: place.tags as MapLocation["details"],
+      }),
+    ),
+  );
 
   const load = async () => {
     const overpass = new OverpassService();
-    const places = await overpass.findNearbyPlaces(
+    places = await overpass.findNearbyPlaces(
       { lat: 37.7749, lon: -122.4194 }, // San Francisco coordinates
       "coffee shop",
+      undefined, // radius parameter (using default)
+      3, // limit parameter - show 25 results
     );
-    console.log(places);
   };
   $effect(() => {
     load();
   });
-
-  // Example locations
-  const locations = [
-    { lat: 40.7128, lng: -74.006, title: "New York City" },
-    { lat: 34.0522, lng: -118.2437, title: "Los Angeles" },
-    { lat: 41.8781, lng: -87.6298, title: "Chicago" },
-  ];
 </script>
 
 <PageTemplate>

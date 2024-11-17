@@ -17,19 +17,26 @@ interface Place {
 }
 
 export class OverpassService {
-    private readonly OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
+    private readonly OVERPASS_API_URL =
+        "https://overpass-api.de/api/interpreter";
 
     /**
      * Fetches nearby places based on a search term and location
      * @param center The center point to search around
      * @param searchTerm The type of place to search for (e.g., "coffee_shop", "restaurant")
      * @param radius Optional search radius in meters (default: 2000)
+     * @param limit Optional maximum number of results to return (default: 10)
      * @returns Array of places sorted by distance
      */
-    async findNearbyPlaces(center: Location, searchTerm: string, radius?: number): Promise<Place[]> {
+    async findNearbyPlaces(
+        center: Location,
+        searchTerm: string,
+        radius?: number,
+        limit: number = 10,
+    ): Promise<Place[]> {
         // Convert searchTerm to appropriate amenity value
         const amenity = this.normalizeSearchTerm(searchTerm);
-        
+
         // Construct Overpass QL query
         const searchRadius = radius || 2000; // Default to 2km if not specified
         const query = `
@@ -46,35 +53,44 @@ export class OverpassService {
 
         try {
             const response = await fetch(this.OVERPASS_API_URL, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                    "Content-Type": "application/x-www-form-urlencoded",
                 },
                 body: `data=${encodeURIComponent(query)}`,
             });
 
             if (!response.ok) {
-                throw new Error(`Overpass API request failed: ${response.statusText}`);
+                throw new Error(
+                    `Overpass API request failed: ${response.statusText}`,
+                );
             }
 
             const data = await response.json();
             const places = data.elements
-                .filter((element: any) => element.type === 'node' && element.tags)
+                .filter((element: any) =>
+                    element.type === "node" && element.tags
+                )
                 .map((element: any) => ({
                     id: element.id,
                     type: element.type,
                     lat: element.lat,
                     lon: element.lon,
                     tags: element.tags,
-                    distance: this.calculateDistance(center, { lat: element.lat, lon: element.lon })
+                    distance: this.calculateDistance(center, {
+                        lat: element.lat,
+                        lon: element.lon,
+                    }),
                 }));
 
-            // Sort by distance and return top 10
+            // Sort by distance and return top results
             return places
-                .sort((a: Place, b: Place) => (a.distance || 0) - (b.distance || 0))
-                .slice(0, 10);
+                .sort((a: Place, b: Place) =>
+                    (a.distance || 0) - (b.distance || 0)
+                )
+                .slice(0, limit);
         } catch (error) {
-            console.error('Error fetching places:', error);
+            console.error("Error fetching places:", error);
             throw error;
         }
     }
@@ -84,17 +100,17 @@ export class OverpassService {
      */
     private normalizeSearchTerm(searchTerm: string): string {
         const termMap: { [key: string]: string } = {
-            'coffee shop': 'cafe',
-            'coffee': 'cafe',
-            'restaurant': 'restaurant',
-            'bar': 'bar',
-            'pub': 'pub',
-            'atm': 'atm',
-            'bank': 'bank',
-            'pharmacy': 'pharmacy',
-            'hospital': 'hospital',
-            'school': 'school',
-            'parking': 'parking',
+            "coffee shop": "cafe",
+            "coffee": "cafe",
+            "restaurant": "restaurant",
+            "bar": "bar",
+            "pub": "pub",
+            "atm": "atm",
+            "bank": "bank",
+            "pharmacy": "pharmacy",
+            "hospital": "hospital",
+            "school": "school",
+            "parking": "parking",
         };
 
         const normalized = searchTerm.toLowerCase().trim();
@@ -112,7 +128,7 @@ export class OverpassService {
         const Δλ = (point2.lon - point1.lon) * Math.PI / 180;
 
         const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-                Math.cos(φ1) * Math.cos(φ2) *
+            Math.cos(φ1) * Math.cos(φ2) *
                 Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
