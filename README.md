@@ -25,7 +25,8 @@ An opinionated development template designed to create large-scale business apps
   - Data object layer calls [backendService](./src/lib/services/backendService.svelte.ts)
   - [backendService](./src/lib/services/backendService.svelte.ts) calls [supabase](./src/lib/services/supabase.ts)
   - Data object layers are responsible for fetching data from Supabase
-  - Data object layers use and export Typescript Types for objects stored inpostgres tables generated from Supabase (see [generate-types.sh](./generate-types.sh))
+  - Data object layers use and export Typescript Types for objects stored in postgres tables
+  - Types are generated automatically from Supabase (see [generate-types.sh](./generate-types.sh))
 - Multi-Tenancy
   - Create multiple organizations
   - Switch between organizations
