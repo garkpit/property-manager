@@ -1,10 +1,10 @@
 <!-- +page.svelte -->
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
-  import Map from "$lib/components/Map.svelte";
-  import MapPins from "$lib/components/MapPins.svelte";
+  import Map from "$lib/components/map/Map.svelte";
+  import MapPins from "$lib/components/map/MapPins.svelte";
   import maplibregl from "maplibre-gl";
-  import { OverpassService } from "$lib/services/overpass";
+  import { OverpassService } from "$lib/components/map/overpass";
   import {
     Coffee,
     ChefHat,

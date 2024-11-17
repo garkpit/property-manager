@@ -4,14 +4,14 @@
   import "maplibre-gl/dist/maplibre-gl.css";
   import type { Snippet } from "svelte";
 
-  let { 
-    map = $bindable<maplibregl.Map | undefined>(undefined), 
-    content = () => null 
+  let {
+    map = $bindable<maplibregl.Map | undefined>(undefined),
+    content = () => null,
   } = $props<{
     map?: maplibregl.Map;
     content?: Snippet;
   }>();
-  
+
   let mapInstance: maplibregl.Map | undefined;
   let mapContainer: HTMLDivElement;
   let isDefaultView = $state(true);
