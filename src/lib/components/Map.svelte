@@ -1,16 +1,76 @@
 <!-- Map.svelte -->
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
   import maplibregl from 'maplibre-gl';
   import 'maplibre-gl/dist/maplibre-gl.css';
+  import { Compass } from 'lucide-svelte';
+
+  class ResetNorthControl {
+    _map: maplibregl.Map;
+    _container: HTMLDivElement;
+    _button: HTMLButtonElement;
+
+    onAdd(map: maplibregl.Map) {
+      this._map = map;
+      this._container = document.createElement('div');
+      this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+      
+      this._button = document.createElement('button');
+      this._button.className = 'maplibregl-ctrl-icon reset-north-control';
+      this._button.setAttribute('aria-label', 'Toggle tilted view');
+      this._button.title = 'Switch to tilted view';
+      
+      // Create the compass icon using Lucide's SVG
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      svg.setAttribute('width', '16');
+      svg.setAttribute('height', '16');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      
+      // Compass path
+      svg.innerHTML = `
+        <circle cx="12" cy="12" r="10"/>
+        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+      `;
+      
+      this._button.appendChild(svg);
+      
+      this._button.addEventListener('click', () => {
+        isDefaultView = !isDefaultView;
+        const view = isDefaultView ? defaultView : tiltedView;
+        
+        map.easeTo({
+          pitch: view.pitch,
+          bearing: view.bearing,
+          duration: 300
+        });
+
+        // Update tooltip based on current state
+        this._button.title = isDefaultView ? 'Switch to tilted view' : 'Reset to normal view';
+      });
+      
+      this._container.appendChild(this._button);
+      return this._container;
+    }
+
+    onRemove() {
+      this._container.parentNode?.removeChild(this._container);
+    }
+  }
 
   let mapContainer: HTMLDivElement;
-  let map: maplibregl.Map;
-  let isDefaultView = true;
+  let map: maplibregl.Map | null = null;
+  let isDefaultView = $state(true);
   const defaultView = { pitch: 0, bearing: 0 };
   const tiltedView = { pitch: 45, bearing: -17.6 };
 
-  onMount(() => {
+  $effect(() => {
+    if (!mapContainer) return;
+
     map = new maplibregl.Map({
       container: mapContainer,
       style: {
@@ -40,65 +100,6 @@
       bearing: defaultView.bearing,
       antialias: true
     });
-
-    // Create custom reset north button
-    class ResetNorthControl {
-      _map: maplibregl.Map;
-      _container: HTMLDivElement;
-      _button: HTMLButtonElement;
-
-      onAdd(map: maplibregl.Map) {
-        this._map = map;
-        this._container = document.createElement('div');
-        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-        
-        this._button = document.createElement('button');
-        this._button.className = 'maplibregl-ctrl-icon reset-north-control';
-        this._button.setAttribute('aria-label', 'Toggle tilted view');
-        this._button.title = 'Switch to tilted view';
-        
-        // Create the compass icon using Lucide's SVG
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        svg.setAttribute('width', '16');
-        svg.setAttribute('height', '16');
-        svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('fill', 'none');
-        svg.setAttribute('stroke', 'currentColor');
-        svg.setAttribute('stroke-width', '2');
-        svg.setAttribute('stroke-linecap', 'round');
-        svg.setAttribute('stroke-linejoin', 'round');
-        
-        // Compass path
-        svg.innerHTML = `
-          <circle cx="12" cy="12" r="10"/>
-          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
-        `;
-        
-        this._button.appendChild(svg);
-        
-        this._button.addEventListener('click', () => {
-          isDefaultView = !isDefaultView;
-          const view = isDefaultView ? defaultView : tiltedView;
-          
-          map.easeTo({
-            pitch: view.pitch,
-            bearing: view.bearing,
-            duration: 300
-          });
-
-          // Update tooltip based on current state
-          this._button.title = isDefaultView ? 'Switch to tilted view' : 'Reset to normal view';
-        });
-        
-        this._container.appendChild(this._button);
-        return this._container;
-      }
-
-      onRemove() {
-        this._container.parentNode?.removeChild(this._container);
-      }
-    }
 
     // Add geolocate control
     const geolocate = new maplibregl.GeolocateControl({
@@ -135,12 +136,13 @@
 
     // Ensure map fills container after initialization
     map.resize();
-  });
 
-  onDestroy(() => {
-    if (map) {
-      map.remove();
-    }
+    return () => {
+      if (map) {
+        map.remove();
+        map = null;
+      }
+    };
   });
 </script>
 
