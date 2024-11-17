@@ -83,6 +83,10 @@
         isActive: false,
         items: [
           {
+            title: "Map",
+            url: "/map",
+          },
+          {
             title: "Organizations",
             url: "/orgs",
           },
