@@ -34,6 +34,24 @@
 
   let map = $state<maplibregl.Map>();
   let places = $state<Array<any>>([]);
+  let notification = $state<string | null>(null);
+
+  // Clear notification when map moves
+  $effect(() => {
+    if (!map) return;
+
+    const clearNotification = () => {
+      notification = null;
+    };
+
+    map.on("move", clearNotification);
+
+    return () => {
+      if (!map) return;
+      map.off("move", clearNotification);
+    };
+  });
+
   let locations = $derived(
     places.map(
       (place): MapLocation => ({
@@ -44,24 +62,22 @@
       }),
     ),
   );
-  let notification = $state<string | null>(null);
 
   const locatePlaces = async (placeType: string) => {
     if (!map) return;
-    
+
     // Clear existing places and notification
     places = [];
     notification = null;
-    
+
     const center = map.getCenter();
     const overpass = new OverpassService();
     places = await overpass.findNearbyPlaces(
       { lat: center.lat, lon: center.lng },
       placeType,
-      2000, // radius parameter (using default)
+      5000, // radius parameter (using default)
       10, // limit parameter - show 25 results
     );
-    console.log("places", places);
 
     // If places were found, fit the map to show all pins
     if (places.length > 0) {
@@ -199,7 +215,7 @@
     background-color: #fff;
     padding: 0.5rem 1rem;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 1000;
   }
 </style>

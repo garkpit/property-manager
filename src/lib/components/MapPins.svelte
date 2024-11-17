@@ -44,7 +44,7 @@
 
   // Create markers for each location
   $effect(() => {
-    if (!map || !locations.length) return;
+    if (!map) return;
 
     // Remove existing markers
     while (currentMarkers.length > 0) {
@@ -52,21 +52,23 @@
       marker?.remove();
     }
 
-    // Add new markers
-    locations.forEach(location => {
-      const marker = new maplibregl.Marker({ className: 'map-marker' })
-        .setLngLat([location.lng, location.lat])
-        .addTo(map);
+    // Add new markers only if we have locations
+    if (locations.length > 0) {
+      locations.forEach(location => {
+        const marker = new maplibregl.Marker({ className: 'map-marker' })
+          .setLngLat([location.lng, location.lat])
+          .addTo(map);
 
-      if (location.details || location.title) {
-        marker.setPopup(
-          new maplibregl.Popup({ offset: 25 })
-            .setHTML(location.details ? formatDetails(location.details) : `<h3>${location.title}</h3>`)
-        );
-      }
+        if (location.details || location.title) {
+          marker.setPopup(
+            new maplibregl.Popup({ offset: 25 })
+              .setHTML(location.details ? formatDetails(location.details) : `<h3>${location.title}</h3>`)
+          );
+        }
 
-      currentMarkers.push(marker);
-    });
+        currentMarkers.push(marker);
+      });
+    }
   });
 
   // Cleanup markers when component is destroyed
