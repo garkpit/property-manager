@@ -19,7 +19,6 @@
       console.error(error);
     } else if (data) {
       sentMessages = data;
-      console.log("sentMessages", sentMessages);
     }
   };
   $effect(() => {

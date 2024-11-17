@@ -20,7 +20,6 @@
       console.error(error);
     } else if (data) {
       inboxMessages = data;
-      console.log("inboxMessages", inboxMessages);
     }
   };
 
