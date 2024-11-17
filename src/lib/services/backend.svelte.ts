@@ -10,7 +10,7 @@ import type { Database } from "$lib/types/database.types";
 import { getOrgById } from "./orgService.svelte";
 export type Profile = Database["public"]["Tables"]["profiles"]["Insert"];
 //export type Org = Database["public"]["Tables"]["orgs"]["Insert"];
-interface Org {
+export interface Org {
   id: string;
   title: string;
   created_at: string;
@@ -79,12 +79,12 @@ export async function updateCurrentOrg(orgId: string | null) {
 
     const { data, error } = await getOrgById(orgId);
     if (error) {
-      console.error('Error fetching org:', error);
+      console.error("Error fetching org:", error);
       return;
     }
     currentOrg = data;
   } catch (error) {
-    console.error('Error updating current org:', error);
+    console.error("Error updating current org:", error);
   }
 }
 
