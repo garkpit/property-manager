@@ -28,23 +28,22 @@ export class OverpassService {
      * @param limit Optional maximum number of results to return (default: 10)
      * @returns Array of places sorted by distance
      */
-    async findNearbyPlaces(
+    private async findNearbyPlacesWithRadius(
         center: Location,
         searchTerm: string,
-        radius?: number,
-        limit: number = 10,
+        radius: number,
+        limit: number
     ): Promise<Place[]> {
         // Convert searchTerm to appropriate amenity value
         const amenity = this.normalizeSearchTerm(searchTerm);
 
         // Construct Overpass QL query
-        const searchRadius = radius || 2000; // Default to 2km if not specified
         const query = `
             [out:json][timeout:25];
             (
-                node["amenity"="${amenity}"](around:${searchRadius},${center.lat},${center.lon});
-                way["amenity"="${amenity}"](around:${searchRadius},${center.lat},${center.lon});
-                relation["amenity"="${amenity}"](around:${searchRadius},${center.lat},${center.lon});
+                node["amenity"="${amenity}"](around:${radius},${center.lat},${center.lon});
+                way["amenity"="${amenity}"](around:${radius},${center.lat},${center.lon});
+                relation["amenity"="${amenity}"](around:${radius},${center.lat},${center.lon});
             );
             out body;
             >;
@@ -93,6 +92,29 @@ export class OverpassService {
             console.error("Error fetching places:", error);
             throw error;
         }
+    }
+
+    async findNearbyPlaces(
+        center: Location,
+        searchTerm: string,
+        radius?: number,
+        limit: number = 10,
+    ): Promise<Place[]> {
+        let currentRadius = radius || 2000; // Default to 2km if not specified
+        
+        // First attempt
+        let results = await this.findNearbyPlacesWithRadius(center, searchTerm, currentRadius, limit);
+        if (results.length > 0) return results;
+
+        // Second attempt with doubled radius
+        currentRadius *= 2;
+        results = await this.findNearbyPlacesWithRadius(center, searchTerm, currentRadius, limit);
+        if (results.length > 0) return results;
+
+        // Third attempt with doubled radius again
+        currentRadius *= 2;
+        results = await this.findNearbyPlacesWithRadius(center, searchTerm, currentRadius, limit);
+        return results; // Return results regardless if empty or not
     }
 
     /**
