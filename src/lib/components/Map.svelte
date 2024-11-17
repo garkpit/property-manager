@@ -2,8 +2,6 @@
 <script lang="ts">
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
-  import { Compass, Search } from "lucide-svelte";
-  import { onMount } from "svelte";
 
   // Default location (New York) as fallback
   const DEFAULT_CENTER = [-74.5, 40];
@@ -12,7 +10,7 @@
   // Function to save map state with debouncing
   function createDebouncedSaveState(map: maplibregl.Map, delay: number) {
     let timeoutId: ReturnType<typeof setTimeout>;
-    
+
     return () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
@@ -22,9 +20,9 @@
           lat: center.lat,
           zoom: map.getZoom(),
           pitch: map.getPitch(),
-          bearing: map.getBearing()
+          bearing: map.getBearing(),
         };
-        localStorage.setItem('mapState', JSON.stringify(state));
+        localStorage.setItem("mapState", JSON.stringify(state));
       }, delay);
     };
   }
@@ -32,12 +30,12 @@
   // Function to load saved state
   function loadSavedState() {
     try {
-      const saved = localStorage.getItem('mapState');
+      const saved = localStorage.getItem("mapState");
       if (saved) {
         return JSON.parse(saved);
       }
     } catch (e) {
-      console.warn('Error loading saved map state:', e);
+      console.warn("Error loading saved map state:", e);
     }
     return null;
   }
@@ -57,7 +55,7 @@
       this._button.setAttribute("aria-label", "Toggle tilted view");
       this._button.title = "Switch to tilted view";
 
-      // Create the compass icon using Lucide's SVG
+      // Create compass icon SVG
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
       svg.setAttribute("width", "16");
@@ -69,10 +67,10 @@
       svg.setAttribute("stroke-linecap", "round");
       svg.setAttribute("stroke-linejoin", "round");
 
-      // Compass path
+      // Using Lucide Compass path data
       svg.innerHTML = `
         <circle cx="12" cy="12" r="10"/>
-        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+        <path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/>
       `;
 
       this._button.appendChild(svg);
@@ -121,7 +119,7 @@
       this._button.setAttribute("aria-label", "Search location");
       this._button.title = "Search location";
 
-      // Create the search icon using Lucide's SVG
+      // Create search icon SVG
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
       svg.setAttribute("width", "16");
@@ -133,10 +131,10 @@
       svg.setAttribute("stroke-linecap", "round");
       svg.setAttribute("stroke-linejoin", "round");
 
-      // Search icon path
+      // Using Lucide Search path data
       svg.innerHTML = `
         <circle cx="11" cy="11" r="8"/>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <path d="m21 21-4.3-4.3"/>
       `;
 
       this._button.appendChild(svg);
@@ -198,8 +196,8 @@
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-            query
-          )}`
+            query,
+          )}`,
         );
         const data = await response.json();
 
@@ -208,7 +206,7 @@
           this._map.flyTo({
             center: [parseFloat(lon), parseFloat(lat)],
             zoom: 17,
-            duration: 2000
+            duration: 2000,
           });
           this._closeSearch();
           this._input.value = "";
@@ -264,10 +262,10 @@
     const saveState = createDebouncedSaveState(map, 1000);
 
     // Add event listeners for map movement
-    map.on('moveend', saveState);
-    map.on('zoomend', saveState);
-    map.on('pitchend', saveState);
-    map.on('rotateend', saveState);
+    map.on("moveend", saveState);
+    map.on("zoomend", saveState);
+    map.on("pitchend", saveState);
+    map.on("rotateend", saveState);
 
     // Add geolocate control
     const geolocate = new maplibregl.GeolocateControl({
@@ -411,6 +409,6 @@
 
   :global(.search-input:focus) {
     outline: none;
-    border-color: #4A90E2;
+    border-color: #4a90e2;
   }
 </style>
