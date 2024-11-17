@@ -3,7 +3,7 @@
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import Map from "$lib/components/Map.svelte";
   import MapPins from "$lib/components/MapPins.svelte";
-  import type maplibregl from "maplibre-gl";
+  import maplibregl from "maplibre-gl";
   import { OverpassService } from "$lib/services/overpass";
   import {
     Coffee,
@@ -44,9 +44,15 @@
       }),
     ),
   );
+  let notification = $state<string | null>(null);
 
   const locatePlaces = async (placeType: string) => {
     if (!map) return;
+    
+    // Clear existing places and notification
+    places = [];
+    notification = null;
+    
     const center = map.getCenter();
     const overpass = new OverpassService();
     places = await overpass.findNearbyPlaces(
@@ -56,19 +62,25 @@
       10, // limit parameter - show 25 results
     );
     console.log("places", places);
+
+    // If places were found, fit the map to show all pins
+    if (places.length > 0) {
+      // Find the bounds of all places
+      const bounds = new maplibregl.LngLatBounds();
+      places.forEach((place) => {
+        bounds.extend([place.lon, place.lat]);
+      });
+
+      // Fit the map to the bounds with some padding
+      map.fitBounds(bounds, {
+        padding: 50, // Add 50px padding around the bounds
+        maxZoom: 16, // Don't zoom in too far
+      });
+    } else {
+      notification = `No ${placeType}s found in this area`;
+    }
   };
 
-  /**
-            "bar": "bar",
-            "pub": "pub",
-            "atm": "atm",
-            "bank": "bank",
-            "pharmacy": "pharmacy",
-            "hospital": "hospital",
-            "school": "school",
-            "parking": "parking",
-
-   */
   const actionItems: any[] = [
     {
       groupName: "Locate:",
@@ -151,6 +163,11 @@
 <PageTemplate {actionItems}>
   {#snippet TopCenter()}
     Interactive Map
+    {#if notification}
+      <div class="notification">
+        {notification}
+      </div>
+    {/if}
   {/snippet}
 
   {#snippet Middle()}
@@ -173,5 +190,16 @@
     bottom: 0;
     height: calc(100vh - var(--header-height) - var(--footer-height));
     margin: -1rem;
+  }
+  .notification {
+    position: absolute;
+    top: 4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
   }
 </style>
