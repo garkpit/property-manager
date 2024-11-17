@@ -2,6 +2,43 @@
 
 An opinionated development template designed to create large-scale business apps quickly and deploy them as a static website, iOS App, Android App, Windows Desktop App, MacOS Desktop App, and Linux Desktop App.
 
+## Features
+
+- Internationalization
+  - Multiple languages (English, Spanish, etc.)
+  - Dynamic language switching
+  - Stores language preference in browser local storage and in the user record in Supabase
+- Authentication
+  - Uses Supabase's [Auth](https://supabase.com/docs/guides/auth)
+  - Email/Password
+    - Register & send verification email
+    - Sign in
+    - Reset password
+    - Internationalization for email templates (verification, reset password, etc.)
+  - OAuth
+    - Google
+    - Display Avatar / User Image Thumbnail
+  - Automatic account linking based on password (single user account for multiple sign-in methods)
+- Data Access Layer
+  - Modular, separation of concerns
+  - Front end code calls data object layer (i.e. [messageService](./src/lib/services/messageService.svelte.ts))
+  - Data object layer calls [backendService](./src/lib/services/backendService.svelte.ts)
+  - [backendService](./src/lib/services/backendService.svelte.ts) calls [supabase](./src/lib/services/supabase.ts)
+  - Data object layers are responsible for fetching data from Supabase
+  - Data object layers use and export Typescript Types for objects stored inpostgres tables generated from Supabase (see [generate-types.sh](./generate-types.sh))
+- Multi-Tenancy
+  - Create multiple organizations
+  - Switch between organizations
+  - Invite other users to join an organization
+    - Assign roles to users
+    - Accept/Reject invites
+    - Update user roles
+  - View list of users in an organization
+  - View list of invites in an organization
+  - Delete an organization
+  - Delete a user from an organization
+  - Delete an invite from an organization
+
 ### Design Philosophy
 
 - client-side code only
