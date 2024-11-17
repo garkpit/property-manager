@@ -386,6 +386,45 @@ COMMENT ON TABLE "public"."profiles" IS 'User profiles';
 
 
 
+CREATE TABLE IF NOT EXISTS "public"."properties" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "transaction_type" "text",
+    "property_type" "text",
+    "property_subtype" "text",
+    "address" "text",
+    "address2" "text",
+    "city" "text",
+    "region" "text",
+    "postal" "text",
+    "country" "text",
+    "lat" numeric,
+    "lng" numeric,
+    "status" "text",
+    "list_price" numeric,
+    "list_date" timestamp with time zone,
+    "closing_price" numeric,
+    "closing_date" timestamp with time zone,
+    "beds" numeric,
+    "baths" numeric,
+    "living_area" numeric,
+    "land_area" numeric,
+    "year_built" numeric,
+    "hoa_fees" numeric,
+    "notes" "text",
+    "metadata" "jsonb",
+    "orgid" "uuid" NOT NULL,
+    "userid" "uuid" NOT NULL
+);
+
+
+ALTER TABLE "public"."properties" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."properties" IS 'Properties for sale or rent';
+
+
+
 ALTER TABLE ONLY "public"."contacts"
     ADD CONSTRAINT "contacts_pkey" PRIMARY KEY ("id");
 
@@ -418,6 +457,11 @@ ALTER TABLE ONLY "public"."orgs_users"
 
 ALTER TABLE ONLY "public"."profiles"
     ADD CONSTRAINT "profile_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."properties"
+    ADD CONSTRAINT "properties_pkey" PRIMARY KEY ("id");
 
 
 
@@ -484,6 +528,16 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
+ALTER TABLE ONLY "public"."properties"
+    ADD CONSTRAINT "properties_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id");
+
+
+
+ALTER TABLE ONLY "public"."properties"
+    ADD CONSTRAINT "properties_userid_fkey" FOREIGN KEY ("userid") REFERENCES "public"."profiles"("id");
+
+
+
 CREATE POLICY "Insert - user must be sender" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "sender"));
 
 
@@ -500,7 +554,21 @@ CREATE POLICY "User must belong to org" ON "public"."contacts" TO "authenticated
 
 
 
+CREATE POLICY "anyone can view" ON "public"."properties" FOR SELECT USING (true);
+
+
+
 ALTER TABLE "public"."contacts" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "deletion not allowed" ON "public"."properties" FOR DELETE USING (false);
+
+
+
+CREATE POLICY "insert: userid and orgid required" ON "public"."properties" FOR INSERT WITH CHECK ((("userid" = "auth"."uid"()) AND ("orgid" IN ( SELECT "orgs_users"."orgid"
+   FROM "public"."orgs_users"
+  WHERE ("orgs_users"."userid" = "auth"."uid"())))));
+
 
 
 ALTER TABLE "public"."messages" ENABLE ROW LEVEL SECURITY;
@@ -522,6 +590,10 @@ CREATE POLICY "org owners can create invites" ON "public"."orgs_invites" FOR INS
 
 
 CREATE POLICY "org owners can updated policies they created" ON "public"."orgs_invites" FOR UPDATE TO "authenticated" USING (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid")))) WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid"))));
+
+
+
+CREATE POLICY "org role must be Owner or Manager" ON "public"."properties" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
 
 
 
@@ -547,6 +619,9 @@ ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "profiles cannot be deleted" ON "public"."profiles" FOR DELETE USING (false);
 
+
+
+ALTER TABLE "public"."properties" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "recipient can update" ON "public"."messages_recipients" FOR UPDATE USING (("recipient" = ( SELECT "auth"."uid"() AS "uid"))) WITH CHECK (("recipient" = ( SELECT "auth"."uid"() AS "uid")));
@@ -688,6 +763,12 @@ GRANT ALL ON TABLE "public"."orgs_users" TO "service_role";
 GRANT ALL ON TABLE "public"."profiles" TO "anon";
 GRANT ALL ON TABLE "public"."profiles" TO "authenticated";
 GRANT ALL ON TABLE "public"."profiles" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."properties" TO "anon";
+GRANT ALL ON TABLE "public"."properties" TO "authenticated";
+GRANT ALL ON TABLE "public"."properties" TO "service_role";
 
 
 
