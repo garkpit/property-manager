@@ -10,6 +10,8 @@
   import { Input } from "$lib/components/ui/input";
   import { Textarea } from "$lib/components/ui/textarea";
   import { Label } from "$lib/components/ui/label";
+  import { Button } from "$lib/components/ui/button";
+  import { ArrowLeft } from "lucide-svelte";
 
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
@@ -205,6 +207,19 @@
 </script>
 
 <PageTemplate {actionItems}>
+  {#snippet TopLeft()}
+    <Button
+      variant="ghost"
+      size="icon"
+      onclick={() => {
+        goto("/properties");
+      }}
+      class="h-9 w-9"
+    >
+      <ArrowLeft class="w-6 h-6" />
+    </Button>
+  {/snippet}
+
   {#snippet TopCenter()}
     {isNew ? "New Property" : property.name || "Loading..."}
   {/snippet}

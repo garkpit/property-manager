@@ -2,8 +2,19 @@
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import { Plus } from "lucide-svelte";
   import type { Property } from "$lib/services/propertyService.svelte";
-  import { upsertProperty } from "$lib/services/propertyService.svelte";
+  import {
+    upsertProperty,
+    getOrgProperties,
+  } from "$lib/services/propertyService.svelte";
   import { goto } from "$app/navigation";
+  import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+  } from "$lib/components/ui/table";
 
   const actionItems = [
     {
@@ -20,11 +31,26 @@
     },
   ];
 
-  let properties: Property[] = [];
+  let properties = $state<Property[]>([]);
+  let loading = $state(false);
+  let error = $state<string | null>(null);
 
   async function loadProperties() {
-    // TODO: Implement properties loading from Supabase
+    loading = true;
+    error = null;
+
+    const { data, error: err } = await getOrgProperties();
+
+    if (err) {
+      error = err.message;
+      loading = false;
+      return;
+    }
+
+    properties = data || [];
+    loading = false;
   }
+
   $effect(() => {
     loadProperties();
   });
@@ -36,7 +62,17 @@
   {/snippet}
 
   {#snippet Middle()}
-    {#if properties.length === 0}
+    {#if loading}
+      <div class="flex items-center justify-center h-full">
+        <div
+          class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
+        ></div>
+      </div>
+    {:else if error}
+      <div class="flex items-center justify-center h-full text-destructive">
+        <p>{error}</p>
+      </div>
+    {:else if properties.length === 0}
       <div
         class="flex flex-col items-center justify-center h-full text-muted-foreground"
       >
@@ -46,15 +82,35 @@
         </p>
       </div>
     {:else}
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-        {#each properties as property}
-          <div
-            class="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <h3 class="text-lg font-semibold">{property.name}</h3>
-            <!-- Add more property details as needed -->
-          </div>
-        {/each}
+      <div class="p-4">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Address</TableHead>
+              <TableHead>City</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {#each properties as property}
+              <TableRow
+                class="cursor-pointer hover:bg-muted/50"
+                onclick={() => goto(`/properties/${property.id}`)}
+              >
+                <TableCell>
+                  <div class="space-y-1">
+                    <div>{property.address || "-"}</div>
+                    {#if property.address2}
+                      <div class="text-sm text-muted-foreground">
+                        {property.address2}
+                      </div>
+                    {/if}
+                  </div>
+                </TableCell>
+                <TableCell>{property.city || "-"}</TableCell>
+              </TableRow>
+            {/each}
+          </TableBody>
+        </Table>
       </div>
     {/if}
   {/snippet}
