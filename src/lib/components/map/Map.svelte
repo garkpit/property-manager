@@ -395,6 +395,14 @@
 </div>
 
 <style>
+  :global(.maplibregl-ctrl-icon) {
+    filter: brightness(0);
+  }
+  
+  :global(.maplibregl-ctrl button.maplibregl-ctrl-compass .maplibregl-ctrl-icon) {
+    filter: none;
+  }
+
   .map-container {
     position: absolute;
     top: 0;
