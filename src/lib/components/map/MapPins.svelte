@@ -54,7 +54,8 @@
 
         const popup = new maplibregl.Popup({ 
           offset: 25,
-          closeButton: false 
+          closeButton: false,
+          className: 'property-popup'
         })
           .setHTML(createPopupHTML(location));
 
@@ -76,35 +77,75 @@
 </script>
 
 <style>
+  :global(.property-popup .maplibregl-popup-content) {
+    background-color: white;
+    color: black;
+    border: 1px solid var(--border);
+  }
+
+  :global(.dark .property-popup .maplibregl-popup-content) {
+    background-color: black;
+    color: white;
+    border-color: #333;
+  }
+
+  :global(.property-popup .maplibregl-popup-tip) {
+    border-top-color: white !important;
+    border-bottom-color: white !important;
+  }
+
+  :global(.dark .property-popup .maplibregl-popup-tip) {
+    border-top-color: black !important;
+    border-bottom-color: black !important;
+  }
+
   :global(.popup-content) {
     padding: 12px;
     min-width: 200px;
   }
+
   :global(.popup-content h3) {
     margin: 0 0 8px 0;
     font-size: 16px;
     font-weight: 600;
   }
+
   :global(.popup-content p) {
     margin: 4px 0;
     font-size: 14px;
   }
+
   :global(.popup-content .city) {
     color: #666;
   }
+
+  :global(.dark .popup-content .city) {
+    color: #a1a1aa;
+  }
+
   :global(.popup-content .status) {
     text-transform: capitalize;
     color: #2563eb;
     font-weight: 500;
   }
+
+  :global(.dark .popup-content .status) {
+    color: #60a5fa;
+  }
+
   :global(.popup-content .price) {
     font-weight: 600;
     font-size: 16px;
     margin: 8px 0;
   }
+
   :global(.popup-content .specs) {
     display: flex;
     gap: 12px;
     color: #666;
+  }
+
+  :global(.dark .popup-content .specs) {
+    color: #a1a1aa;
   }
 </style>
