@@ -89,26 +89,6 @@
     property.closing_date = closingDateInput ? formatDateForDb(closingDateInput) : null;
   });
 
-  let metadataString = $state("");
-
-  $effect(() => {
-    metadataString = property.metadata
-      ? JSON.stringify(property.metadata, null, 2)
-      : "";
-  });
-
-  $effect(() => {
-    try {
-      if (metadataString) {
-        property.metadata = JSON.parse(metadataString);
-      } else {
-        property.metadata = {};
-      }
-    } catch (e) {
-      // Invalid JSON, keep the string but don't update the metadata
-    }
-  });
-
   const propertyTypeContent = $derived(
     propertyTypes.find((t) => t.value === property.property_type)?.label ?? "Select property type"
   );
@@ -298,12 +278,12 @@
   <div class="space-y-4">
     <h3 class="text-lg font-semibold">Additional Information</h3>
     <div class="space-y-2">
-      <Label for="metadata">Metadata (JSON)</Label>
+      <Label for="notes">Notes</Label>
       <Textarea
-        id="metadata"
-        bind:value={metadataString}
-        rows="10"
-        class="font-mono"
+        id="notes"
+        bind:value={property.notes}
+        rows="4"
+        placeholder="Add any additional notes about the property"
       />
     </div>
   </div>

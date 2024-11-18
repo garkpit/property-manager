@@ -79,12 +79,12 @@
   </div>
 
   <!-- Additional Information -->
-  {#if property.metadata && Object.keys(property.metadata).length > 0}
+  {#if property.notes}
     <div class="space-y-4">
       <h3 class="text-lg font-semibold">Additional Information</h3>
-      <pre class="bg-muted p-4 rounded-lg overflow-auto">
-        {JSON.stringify(property.metadata, null, 2)}
-      </pre>
+      <div class="bg-muted p-4 rounded-lg">
+        <p class="whitespace-pre-wrap">{property.notes}</p>
+      </div>
     </div>
   {/if}
 </div>
