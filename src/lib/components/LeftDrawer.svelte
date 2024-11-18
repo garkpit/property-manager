@@ -61,14 +61,18 @@
         ],
       },
       {
-        title: "Data",
+        title: "Properties",
         url: "#",
         icon: Sparkles,
         isActive: false,
         items: [
           {
-            title: "Properties",
+            title: "Properties List",
             url: "/properties",
+          },
+          {
+            title: "Properties Map",
+            url: "/properties/map",
           },
           {
             title: "Map",
