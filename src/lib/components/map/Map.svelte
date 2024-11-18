@@ -3,6 +3,7 @@
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
   import type { Snippet } from "svelte";
+  import { ModeWatcher } from "mode-watcher";
 
   let {
     map = $bindable<maplibregl.Map | undefined>(undefined),
@@ -53,6 +54,70 @@
       console.warn("Error loading saved map state:", e);
     }
     return null;
+  }
+
+  let isDarkMode = $state(false);
+  
+  // Initialize dark mode state
+  $effect(() => {
+    isDarkMode = document.documentElement.classList.contains("dark");
+  });
+
+  // Watch for dark mode changes
+  $effect(() => {
+    const observer = new MutationObserver(() => {
+      isDarkMode = document.documentElement.classList.contains("dark");
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"]
+    });
+
+    return () => observer.disconnect();
+  });
+
+  // Update map style when dark mode changes
+  $effect(() => {
+    if (mapInstance) {
+      updateMapStyle();
+    }
+  });
+
+  function getMapStyle() {
+    return {
+      version: 8,
+      sources: {
+        osm: {
+          type: "raster",
+          tiles: isDarkMode
+            ? [
+                "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png",
+              ]
+            : ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+          attribution: isDarkMode
+            ? "&copy; OpenStreetMap Contributors, &copy; Stadia Maps"
+            : "&copy; OpenStreetMap Contributors",
+          maxzoom: 20,
+        },
+      },
+      layers: [
+        {
+          id: "osm",
+          type: "raster",
+          source: "osm",
+          minzoom: 0,
+          maxzoom: 20,
+        },
+      ],
+    };
+  }
+
+  function updateMapStyle() {
+    if (!mapInstance) return;
+    const style = getMapStyle();
+    mapInstance.setStyle(style);
   }
 
   class ResetNorthControl {
@@ -248,27 +313,7 @@
     if (!mapInstance) {
       mapInstance = new maplibregl.Map({
         container: mapContainer,
-        style: {
-          version: 8,
-          sources: {
-            osm: {
-              type: "raster",
-              tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-              tileSize: 256,
-              attribution: "&copy; OpenStreetMap Contributors",
-              maxzoom: 19,
-            },
-          },
-          layers: [
-            {
-              id: "osm",
-              type: "raster",
-              source: "osm",
-              minzoom: 0,
-              maxzoom: 19,
-            },
-          ],
-        },
+        style: getMapStyle(),
         center: [initialState.lng, initialState.lat],
         zoom: initialState.zoom,
         pitch: initialState.pitch,
