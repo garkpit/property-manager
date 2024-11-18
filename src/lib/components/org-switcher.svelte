@@ -38,12 +38,12 @@
     load();
   });
   async function handleOrgChange(id: string) {
-    await updateCurrentOrg(id);
+    return await updateCurrentOrg(id);
   }
   const handleSelectOrg = async (id: string) => {
-    const result = await handleOrgChange(id);
-    if (!result) {
-      console.error("Error in handleSelectOrg");
+    const success = await handleOrgChange(id);
+    if (!success) {
+      console.error("Error switching organization");
     }
   };
 </script>

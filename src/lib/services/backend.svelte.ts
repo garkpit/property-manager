@@ -21,6 +21,8 @@ export interface Org {
 let user = $state<User | null>(null);
 let profile = $state<Profile | null>(null);
 let currentOrg = $state<Org | null>(null);
+let isUpdatingUserMetadata = $state(false);
+
 // Add this getter function
 export function getUser() {
   return user;
@@ -50,10 +52,12 @@ export function initializeUser() {
           locale.set(userLocale);
           localStorage.setItem("locale", userLocale);
         }
-        // Fetch currentOrgId from user metadata and set it
-        const newCurrentOrgId = user?.user_metadata?.currentOrgId;
-        if (newCurrentOrgId) {
-          updateCurrentOrg(newCurrentOrgId);
+        // Only update current org if we're not in the middle of updating metadata
+        if (!isUpdatingUserMetadata) {
+          const newCurrentOrgId = user?.user_metadata?.currentOrgId;
+          if (newCurrentOrgId) {
+            updateCurrentOrg(newCurrentOrgId);
+          }
         }
       },
     );
@@ -63,10 +67,10 @@ export function initializeUser() {
     };
   });
 }
-export async function updateCurrentOrg(orgId: string | null) {
+export async function updateCurrentOrg(orgId: string | null): Promise<boolean> {
   if (!orgId) {
     currentOrg = null;
-    return;
+    return true;
   }
 
   try {
@@ -80,11 +84,33 @@ export async function updateCurrentOrg(orgId: string | null) {
     const { data, error } = await getOrgById(orgId);
     if (error) {
       console.error("Error fetching org:", error);
-      return;
+      return false;
     }
+    
+    // Update the current org in state
     currentOrg = data;
+    
+    // Persist the selected org ID in user metadata
+    if (user && !isUpdatingUserMetadata) {
+      isUpdatingUserMetadata = true;
+      try {
+        const { error: updateError } = await supabase.auth.updateUser({
+          data: { currentOrgId: orgId }
+        });
+        
+        if (updateError) {
+          console.error("Error updating user metadata:", updateError);
+          return false;
+        }
+      } finally {
+        isUpdatingUserMetadata = false;
+      }
+    }
+    
+    return true;
   } catch (error) {
     console.error("Error updating current org:", error);
+    return false;
   }
 }
 
