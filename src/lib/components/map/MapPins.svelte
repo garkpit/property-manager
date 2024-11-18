@@ -52,7 +52,10 @@
           .setLngLat([location.lng, location.lat])
           .addTo(map);
 
-        const popup = new maplibregl.Popup({ offset: 25 })
+        const popup = new maplibregl.Popup({ 
+          offset: 25,
+          closeButton: false 
+        })
           .setHTML(createPopupHTML(location));
 
         marker.setPopup(popup);
