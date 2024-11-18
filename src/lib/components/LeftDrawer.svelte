@@ -90,6 +90,10 @@
             title: "Organizations",
             url: "/orgs",
           },
+          {
+            title: "Properties",
+            url: "/properties",
+          },
         ],
       },
       {
