@@ -49,22 +49,6 @@
     versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
     navMain: [
       {
-        title: "Samples",
-        url: "#",
-        icon: Sparkles,
-        isActive: false,
-        items: [
-          {
-            title: "Alert",
-            url: "/samples/alert",
-          },
-          {
-            title: "Loading",
-            url: "/samples/loading",
-          },
-        ],
-      },
-      {
         title: "Messages",
         url: "#",
         icon: Mail,
@@ -83,16 +67,16 @@
         isActive: false,
         items: [
           {
+            title: "Properties",
+            url: "/properties",
+          },
+          {
             title: "Map",
             url: "/map",
           },
           {
             title: "Organizations",
             url: "/orgs",
-          },
-          {
-            title: "Properties",
-            url: "/properties",
           },
         ],
       },
@@ -113,6 +97,22 @@
           {
             title: "Privacy Policy",
             url: "/privacy",
+          },
+        ],
+      },
+      {
+        title: "Samples",
+        url: "#",
+        icon: Sparkles,
+        isActive: false,
+        items: [
+          {
+            title: "Alert",
+            url: "/samples/alert",
+          },
+          {
+            title: "Loading",
+            url: "/samples/loading",
           },
         ],
       },
