@@ -53,5 +53,21 @@ export async function upsertProperty(
         .select()
         .single();
 
+    if (data && !property.id) {
+        // If this is a new property (no ID), trigger geocoding
+        const geocodeResponse = await supabase.functions.invoke(
+            "server_function",
+            {
+                body: {
+                    action: "property_geocode",
+                    payload: { id: data.id },
+                },
+            },
+        );
+        console.log("geocodeResponse", geocodeResponse);
+        // We don't need to wait for or handle the geocoding response
+        // as it will update the database asynchronously
+    }
+
     return { data, error };
 }

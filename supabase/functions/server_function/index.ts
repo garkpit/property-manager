@@ -12,6 +12,7 @@ import { invite_insert } from "../actions/invite_insert.ts";
 import { invite_delete } from "../actions/invite_delete.ts";
 import { invite_accept } from "../actions/invite_accept.ts";
 import { invite_reject } from "../actions/invite_reject.ts";
+import { property_geocode } from "../actions/property_geocode.ts";
 const actions = {
     org_delete,
     org_upsert,
@@ -22,6 +23,7 @@ const actions = {
     invite_delete,
     invite_accept,
     invite_reject,
+    property_geocode,
 } as const;
 
 type ActionKey = keyof typeof actions;
