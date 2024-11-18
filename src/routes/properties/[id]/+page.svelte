@@ -221,7 +221,16 @@
   {/snippet}
 
   {#snippet TopCenter()}
-    {isNew ? "New Property" : property.name || "Loading..."}
+    {#if isNew}
+      New Property
+    {:else if !property.address}
+      Loading...
+    {:else}
+      {property.address}
+      {#if property.address2}
+        <span class="text-muted-foreground text-sm">{property.address2}</span>
+      {/if}
+    {/if}
   {/snippet}
 
   {#snippet Middle()}
