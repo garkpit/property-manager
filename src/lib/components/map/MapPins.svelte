@@ -8,36 +8,29 @@
       lat: number;
       lng: number;
       title?: string;
-      details?: {
-        'addr:housenumber'?: string;
-        'addr:street'?: string;
-        'addr:postcode'?: string;
-        name?: string;
-        opening_hours?: string;
-        phone?: string;
-        [key: string]: string | undefined;
-      };
+      property?: any;  // This will be the full property object
     }>;
     map?: maplibregl.Map;
   }
   const { locations = [], map } = $props<Props>();
   const currentMarkers: maplibregl.Marker[] = [];
 
-  function formatDetails(details: Props['locations'][0]['details']) {
-    if (!details) return '';
+  function createPopupHTML(location: Props['locations'][0]) {
+    if (!location.property) {
+      return `<h3>${location.title || 'Unnamed Location'}</h3>`;
+    }
     
-    const address = [
-      details['addr:housenumber'],
-      details['addr:street'],
-      details['addr:postcode']
-    ].filter(Boolean).join(' ');
-
+    const { address, city, status, list_price, beds, baths } = location.property;
     return `
       <div class="popup-content">
-        <h3>${details.name || 'Unnamed Location'}</h3>
-        ${address ? `<p>${address}</p>` : ''}
-        ${details.opening_hours ? `<p>Hours: ${details.opening_hours}</p>` : ''}
-        ${details.phone ? `<p>Phone: ${details.phone}</p>` : ''}
+        <h3>${address || 'No Address'}</h3>
+        <p class="city">${city || ''}</p>
+        <p class="status">${status || ''}</p>
+        <p class="price">$${(list_price || 0).toLocaleString()}</p>
+        <div class="specs">
+          <span>${beds || 0} beds</span>
+          <span>${baths || 0} baths</span>
+        </div>
       </div>
     `;
   }
@@ -59,13 +52,10 @@
           .setLngLat([location.lng, location.lat])
           .addTo(map);
 
-        if (location.details || location.title) {
-          marker.setPopup(
-            new maplibregl.Popup({ offset: 25 })
-              .setHTML(location.details ? formatDetails(location.details) : `<h3>${location.title}</h3>`)
-          );
-        }
+        const popup = new maplibregl.Popup({ offset: 25 })
+          .setHTML(createPopupHTML(location));
 
+        marker.setPopup(popup);
         currentMarkers.push(marker);
       });
     }
@@ -84,7 +74,8 @@
 
 <style>
   :global(.popup-content) {
-    padding: 8px;
+    padding: 12px;
+    min-width: 200px;
   }
   :global(.popup-content h3) {
     margin: 0 0 8px 0;
@@ -94,5 +85,23 @@
   :global(.popup-content p) {
     margin: 4px 0;
     font-size: 14px;
+  }
+  :global(.popup-content .city) {
+    color: #666;
+  }
+  :global(.popup-content .status) {
+    text-transform: capitalize;
+    color: #2563eb;
+    font-weight: 500;
+  }
+  :global(.popup-content .price) {
+    font-weight: 600;
+    font-size: 16px;
+    margin: 8px 0;
+  }
+  :global(.popup-content .specs) {
+    display: flex;
+    gap: 12px;
+    color: #666;
   }
 </style>

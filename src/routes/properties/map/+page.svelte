@@ -22,6 +22,7 @@
       opening_hours?: string;
       phone?: string;
     };
+    property: Property;
   }
 
   let map = $state<maplibregl.Map>();
@@ -89,7 +90,7 @@
         lat: Number(place.lat),
         lng: Number(place.lng),
         title: place.address || "unknown address",
-        details: place.address as MapLocation["details"],
+        property: place,
       }),
     ),
   );
