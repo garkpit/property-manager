@@ -51,22 +51,11 @@
       .filter((file) => file.type.startsWith("image/"))
       .map((file) => URL.createObjectURL(file));
 
-    // Combine existing files with new files
-    const dt = new DataTransfer();
+    // Set the new files directly instead of combining
+    files = fileList;
 
-    // Add existing files
-    if (files) {
-      Array.from(files).forEach((file) => dt.items.add(file));
-    }
-
-    // Add new files
-    Array.from(fileList).forEach((file) => dt.items.add(file));
-
-    // Update files
-    files = dt.files;
-
-    // Update previews
-    previews = [...previews, ...newPreviews];
+    // Set the new previews directly
+    previews = newPreviews;
   }
 
   function handleDrag(e: DragEvent) {
@@ -78,8 +67,7 @@
     e.preventDefault();
     dragActive = false;
     if (e.dataTransfer?.files) {
-      files = e.dataTransfer.files;
-      createPreviews(files);
+      createPreviews(e.dataTransfer.files);
     }
   }
 
@@ -87,7 +75,6 @@
     const target = e.target as HTMLInputElement;
     if (target.files && target.files.length > 0) {
       createPreviews(target.files);
-      console.log("Files selected:", files);
     }
   }
 
@@ -168,7 +155,10 @@
       if (i !== index) dt.items.add(file);
     });
     files = dt.files;
-    previews.splice(index, 1);
+
+    // Revoke the URL for the removed preview to prevent memory leaks
+    URL.revokeObjectURL(previews[index]);
+    previews = previews.filter((_, i) => i !== index);
   }
 
   async function handleUpload() {
@@ -406,15 +396,17 @@
                   alt={file.name}
                   class="w-full h-40 object-cover rounded-lg shadow-sm"
                 />
-                <button
+                <Button
                   type="button"
-                  class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
-                         shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  variant="ghost"
+                  size="icon"
+                  class="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-gray-500 hover:bg-gray-600 text-white
+                         shadow-md focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                   onclick={(e) => removeFile(i, e)}
                   aria-label="Remove image"
                 >
-                  ×
-                </button>
+                  <Trash2 class="h-4 w-4" />
+                </Button>
               </div>
             {/if}
             <div class="text-sm text-gray-600 truncate">
