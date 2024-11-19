@@ -153,3 +153,21 @@ export async function deletePropertyImage(
         success: true,
     };
 }
+
+export async function updatePropertyImageOrder(propertyId: string, images: { url: string; name: string }[]) {
+    const { error } = await supabase
+        .from("properties")
+        .update({
+            metadata: {
+                images,
+            },
+        })
+        .eq("id", propertyId);
+
+    if (error) {
+        console.error("Error updating image order:", error);
+        return { success: false, error: error.message };
+    }
+
+    return { success: true };
+}

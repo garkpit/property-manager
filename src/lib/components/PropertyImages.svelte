@@ -3,6 +3,7 @@
   import {
     uploadImages,
     deletePropertyImage,
+    updatePropertyImageOrder,
     type PropertyImage,
   } from "$lib/services/imageService.svelte";
   import ImageModal from "./ImageModal.svelte";
@@ -131,9 +132,9 @@
     dragSource = null;
   }
 
-  function handleImageDrop(e: DragEvent, dropIndex: number) {
+  async function handleImageDrop(e: DragEvent, dropIndex: number) {
     e.preventDefault();
-    if (dragSource === null || dragSource === dropIndex) return;
+    if (dragSource === null || dragSource === dropIndex || !property.id) return;
 
     const items = [...existingImages];
     const [removed] = items.splice(dragSource, 1);
@@ -144,6 +145,17 @@
       e.currentTarget.classList.remove("bg-gray-100");
     }
     dragSource = null;
+
+    // Save the new order using the image service
+    const { success, error } = await updatePropertyImageOrder(
+      property.id,
+      items,
+    );
+
+    if (!success) {
+      console.error("Error updating image order:", error);
+      errorMessage = "Failed to save the new image order";
+    }
   }
 
   function removeFile(index: number, e: Event) {
