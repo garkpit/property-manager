@@ -21,6 +21,7 @@
   let isLoading = $state(true);
   let isDeletingImage = $state<{ [key: string]: boolean }>({});
   let selectedImage = $state<string | null>(null);
+  let dragSource = $state<number | null>(null);
 
   const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 
@@ -202,6 +203,50 @@
     selectedImage = null;
   }
 
+  function handleDragStart(e: DragEvent, index: number) {
+    dragSource = index;
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      // Set some data to enable dragging
+      e.dataTransfer.setData('text/plain', index.toString());
+    }
+  }
+
+  function handleDragOver(e: DragEvent, index: number) {
+    if (dragSource === index) return;
+    
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.add("bg-gray-100");
+    }
+  }
+
+  function handleDragLeave(e: DragEvent) {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.remove("bg-gray-100");
+    }
+  }
+
+  function handleDragEnd(e: DragEvent) {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.remove("bg-gray-100");
+    }
+    dragSource = null;
+  }
+
+  function handleImageDrop(e: DragEvent, dropIndex: number) {
+    if (dragSource === null || dragSource === dropIndex) return;
+    
+    const items = [...existingImages];
+    const [removed] = items.splice(dragSource, 1);
+    items.splice(dropIndex, 0, removed);
+    existingImages = items;
+    
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.remove("bg-gray-100");
+    }
+    dragSource = null;
+  }
+
   // Load images when property changes
   $effect(() => {
     if (property.id) {
@@ -233,18 +278,22 @@
     <div class="mb-6">
       <h3 class="text-lg font-semibold mb-2">Existing Images:</h3>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {#each existingImages as image}
-          <div class="relative">
+        {#each existingImages as image, i}
+          <div
+            class="relative aspect-square transition-colors"
+            draggable="true"
+            on:dragstart={(e) => handleDragStart(e, i)}
+            on:dragover|preventDefault={(e) => handleDragOver(e, i)}
+            on:dragleave={(e) => handleDragLeave(e)}
+            on:dragend={(e) => handleDragEnd(e)}
+            on:drop|preventDefault={(e) => handleImageDrop(e, i)}
+          >
             <img
               src={image.url}
               alt="Property image"
               class="w-full h-40 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
-              onclick={(e) => {
-                e.preventDefault();
-                openModal(image.url);
-              }}
-              onkeydown={(e) => {
-                e.preventDefault();
+              on:click|preventDefault={(e) => openModal(image.url)}
+              on:keydown={(e) => {
                 if (e.key === "Enter") openModal(image.url);
               }}
               role="button"
@@ -255,14 +304,14 @@
               class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                      shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
                      disabled:opacity-50 disabled:cursor-not-allowed"
-              onclick={(e) => {
-                e.preventDefault();
-                handleDeleteImage(image.name);
-              }}
+              on:click|preventDefault={(e) => handleDeleteImage(image.name)}
               disabled={isDeletingImage[image.name]}
               aria-label="Delete image"
             >
-              {isDeletingImage[image.name] ? "..." : "×"}
+              <i class="fas fa-times"></i>
+              {#if isDeletingImage[image.name]}
+                <span class="loading loading-spinner loading-xs"></span>
+              {/if}
             </button>
           </div>
         {/each}
@@ -273,22 +322,10 @@
   <div
     class="relative border-2 border-dashed rounded-lg p-8 text-center
            {dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}"
-    ondragenter={(e) => {
-      e.preventDefault();
-      handleDrag(e);
-    }}
-    ondragleave={(e) => {
-      e.preventDefault();
-      handleDrag(e);
-    }}
-    ondragover={(e) => {
-      e.preventDefault();
-      handleDrag(e);
-    }}
-    ondrop={(e) => {
-      e.preventDefault();
-      handleDrop(e);
-    }}
+    on:dragenter|preventDefault={(e) => handleDrag(e)}
+    on:dragleave={(e) => handleDrag(e)}
+    on:dragover|preventDefault={(e) => handleDrag(e)}
+    on:drop|preventDefault={(e) => handleDrop(e)}
     role="region"
     aria-label="Image upload drop zone"
   >
@@ -297,7 +334,7 @@
       multiple
       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-      onchange={handleChange}
+      on:change={(e) => handleChange(e)}
     />
 
     <div class="space-y-4">
@@ -344,10 +381,7 @@
           class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600
                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                  disabled:opacity-50 disabled:cursor-not-allowed"
-          onclick={(e) => {
-            e.preventDefault();
-            handleUpload(e);
-          }}
+          on:click|preventDefault={(e) => handleUpload()}
           disabled={isUploading}
         >
           {isUploading ? "Uploading..." : "Upload Images"}
@@ -367,10 +401,7 @@
                   type="button"
                   class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                          shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                  onclick={(e) => {
-                    e.preventDefault();
-                    removeFile(i);
-                  }}
+                  on:click|preventDefault={(e) => removeFile(i)}
                   aria-label="Remove image"
                 >
                   ×
