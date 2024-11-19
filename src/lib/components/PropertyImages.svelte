@@ -28,18 +28,30 @@
 
   function createPreviews(fileList: FileList) {
     if (!validateFiles(fileList)) {
-      files = null;
-      previews = [];
       return;
     }
 
-    // Revoke any existing preview URLs to avoid memory leaks
-    previews.forEach((url) => URL.revokeObjectURL(url));
-
-    // Create new preview URLs
-    previews = Array.from(fileList)
+    // Create new preview URLs for the new files
+    const newPreviews = Array.from(fileList)
       .filter((file) => file.type.startsWith("image/"))
       .map((file) => URL.createObjectURL(file));
+
+    // Combine existing files with new files
+    const dt = new DataTransfer();
+    
+    // Add existing files
+    if (files) {
+      Array.from(files).forEach(file => dt.items.add(file));
+    }
+    
+    // Add new files
+    Array.from(fileList).forEach(file => dt.items.add(file));
+    
+    // Update files
+    files = dt.files;
+    
+    // Update previews
+    previews = [...previews, ...newPreviews];
   }
 
   function handleDrag(e: DragEvent) {
@@ -56,8 +68,7 @@
     e.preventDefault();
     e.stopPropagation();
     dragActive = false;
-    if (e.dataTransfer?.files) {
-      files = e.dataTransfer.files;
+    if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
       createPreviews(e.dataTransfer.files);
       console.log("Files dropped:", files);
     }
@@ -65,8 +76,7 @@
 
   function handleChange(e: Event) {
     const target = e.target as HTMLInputElement;
-    if (target.files) {
-      files = target.files;
+    if (target.files && target.files.length > 0) {
       createPreviews(target.files);
       console.log("Files selected:", files);
     }
