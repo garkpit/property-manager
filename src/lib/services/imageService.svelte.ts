@@ -20,6 +20,19 @@ export async function uploadImage(file: File, propertyId: string) {
         .upload(filePath, file);
 
     if (error) {
+        // If the file already exists, just get its URL and return success
+        if (error.message?.includes("already exists")) {
+            const { data: urlData } = supabase.storage
+                .from("property-images")
+                .getPublicUrl(filePath);
+
+            return {
+                success: true,
+                url: urlData.publicUrl,
+                skipped: true,
+            };
+        }
+
         console.error("Error uploading to Supabase:", error);
         return {
             success: false,
@@ -80,13 +93,13 @@ export async function getPropertyImages(propertyId: string) {
     }
 
     // Get public URLs for all files
-    const images = files.map(file => {
+    const images = files.map((file) => {
         const { data } = supabase.storage
             .from("property-images")
             .getPublicUrl(`properties/${propertyId}/${file.name}`);
         return {
             url: data.publicUrl,
-            name: file.name
+            name: file.name,
         };
     });
 
@@ -96,7 +109,10 @@ export async function getPropertyImages(propertyId: string) {
     };
 }
 
-export async function deletePropertyImage(propertyId: string, fileName: string) {
+export async function deletePropertyImage(
+    propertyId: string,
+    fileName: string,
+) {
     const { error } = await supabase.storage
         .from("property-images")
         .remove([`properties/${propertyId}/${fileName}`]);
