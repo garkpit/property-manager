@@ -1,6 +1,7 @@
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import { Plus } from "lucide-svelte";
+  import { Search } from "lucide-svelte";
   import type { Property } from "$lib/services/propertyService.svelte";
   import {
     upsertProperty,
@@ -15,6 +16,7 @@
     TableHeader,
     TableRow,
   } from "$lib/components/ui/table";
+  import { Input } from "$lib/components/ui/input";
 
   const actionItems = [
     {
@@ -32,6 +34,9 @@
   ];
 
   let properties = $state<Property[]>([]);
+  let filteredProperties = $state<Property[]>([]);
+  let searchQuery = $state("");
+  let searchTimeout: ReturnType<typeof setTimeout>;
   let loading = $state(false);
   let error = $state<string | null>(null);
 
@@ -40,7 +45,7 @@
     error = null;
 
     const { data, error: err } = await getOrgProperties();
-
+    console.log("getOrgProperties", data);
     if (err) {
       error = err.message;
       loading = false;
@@ -50,6 +55,41 @@
     properties = data || [];
     loading = false;
   }
+
+  function filterProperties() {
+    if (!searchQuery.trim()) {
+      filteredProperties = properties;
+      return;
+    }
+
+    const query = searchQuery?.toLowerCase() ?? "";
+    filteredProperties = properties.filter((property) => {
+      const searchFields = [
+        property.title,
+        property.subtitle,
+        property.address,
+        property.address2,
+        property.city,
+        property.region,
+        property.postal,
+        property.notes,
+      ];
+      return searchFields.some((field) => field?.toLowerCase().includes(query));
+    });
+  }
+
+  $effect(() => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    if (searchQuery !== undefined) {
+      searchTimeout = setTimeout(filterProperties, 500);
+    }
+  });
+
+  $effect(() => {
+    filteredProperties = properties;
+  });
 
   $effect(() => {
     loadProperties();
@@ -82,7 +122,18 @@
         </p>
       </div>
     {:else}
-      <div class="p-4">
+      <div class="p-4 space-y-4">
+        <div class="relative">
+          <Search
+            class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+          />
+          <Input
+            type="search"
+            placeholder="Search properties..."
+            class="pl-8"
+            bind:value={searchQuery}
+          />
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -91,27 +142,33 @@
             </TableRow>
           </TableHeader>
           <TableBody>
-            {#each properties as property}
+            {#each filteredProperties as property}
               <TableRow
                 class="cursor-pointer hover:bg-muted/50"
                 onclick={() => goto(`/properties/${property.id}`)}
               >
                 <TableCell>
                   <div class="space-y-1">
-                    <div class="font-medium">{property.title || "Untitled Property"}</div>
+                    <div class="font-medium">
+                      {property.title || "Untitled Property"}
+                    </div>
                     <div class="text-sm text-muted-foreground">
                       {[
                         property.address,
                         property.address2,
                         property.city,
                         property.region,
-                        property.postal
-                      ].filter(Boolean).join(", ")}
+                        property.postal,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
                     </div>
                   </div>
                 </TableCell>
                 <TableCell class="whitespace-nowrap">
-                  {property.created_at ? new Date(property.created_at).toLocaleDateString() : "-"}
+                  {property.created_at
+                    ? new Date(property.created_at).toLocaleDateString()
+                    : "-"}
                 </TableCell>
               </TableRow>
             {/each}
