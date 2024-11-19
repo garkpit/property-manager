@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Property } from "$lib/services/propertyService.svelte";
+  import { uploadImages, getPropertyImages } from "$lib/services/imageService.svelte";
 
   let { property } = $props<{
     property: Partial<Property>;
@@ -9,16 +10,19 @@
   let files = $state<FileList | null>(null);
   let previews = $state<string[]>([]);
   let errorMessage = $state<string | null>(null);
+  let isUploading = $state(false);
+  let existingImages = $state<string[]>([]);
+  let isLoading = $state(true);
 
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 
   function validateFiles(fileList: FileList): boolean {
     const invalidFiles = Array.from(fileList).filter(
-      file => !ALLOWED_TYPES.includes(file.type)
+      (file) => !ALLOWED_TYPES.includes(file.type),
     );
 
     if (invalidFiles.length > 0) {
-      errorMessage = `Invalid file type(s): ${invalidFiles.map(f => f.name).join(', ')}. Only JPG, PNG, and GIF files are allowed.`;
+      errorMessage = `Invalid file type(s): ${invalidFiles.map((f) => f.name).join(", ")}. Only JPG, PNG, and GIF files are allowed.`;
       return false;
     }
 
@@ -38,18 +42,18 @@
 
     // Combine existing files with new files
     const dt = new DataTransfer();
-    
+
     // Add existing files
     if (files) {
-      Array.from(files).forEach(file => dt.items.add(file));
+      Array.from(files).forEach((file) => dt.items.add(file));
     }
-    
+
     // Add new files
-    Array.from(fileList).forEach(file => dt.items.add(file));
-    
+    Array.from(fileList).forEach((file) => dt.items.add(file));
+
     // Update files
     files = dt.files;
-    
+
     // Update previews
     previews = [...previews, ...newPreviews];
   }
@@ -87,12 +91,12 @@
     const fileArray = Array.from(files || []);
     // Remove the file at the specified index
     fileArray.splice(index, 1);
-    
+
     // Revoke the URL for the removed preview
     if (previews[index]) {
       URL.revokeObjectURL(previews[index]);
     }
-    
+
     // Update previews array
     const newPreviews = [...previews];
     newPreviews.splice(index, 1);
@@ -100,13 +104,75 @@
 
     // Convert back to FileList-like object
     const dt = new DataTransfer();
-    fileArray.forEach(file => dt.items.add(file));
+    fileArray.forEach((file) => dt.items.add(file));
     files = dt.files;
 
     if (files.length === 0) {
       files = null;
     }
   }
+
+  async function handleUpload() {
+    if (!files || !property.id) return;
+
+    try {
+      isUploading = true;
+      errorMessage = null;
+
+      const result = await uploadImages(Array.from(files), property.id);
+      console.log("Upload result:", result);
+
+      if (result.success) {
+        // Clear the files and previews after successful upload
+        files = null;
+        previews.forEach((url) => URL.revokeObjectURL(url));
+        previews = [];
+        console.log("Upload successful:", result.urls);
+        
+        // Refresh the list of existing images
+        await loadExistingImages();
+      } else if (result.error) {
+        errorMessage = result.error;
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      errorMessage = "Failed to upload images. Please try again.";
+    } finally {
+      isUploading = false;
+    }
+  }
+
+  // Load existing images when component mounts
+  async function loadExistingImages() {
+    if (!property.id) return;
+    
+    try {
+      isLoading = true;
+      errorMessage = null;
+      const result = await getPropertyImages(property.id);
+      
+      if (result.success) {
+        existingImages = result.urls;
+      } else if (result.error) {
+        errorMessage = `Failed to load existing images: ${result.error}`;
+      }
+    } catch (error) {
+      console.error("Error loading images:", error);
+      errorMessage = "Failed to load existing images. Please try again.";
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  // Load images when property changes
+  $effect(() => {
+    if (property.id) {
+      loadExistingImages();
+    } else {
+      // Clear existing images if no property id
+      existingImages = [];
+    }
+  });
 
   // Cleanup previews when component is destroyed
   $effect.root(() => {
@@ -120,6 +186,27 @@
 
 <div class="p-4">
   <h2 class="text-2xl font-semibold mb-4">Property Images</h2>
+
+  {#if isLoading}
+    <div class="text-center py-4">
+      <span class="text-gray-600">Loading existing images...</span>
+    </div>
+  {:else if existingImages.length > 0}
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold mb-2">Existing Images:</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {#each existingImages as imageUrl}
+          <div class="relative">
+            <img
+              src={imageUrl}
+              alt="Property image"
+              class="w-full h-40 object-cover rounded-lg shadow-sm"
+            />
+          </div>
+        {/each}
+      </div>
+    </div>
+  {/if}
 
   <div
     class="relative border-2 border-dashed rounded-lg p-8 text-center
@@ -161,7 +248,19 @@
 
   {#if files}
     <div class="mt-4">
-      <h3 class="text-lg font-semibold mb-2">Selected Files:</h3>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Selected Files:</h3>
+        <button
+          type="button"
+          class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                 disabled:opacity-50 disabled:cursor-not-allowed"
+          onclick={handleUpload}
+          disabled={isUploading}
+        >
+          {isUploading ? "Uploading..." : "Upload Images"}
+        </button>
+      </div>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {#each Array.from(files) as file, i}
           <div class="space-y-2 relative group">
@@ -174,7 +273,7 @@
                 />
                 <button
                   type="button"
-                  class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center 
+                  class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                          shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                   onclick={() => removeFile(i)}
                   aria-label="Remove image"
