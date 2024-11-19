@@ -361,21 +361,6 @@
       </div>
     </div>
   </div>
-  <div>
-    {#if property?.metadata?.images}
-      <div class="mt-4">
-        {property?.metadata?.images?.length || 0} image(s)
-      </div>
-      <div class="mt-4">
-        <h3 class="text-lg font-semibold">Property Metadata:</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {#each property.metadata.images as image}
-            {image?.url}<br /><br />
-          {/each}
-        </div>
-      </div>
-    {/if}
-  </div>
 
   {#if errorMessage}
     <div class="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
