@@ -51,19 +51,57 @@ export async function uploadImage(file: File, propertyId: string) {
     };
 }
 
+async function getCurrentMetadata(propertyId: string) {
+    const { data, error } = await supabase
+        .from("properties")
+        .select("metadata")
+        .eq("id", propertyId)
+        .single();
+    
+    if (error) {
+        console.error("Error fetching property metadata:", error);
+        return null;
+    }
+    
+    return data?.metadata?.images || [];
+}
+
 async function updatePropertyImageMetadata(propertyId: string) {
-    const { images } = await getPropertyImages(propertyId);
+    // Get current storage images
+    const { images: storageImages } = await getPropertyImages(propertyId);
+    
+    // Get current metadata images array (preserves order)
+    const currentMetadataImages = await getCurrentMetadata(propertyId);
+    
+    // Create a map of existing images by name for quick lookup
+    const existingImageMap = new Map(
+        currentMetadataImages.map((img: { name: string }) => [img.name, img])
+    );
+    
+    // Filter out any images that no longer exist in storage
+    const validExistingImages = currentMetadataImages.filter(
+        (img: { name: string }) => storageImages.some(sImg => sImg.name === img.name)
+    );
+    
+    // Add any new images that aren't in the metadata yet
+    const newImages = storageImages.filter(
+        img => !existingImageMap.has(img.name)
+    );
+    
+    // Combine existing (ordered) images with new images
+    const updatedImages = [...validExistingImages, ...newImages];
+    
     const { error } = await supabase
-        .from('properties')
+        .from("properties")
         .update({
             metadata: {
-                images: images
+                images: updatedImages
             }
         })
-        .eq('id', propertyId);
+        .eq("id", propertyId);
 
     if (error) {
-        console.error('Error updating property metadata:', error);
+        console.error("Error updating property metadata:", error);
     }
     return { success: !error, error };
 }
@@ -134,20 +172,43 @@ export async function deletePropertyImage(
     propertyId: string,
     fileName: string,
 ) {
-    const { error } = await supabase.storage
+    // First get the current metadata to preserve order
+    const currentMetadataImages = await getCurrentMetadata(propertyId);
+    
+    // Remove the file from storage
+    const { error: storageError } = await supabase.storage
         .from("property-images")
         .remove([`properties/${propertyId}/${fileName}`]);
 
-    if (error) {
-        console.error("Error deleting image:", error);
+    if (storageError) {
+        console.error("Error deleting image:", storageError);
         return {
             success: false,
-            error: error.message,
+            error: storageError.message,
         };
     }
 
-    // Update property metadata with new image list
-    await updatePropertyImageMetadata(propertyId);
+    // Update metadata by removing only the deleted image
+    const updatedImages = currentMetadataImages.filter(
+        (img: { name: string }) => img.name !== fileName
+    );
+    
+    const { error: metadataError } = await supabase
+        .from("properties")
+        .update({
+            metadata: {
+                images: updatedImages
+            }
+        })
+        .eq("id", propertyId);
+
+    if (metadataError) {
+        console.error("Error updating metadata after delete:", metadataError);
+        return {
+            success: false,
+            error: metadataError.message,
+        };
+    }
 
     return {
         success: true,
