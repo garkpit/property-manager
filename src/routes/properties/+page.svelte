@@ -123,17 +123,19 @@
       </div>
     {:else}
       <div class="p-4 space-y-4">
-        <div class="relative">
-          <Search
-            class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-          />
-          <Input
-            type="search"
-            placeholder="Search properties..."
-            class="pl-8"
-            bind:value={searchQuery}
-          />
-        </div>
+        {#if properties.length > 3}
+          <div class="relative">
+            <Search
+              class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
+            />
+            <Input
+              type="search"
+              placeholder="Search properties..."
+              class="pl-8"
+              bind:value={searchQuery}
+            />
+          </div>
+        {/if}
         <Table>
           <TableHeader>
             <TableRow>
