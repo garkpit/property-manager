@@ -72,6 +72,32 @@
     }
   }
 
+  function removeFile(index: number) {
+    // Convert FileList to Array to allow manipulation
+    const fileArray = Array.from(files || []);
+    // Remove the file at the specified index
+    fileArray.splice(index, 1);
+    
+    // Revoke the URL for the removed preview
+    if (previews[index]) {
+      URL.revokeObjectURL(previews[index]);
+    }
+    
+    // Update previews array
+    const newPreviews = [...previews];
+    newPreviews.splice(index, 1);
+    previews = newPreviews;
+
+    // Convert back to FileList-like object
+    const dt = new DataTransfer();
+    fileArray.forEach(file => dt.items.add(file));
+    files = dt.files;
+
+    if (files.length === 0) {
+      files = null;
+    }
+  }
+
   // Cleanup previews when component is destroyed
   $effect.root(() => {
     if (previews.length > 0) {
@@ -128,13 +154,24 @@
       <h3 class="text-lg font-semibold mb-2">Selected Files:</h3>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {#each Array.from(files) as file, i}
-          <div class="space-y-2">
+          <div class="space-y-2 relative group">
             {#if previews[i]}
-              <img
-                src={previews[i]}
-                alt={file.name}
-                class="w-full h-40 object-cover rounded-lg shadow-sm"
-              />
+              <div class="relative">
+                <img
+                  src={previews[i]}
+                  alt={file.name}
+                  class="w-full h-40 object-cover rounded-lg shadow-sm"
+                />
+                <button
+                  type="button"
+                  class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center 
+                         shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                  onclick={() => removeFile(i)}
+                  aria-label="Remove image"
+                >
+                  ×
+                </button>
+              </div>
             {/if}
             <div class="text-sm text-gray-600 truncate">
               {file.name} ({Math.round(file.size / 1024)}KB)
