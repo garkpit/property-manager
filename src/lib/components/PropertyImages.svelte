@@ -1,6 +1,10 @@
 <script lang="ts">
   import type { Property } from "$lib/services/propertyService.svelte";
-  import { uploadImages, getPropertyImages } from "$lib/services/imageService.svelte";
+  import {
+    uploadImages,
+    getPropertyImages,
+    deletePropertyImage,
+  } from "$lib/services/imageService.svelte";
 
   let { property } = $props<{
     property: Partial<Property>;
@@ -11,8 +15,9 @@
   let previews = $state<string[]>([]);
   let errorMessage = $state<string | null>(null);
   let isUploading = $state(false);
-  let existingImages = $state<string[]>([]);
+  let existingImages = $state<{ url: string; name: string }[]>([]);
   let isLoading = $state(true);
+  let isDeletingImage = $state<{ [key: string]: boolean }>({});
 
   const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 
@@ -128,7 +133,7 @@
         previews.forEach((url) => URL.revokeObjectURL(url));
         previews = [];
         console.log("Upload successful:", result.urls);
-        
+
         // Refresh the list of existing images
         await loadExistingImages();
       } else if (result.error) {
@@ -145,14 +150,14 @@
   // Load existing images when component mounts
   async function loadExistingImages() {
     if (!property.id) return;
-    
+
     try {
       isLoading = true;
       errorMessage = null;
       const result = await getPropertyImages(property.id);
-      
+
       if (result.success) {
-        existingImages = result.urls;
+        existingImages = result.images;
       } else if (result.error) {
         errorMessage = `Failed to load existing images: ${result.error}`;
       }
@@ -161,6 +166,27 @@
       errorMessage = "Failed to load existing images. Please try again.";
     } finally {
       isLoading = false;
+    }
+  }
+
+  async function handleDeleteImage(fileName: string) {
+    if (!property.id) return;
+
+    try {
+      isDeletingImage[fileName] = true;
+      const result = await deletePropertyImage(property.id, fileName);
+
+      if (result.success) {
+        // Refresh the list after successful deletion
+        await loadExistingImages();
+      } else {
+        errorMessage = `Failed to delete image: ${result.error}`;
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      errorMessage = "Failed to delete image. Please try again.";
+    } finally {
+      isDeletingImage[fileName] = false;
     }
   }
 
@@ -195,13 +221,24 @@
     <div class="mb-6">
       <h3 class="text-lg font-semibold mb-2">Existing Images:</h3>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {#each existingImages as imageUrl}
+        {#each existingImages as image}
           <div class="relative">
             <img
-              src={imageUrl}
+              src={image.url}
               alt="Property image"
               class="w-full h-40 object-cover rounded-lg shadow-sm"
             />
+            <button
+              type="button"
+              class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
+                     shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+              onclick={() => handleDeleteImage(image.name)}
+              disabled={isDeletingImage[image.name]}
+              aria-label="Delete image"
+            >
+              {isDeletingImage[image.name] ? "..." : "×"}
+            </button>
           </div>
         {/each}
       </div>

@@ -75,21 +75,41 @@ export async function getPropertyImages(propertyId: string) {
         return {
             success: false,
             error: error.message,
-            urls: [],
+            images: [],
         };
     }
 
     // Get public URLs for all files
-    const urls = files.map((file) => {
+    const images = files.map(file => {
         const { data } = supabase.storage
             .from("property-images")
             .getPublicUrl(`properties/${propertyId}/${file.name}`);
-        return data.publicUrl;
+        return {
+            url: data.publicUrl,
+            name: file.name
+        };
     });
 
     return {
         success: true,
-        urls,
-        files, // Include original file metadata if needed
+        images,
+    };
+}
+
+export async function deletePropertyImage(propertyId: string, fileName: string) {
+    const { error } = await supabase.storage
+        .from("property-images")
+        .remove([`properties/${propertyId}/${fileName}`]);
+
+    if (error) {
+        console.error("Error deleting image:", error);
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+
+    return {
+        success: true,
     };
 }
