@@ -126,7 +126,6 @@
       errorMessage = null;
 
       const result = await uploadImages(Array.from(files), property.id);
-      console.log("Upload result:", result);
 
       if (result.success) {
         // Clear the files and previews after successful upload
@@ -235,9 +234,14 @@
               src={image.url}
               alt="Property image"
               class="w-full h-40 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
-              on:click|preventDefault={() => openModal(image.url)}
-              on:keydown|preventDefault={(e) =>
-                e.key === "Enter" && openModal(image.url)}
+              onclick={(e) => {
+                e.preventDefault();
+                openModal(image.url);
+              }}
+              onkeydown={(e) => {
+                e.preventDefault();
+                if (e.key === "Enter") openModal(image.url);
+              }}
               role="button"
               tabindex="0"
             />
@@ -246,7 +250,10 @@
               class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                      shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
                      disabled:opacity-50 disabled:cursor-not-allowed"
-              on:click|preventDefault={() => handleDeleteImage(image.name)}
+              onclick={(e) => {
+                e.preventDefault();
+                handleDeleteImage(image.name);
+              }}
               disabled={isDeletingImage[image.name]}
               aria-label="Delete image"
             >
@@ -261,10 +268,22 @@
   <div
     class="relative border-2 border-dashed rounded-lg p-8 text-center
            {dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}"
-    on:dragenter|preventDefault={handleDrag}
-    on:dragleave|preventDefault={handleDrag}
-    on:dragover|preventDefault={handleDrag}
-    on:drop|preventDefault={handleDrop}
+    ondragenter={(e) => {
+      e.preventDefault();
+      handleDrag(e);
+    }}
+    ondragleave={(e) => {
+      e.preventDefault();
+      handleDrag(e);
+    }}
+    ondragover={(e) => {
+      e.preventDefault();
+      handleDrag(e);
+    }}
+    ondrop={(e) => {
+      e.preventDefault();
+      handleDrop(e);
+    }}
     role="region"
     aria-label="Image upload drop zone"
   >
@@ -273,7 +292,7 @@
       multiple
       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-      on:change={handleChange}
+      onchange={handleChange}
     />
 
     <div class="space-y-4">
@@ -320,7 +339,10 @@
           class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600
                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                  disabled:opacity-50 disabled:cursor-not-allowed"
-          on:click|preventDefault={handleUpload}
+          onclick={(e) => {
+            e.preventDefault();
+            handleUpload(e);
+          }}
           disabled={isUploading}
         >
           {isUploading ? "Uploading..." : "Upload Images"}
@@ -340,7 +362,10 @@
                   type="button"
                   class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                          shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                  on:click|preventDefault={() => removeFile(i)}
+                  onclick={(e) => {
+                    e.preventDefault();
+                    removeFile(i);
+                  }}
                   aria-label="Remove image"
                 >
                   ×
