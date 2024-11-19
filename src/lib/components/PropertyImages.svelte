@@ -5,6 +5,7 @@
     getPropertyImages,
     deletePropertyImage,
   } from "$lib/services/imageService.svelte";
+  import ImageModal from "./ImageModal.svelte";
 
   let { property } = $props<{
     property: Partial<Property>;
@@ -18,6 +19,7 @@
   let existingImages = $state<{ url: string; name: string }[]>([]);
   let isLoading = $state(true);
   let isDeletingImage = $state<{ [key: string]: boolean }>({});
+  let selectedImage = $state<string | null>(null);
 
   const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 
@@ -190,6 +192,14 @@
     }
   }
 
+  function openModal(imageUrl: string) {
+    selectedImage = imageUrl;
+  }
+
+  function closeModal() {
+    selectedImage = null;
+  }
+
   // Load images when property changes
   $effect(() => {
     if (property.id) {
@@ -226,14 +236,18 @@
             <img
               src={image.url}
               alt="Property image"
-              class="w-full h-40 object-cover rounded-lg shadow-sm"
+              class="w-full h-40 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+              on:click|preventDefault={() => openModal(image.url)}
+              on:keydown|preventDefault={(e) => e.key === "Enter" && openModal(image.url)}
+              role="button"
+              tabindex="0"
             />
             <button
               type="button"
               class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                      shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
                      disabled:opacity-50 disabled:cursor-not-allowed"
-              onclick={() => handleDeleteImage(image.name)}
+              on:click|preventDefault={() => handleDeleteImage(image.name)}
               disabled={isDeletingImage[image.name]}
               aria-label="Delete image"
             >
@@ -248,10 +262,10 @@
   <div
     class="relative border-2 border-dashed rounded-lg p-8 text-center
            {dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}"
-    ondragenter={handleDrag}
-    ondragleave={handleDrag}
-    ondragover={handleDrag}
-    ondrop={handleDrop}
+    on:dragenter|preventDefault={handleDrag}
+    on:dragleave|preventDefault={handleDrag}
+    on:dragover|preventDefault={handleDrag}
+    on:drop|preventDefault={handleDrop}
     role="region"
     aria-label="Image upload drop zone"
   >
@@ -260,7 +274,7 @@
       multiple
       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-      onchange={handleChange}
+      on:change={handleChange}
     />
 
     <div class="space-y-4">
@@ -292,7 +306,7 @@
           class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600
                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                  disabled:opacity-50 disabled:cursor-not-allowed"
-          onclick={handleUpload}
+          on:click|preventDefault={handleUpload}
           disabled={isUploading}
         >
           {isUploading ? "Uploading..." : "Upload Images"}
@@ -312,7 +326,7 @@
                   type="button"
                   class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                          shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                  onclick={() => removeFile(i)}
+                  on:click|preventDefault={() => removeFile(i)}
                   aria-label="Remove image"
                 >
                   ×
@@ -326,5 +340,9 @@
         {/each}
       </div>
     </div>
+  {/if}
+
+  {#if selectedImage}
+    <ImageModal imageUrl={selectedImage} onClose={closeModal} />
   {/if}
 </div>
