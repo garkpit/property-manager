@@ -156,12 +156,11 @@
     try {
       isLoading = true;
       errorMessage = null;
-      const result = await getPropertyImages(property.id);
 
-      if (result.success) {
-        existingImages = result.images;
-      } else if (result.error) {
-        errorMessage = `Failed to load existing images: ${result.error}`;
+      if (property.metadata?.images) {
+        existingImages = property.metadata.images;
+      } else {
+        existingImages = [];
       }
     } catch (error) {
       console.error("Error loading images:", error);
@@ -238,7 +237,8 @@
               alt="Property image"
               class="w-full h-40 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
               on:click|preventDefault={() => openModal(image.url)}
-              on:keydown|preventDefault={(e) => e.key === "Enter" && openModal(image.url)}
+              on:keydown|preventDefault={(e) =>
+                e.key === "Enter" && openModal(image.url)}
               role="button"
               tabindex="0"
             />
@@ -289,6 +289,21 @@
         Supports: JPG, PNG, GIF only (Max 10MB each)
       </div>
     </div>
+  </div>
+  <div>
+    {#if property?.metadata?.images}
+      <div class="mt-4">
+        {property?.metadata?.images?.length || 0} image(s)
+      </div>
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold">Property Metadata:</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {#each property.metadata.images as image}
+            {image?.url}<br /><br />
+          {/each}
+        </div>
+      </div>
+    {/if}
   </div>
 
   {#if errorMessage}

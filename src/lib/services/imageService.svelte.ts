@@ -51,6 +51,23 @@ export async function uploadImage(file: File, propertyId: string) {
     };
 }
 
+async function updatePropertyImageMetadata(propertyId: string) {
+    const { images } = await getPropertyImages(propertyId);
+    const { error } = await supabase
+        .from('properties')
+        .update({
+            metadata: {
+                images: images
+            }
+        })
+        .eq('id', propertyId);
+
+    if (error) {
+        console.error('Error updating property metadata:', error);
+    }
+    return { success: !error, error };
+}
+
 export async function uploadImages(files: File[], propertyId: string) {
     console.log("Uploading images for property:", propertyId, files);
 
@@ -62,6 +79,9 @@ export async function uploadImages(files: File[], propertyId: string) {
 
         // Check if all uploads were successful
         const allSuccessful = results.every((result) => result.success);
+
+        // Update property metadata with new image list
+        await updatePropertyImageMetadata(propertyId);
 
         return {
             success: allSuccessful,
@@ -82,6 +102,7 @@ export async function getPropertyImages(propertyId: string) {
     const { data: files, error } = await supabase.storage
         .from("property-images")
         .list(`properties/${propertyId}`);
+    console.log("getPropertyImages:", files);
 
     if (error) {
         console.error("Error listing property images:", error);
@@ -124,6 +145,9 @@ export async function deletePropertyImage(
             error: error.message,
         };
     }
+
+    // Update property metadata with new image list
+    await updatePropertyImageMetadata(propertyId);
 
     return {
         success: true,

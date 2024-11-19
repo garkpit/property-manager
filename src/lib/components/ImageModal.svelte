@@ -4,6 +4,7 @@
     onClose: () => void;
   }>();
 
+  console.log("imageUrl", imageUrl);
   function handleBackdropClick(event: MouseEvent) {
     // Only close if clicking the backdrop, not the image
     if ((event.target as HTMLElement).classList.contains("modal-backdrop")) {
