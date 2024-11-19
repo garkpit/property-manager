@@ -86,23 +86,29 @@
 
   $effect(() => {
     property.list_date = listDateInput ? formatDateForDb(listDateInput) : null;
-    property.closing_date = closingDateInput ? formatDateForDb(closingDateInput) : null;
+    property.closing_date = closingDateInput
+      ? formatDateForDb(closingDateInput)
+      : null;
   });
 
   const propertyTypeContent = $derived(
-    propertyTypes.find((t) => t.value === property.property_type)?.label ?? "Select property type"
+    propertyTypes.find((t) => t.value === property.property_type)?.label ??
+      "Select property type",
   );
 
   const propertySubtypeContent = $derived(
-    propertySubtypes.find((t) => t.value === property.property_subtype)?.label ?? "Select property subtype"
+    propertySubtypes.find((t) => t.value === property.property_subtype)
+      ?.label ?? "Select property subtype",
   );
 
   const transactionTypeContent = $derived(
-    transactionTypes.find((t) => t.value === property.transaction_type)?.label ?? "Select transaction type"
+    transactionTypes.find((t) => t.value === property.transaction_type)
+      ?.label ?? "Select transaction type",
   );
 
   const statusContent = $derived(
-    propertyStatuses.find((s) => s.value === property.status)?.label ?? "Select status"
+    propertyStatuses.find((s) => s.value === property.status)?.label ??
+      "Select status",
   );
 </script>
 
@@ -282,7 +288,7 @@
       <Textarea
         id="notes"
         bind:value={property.notes}
-        rows="4"
+        rows={4}
         placeholder="Add any additional notes about the property"
       />
     </div>
