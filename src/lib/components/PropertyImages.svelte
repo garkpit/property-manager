@@ -205,10 +205,19 @@
 
   function handleDragStart(e: DragEvent, index: number) {
     dragSource = index;
-    if (e.dataTransfer) {
+    if (e.dataTransfer && e.target instanceof HTMLElement) {
       e.dataTransfer.effectAllowed = 'move';
-      // Set some data to enable dragging
       e.dataTransfer.setData('text/plain', index.toString());
+      
+      // Find the image element within the dragged container
+      const container = e.target;
+      const imgElement = container.querySelector('img');
+      
+      if (imgElement) {
+        // Use the container itself as the drag image
+        // This ensures we get the entire styled container with the image
+        e.dataTransfer.setDragImage(container, container.offsetWidth / 2, container.offsetHeight / 2);
+      }
     }
   }
 
@@ -292,6 +301,7 @@
               src={image.url}
               alt="Property image"
               class="w-full h-40 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+              draggable="false"
               on:click|preventDefault={(e) => openModal(image.url)}
               on:keydown={(e) => {
                 if (e.key === "Enter") openModal(image.url);
