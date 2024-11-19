@@ -2,7 +2,6 @@
   import type { Property } from "$lib/services/propertyService.svelte";
   import {
     uploadImages,
-    getPropertyImages,
     deletePropertyImage,
   } from "$lib/services/imageService.svelte";
   import ImageModal from "./ImageModal.svelte";
