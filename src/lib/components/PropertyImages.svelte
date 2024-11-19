@@ -7,6 +7,40 @@
 
   let dragActive = $state(false);
   let files = $state<FileList | null>(null);
+  let previews = $state<string[]>([]);
+  let errorMessage = $state<string | null>(null);
+
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+
+  function validateFiles(fileList: FileList): boolean {
+    const invalidFiles = Array.from(fileList).filter(
+      file => !ALLOWED_TYPES.includes(file.type)
+    );
+
+    if (invalidFiles.length > 0) {
+      errorMessage = `Invalid file type(s): ${invalidFiles.map(f => f.name).join(', ')}. Only JPG, PNG, and GIF files are allowed.`;
+      return false;
+    }
+
+    errorMessage = null;
+    return true;
+  }
+
+  function createPreviews(fileList: FileList) {
+    if (!validateFiles(fileList)) {
+      files = null;
+      previews = [];
+      return;
+    }
+
+    // Revoke any existing preview URLs to avoid memory leaks
+    previews.forEach((url) => URL.revokeObjectURL(url));
+
+    // Create new preview URLs
+    previews = Array.from(fileList)
+      .filter((file) => file.type.startsWith("image/"))
+      .map((file) => URL.createObjectURL(file));
+  }
 
   function handleDrag(e: DragEvent) {
     e.preventDefault();
@@ -24,7 +58,7 @@
     dragActive = false;
     if (e.dataTransfer?.files) {
       files = e.dataTransfer.files;
-      // Handle files here
+      createPreviews(e.dataTransfer.files);
       console.log("Files dropped:", files);
     }
   }
@@ -33,10 +67,19 @@
     const target = e.target as HTMLInputElement;
     if (target.files) {
       files = target.files;
-      // Handle files here
+      createPreviews(target.files);
       console.log("Files selected:", files);
     }
   }
+
+  // Cleanup previews when component is destroyed
+  $effect.root(() => {
+    if (previews.length > 0) {
+      return () => {
+        previews.forEach((url) => URL.revokeObjectURL(url));
+      };
+    }
+  });
 </script>
 
 <div class="p-4">
@@ -55,7 +98,7 @@
     <input
       type="file"
       multiple
-      accept="image/*"
+      accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
       onchange={handleChange}
     />
@@ -69,21 +112,36 @@
         <span class="text-gray-500"> or click to select</span>
       </div>
       <div class="text-sm text-gray-500">
-        Supports: JPG, PNG, GIF (Max 10MB each)
+        Supports: JPG, PNG, GIF only (Max 10MB each)
       </div>
     </div>
   </div>
 
+  {#if errorMessage}
+    <div class="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
+      {errorMessage}
+    </div>
+  {/if}
+
   {#if files}
     <div class="mt-4">
       <h3 class="text-lg font-semibold mb-2">Selected Files:</h3>
-      <ul class="space-y-2">
-        {#each Array.from(files) as file}
-          <li class="text-sm text-gray-600">
-            {file.name} ({Math.round(file.size / 1024)}KB)
-          </li>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {#each Array.from(files) as file, i}
+          <div class="space-y-2">
+            {#if previews[i]}
+              <img
+                src={previews[i]}
+                alt={file.name}
+                class="w-full h-40 object-cover rounded-lg shadow-sm"
+              />
+            {/if}
+            <div class="text-sm text-gray-600 truncate">
+              {file.name} ({Math.round(file.size / 1024)}KB)
+            </div>
+          </div>
         {/each}
-      </ul>
+      </div>
     </div>
   {/if}
 </div>
