@@ -6,6 +6,8 @@
     type PropertyImage,
   } from "$lib/services/imageService.svelte";
   import ImageModal from "./ImageModal.svelte";
+  import { Button } from "$lib/components/ui/button";
+  import { Trash2 } from "lucide-svelte";
 
   let { property, onReload } = $props<{
     property: Partial<Property>;
@@ -69,21 +71,15 @@
 
   function handleDrag(e: DragEvent) {
     e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      dragActive = true;
-    } else if (e.type === "dragleave") {
-      dragActive = false;
-    }
+    dragActive = e.type === "dragenter";
   }
 
   function handleDrop(e: DragEvent) {
     e.preventDefault();
-    e.stopPropagation();
     dragActive = false;
-    if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
-      createPreviews(e.dataTransfer.files);
-      console.log("Files dropped:", files);
+    if (e.dataTransfer?.files) {
+      files = e.dataTransfer.files;
+      createPreviews(files);
     }
   }
 
@@ -95,30 +91,84 @@
     }
   }
 
-  function removeFile(index: number) {
-    // Convert FileList to Array to allow manipulation
-    const fileArray = Array.from(files || []);
-    // Remove the file at the specified index
-    fileArray.splice(index, 1);
+  function openModal(url: string, e: Event) {
+    e.preventDefault();
+    selectedImage = url;
+  }
 
-    // Revoke the URL for the removed preview
-    if (previews[index]) {
-      URL.revokeObjectURL(previews[index]);
+  function closeModal() {
+    selectedImage = null;
+  }
+
+  function handleDragStart(e: DragEvent, index: number) {
+    dragSource = index;
+    if (e.dataTransfer && e.target instanceof HTMLElement) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", index.toString());
+
+      // Find the image element within the dragged container
+      const container = e.target;
+      const imgElement = container.querySelector("img");
+
+      if (imgElement) {
+        // Use the container itself as the drag image
+        // This ensures we get the entire styled container with the image
+        e.dataTransfer.setDragImage(
+          container,
+          container.offsetWidth / 2,
+          container.offsetHeight / 2,
+        );
+      }
     }
+  }
 
-    // Update previews array
-    const newPreviews = [...previews];
-    newPreviews.splice(index, 1);
-    previews = newPreviews;
+  function handleDragOver(e: DragEvent, index: number) {
+    e.preventDefault();
+    if (dragSource === index) return;
 
-    // Convert back to FileList-like object
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.add("bg-gray-100");
+    }
+  }
+
+  function handleDragLeave(e: DragEvent) {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.remove("bg-gray-100");
+    }
+  }
+
+  function handleDragEnd(e: DragEvent) {
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.remove("bg-gray-100");
+    }
+    dragSource = null;
+  }
+
+  function handleImageDrop(e: DragEvent, dropIndex: number) {
+    e.preventDefault();
+    if (dragSource === null || dragSource === dropIndex) return;
+
+    const items = [...existingImages];
+    const [removed] = items.splice(dragSource, 1);
+    items.splice(dropIndex, 0, removed);
+    existingImages = items;
+
+    if (e.currentTarget instanceof HTMLElement) {
+      e.currentTarget.classList.remove("bg-gray-100");
+    }
+    dragSource = null;
+  }
+
+  function removeFile(index: number, e: Event) {
+    e.preventDefault();
+    if (!files) return;
+
     const dt = new DataTransfer();
-    fileArray.forEach((file) => dt.items.add(file));
+    Array.from(files).forEach((file, i) => {
+      if (i !== index) dt.items.add(file);
+    });
     files = dt.files;
-
-    if (files.length === 0) {
-      files = null;
-    }
+    previews.splice(index, 1);
   }
 
   async function handleUpload() {
@@ -172,7 +222,8 @@
     }
   }
 
-  async function handleDeleteImage(fileName: string) {
+  async function handleDeleteImage(e: Event, fileName: string) {
+    e.preventDefault();
     if (!property.id) return;
 
     try {
@@ -193,67 +244,6 @@
     } finally {
       isDeletingImage[fileName] = false;
     }
-  }
-
-  function openModal(imageUrl: string) {
-    selectedImage = imageUrl;
-  }
-
-  function closeModal() {
-    selectedImage = null;
-  }
-
-  function handleDragStart(e: DragEvent, index: number) {
-    dragSource = index;
-    if (e.dataTransfer && e.target instanceof HTMLElement) {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', index.toString());
-      
-      // Find the image element within the dragged container
-      const container = e.target;
-      const imgElement = container.querySelector('img');
-      
-      if (imgElement) {
-        // Use the container itself as the drag image
-        // This ensures we get the entire styled container with the image
-        e.dataTransfer.setDragImage(container, container.offsetWidth / 2, container.offsetHeight / 2);
-      }
-    }
-  }
-
-  function handleDragOver(e: DragEvent, index: number) {
-    if (dragSource === index) return;
-    
-    if (e.currentTarget instanceof HTMLElement) {
-      e.currentTarget.classList.add("bg-gray-100");
-    }
-  }
-
-  function handleDragLeave(e: DragEvent) {
-    if (e.currentTarget instanceof HTMLElement) {
-      e.currentTarget.classList.remove("bg-gray-100");
-    }
-  }
-
-  function handleDragEnd(e: DragEvent) {
-    if (e.currentTarget instanceof HTMLElement) {
-      e.currentTarget.classList.remove("bg-gray-100");
-    }
-    dragSource = null;
-  }
-
-  function handleImageDrop(e: DragEvent, dropIndex: number) {
-    if (dragSource === null || dragSource === dropIndex) return;
-    
-    const items = [...existingImages];
-    const [removed] = items.splice(dragSource, 1);
-    items.splice(dropIndex, 0, removed);
-    existingImages = items;
-    
-    if (e.currentTarget instanceof HTMLElement) {
-      e.currentTarget.classList.remove("bg-gray-100");
-    }
-    dragSource = null;
   }
 
   // Load images when property changes
@@ -286,43 +276,52 @@
   {:else if existingImages.length > 0}
     <div class="mb-6">
       <h3 class="text-lg font-semibold mb-2">Existing Images:</h3>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        role="list"
+      >
         {#each existingImages as image, i}
           <div
             class="relative aspect-square transition-colors"
             draggable="true"
-            on:dragstart={(e) => handleDragStart(e, i)}
-            on:dragover|preventDefault={(e) => handleDragOver(e, i)}
-            on:dragleave={(e) => handleDragLeave(e)}
-            on:dragend={(e) => handleDragEnd(e)}
-            on:drop|preventDefault={(e) => handleImageDrop(e, i)}
+            ondragstart={(e) => handleDragStart(e, i)}
+            ondragover={(e) => handleDragOver(e, i)}
+            ondragleave={(e) => handleDragLeave(e)}
+            ondragend={(e) => handleDragEnd(e)}
+            ondrop={(e) => handleImageDrop(e, i)}
+            role="listitem"
           >
-            <img
-              src={image.url}
-              alt="Property image"
-              class="w-full h-40 object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
-              draggable="false"
-              on:click|preventDefault={(e) => openModal(image.url)}
-              on:keydown={(e) => {
-                if (e.key === "Enter") openModal(image.url);
-              }}
-              role="button"
-              tabindex="0"
-            />
             <button
+              class="w-full h-40 p-0 border-0 bg-transparent"
+              onclick={(e) => openModal(image.url, e)}
+              onkeydown={(e) => {
+                if (e.key === "Enter") openModal(image.url, e);
+              }}
+            >
+              <img
+                src={image.url}
+                alt={`Property photo ${i + 1}`}
+                class="w-full h-full object-cover rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                draggable="false"
+              />
+            </button>
+            <Button
               type="button"
-              class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
-                     shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-              on:click|preventDefault={(e) => handleDeleteImage(image.name)}
+              variant="ghost"
+              size="icon"
+              class="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-gray-500 hover:bg-gray-600 text-white
+                     shadow-md focus:ring-2 focus:ring-gray-500 focus:ring-offset-2
+                     disabled:opacity-50"
+              onclick={(e) => handleDeleteImage(e, image.name)}
               disabled={isDeletingImage[image.name]}
               aria-label="Delete image"
             >
-              <i class="fas fa-times"></i>
               {#if isDeletingImage[image.name]}
                 <span class="loading loading-spinner loading-xs"></span>
+              {:else}
+                <Trash2 class="h-4 w-4" />
               {/if}
-            </button>
+            </Button>
           </div>
         {/each}
       </div>
@@ -332,10 +331,10 @@
   <div
     class="relative border-2 border-dashed rounded-lg p-8 text-center
            {dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}"
-    on:dragenter|preventDefault={(e) => handleDrag(e)}
-    on:dragleave={(e) => handleDrag(e)}
-    on:dragover|preventDefault={(e) => handleDrag(e)}
-    on:drop|preventDefault={(e) => handleDrop(e)}
+    ondragenter={(e) => handleDrag(e)}
+    ondragleave={(e) => handleDrag(e)}
+    ondragover={(e) => handleDrag(e)}
+    ondrop={(e) => handleDrop(e)}
     role="region"
     aria-label="Image upload drop zone"
   >
@@ -344,7 +343,7 @@
       multiple
       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-      on:change={(e) => handleChange(e)}
+      onchange={(e) => handleChange(e)}
     />
 
     <div class="space-y-4">
@@ -391,7 +390,7 @@
           class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600
                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
                  disabled:opacity-50 disabled:cursor-not-allowed"
-          on:click|preventDefault={(e) => handleUpload()}
+          onclick={(e) => handleUpload()}
           disabled={isUploading}
         >
           {isUploading ? "Uploading..." : "Upload Images"}
@@ -411,7 +410,7 @@
                   type="button"
                   class="absolute -top-2 -right-2 bg-gray-500 text-white rounded-full w-6 h-6 flex items-center justify-center
                          shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                  on:click|preventDefault={(e) => removeFile(i)}
+                  onclick={(e) => removeFile(i, e)}
                   aria-label="Remove image"
                 >
                   ×
