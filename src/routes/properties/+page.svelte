@@ -86,8 +86,8 @@
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Address</TableHead>
-              <TableHead>City</TableHead>
+              <TableHead class="w-full">Property</TableHead>
+              <TableHead class="w-[100px]">Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -98,15 +98,21 @@
               >
                 <TableCell>
                   <div class="space-y-1">
-                    <div>{property.address || "-"}</div>
-                    {#if property.address2}
-                      <div class="text-sm text-muted-foreground">
-                        {property.address2}
-                      </div>
-                    {/if}
+                    <div class="font-medium">{property.title || "Untitled Property"}</div>
+                    <div class="text-sm text-muted-foreground">
+                      {[
+                        property.address,
+                        property.address2,
+                        property.city,
+                        property.region,
+                        property.postal
+                      ].filter(Boolean).join(", ")}
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell>{property.city || "-"}</TableCell>
+                <TableCell class="whitespace-nowrap">
+                  {property.created_at ? new Date(property.created_at).toLocaleDateString() : "-"}
+                </TableCell>
               </TableRow>
             {/each}
           </TableBody>
