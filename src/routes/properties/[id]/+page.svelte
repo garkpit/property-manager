@@ -6,8 +6,11 @@
   import { ArrowLeft, Edit } from "lucide-svelte";
   import PropertyDisplay from "$lib/components/PropertyDisplay.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
+  import PropertyImages from "$lib/components/PropertyImages.svelte";
+  import PropertyHistory from "$lib/components/PropertyHistory.svelte";
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
+  import * as Tabs from "$lib/components/ui/tabs/index.js";
 
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
@@ -63,6 +66,10 @@
     goto("/properties");
   }
 
+  async function handleSave() {
+    // implement save logic here
+  }
+
   $effect(() => {
     load();
   });
@@ -70,13 +77,17 @@
 
 <PageTemplate>
   {#snippet TopLeft()}
-    <Button variant="ghost" size="icon" onclick={handleBack}>
+    <Button variant="ghost" size="icon" onclick={() => goto("/properties")}>
       <ArrowLeft class="h-4 w-4" />
     </Button>
   {/snippet}
 
+  {#snippet TopCenter()}
+    Property Details
+  {/snippet}
+
   {#snippet TopRight()}
-    {#if !isEditing && !isNew}
+    {#if !isNew && !isEditing}
       <Button variant="ghost" size="icon" onclick={() => (isEditing = true)}>
         <Edit class="h-4 w-4" />
       </Button>
@@ -86,18 +97,31 @@
   {#snippet Middle()}
     {#if loading}
       <div class="flex items-center justify-center h-full">
-        <div
-          class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"
-        ></div>
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
       </div>
     {:else if error}
-      <div class="flex items-center justify-center h-full">
-        <div class="text-destructive">{error}</div>
-      </div>
+      <div class="text-red-500 p-4">{error}</div>
     {:else if isEditing}
-      <PropertyEdit {property} />
+      <PropertyEdit bind:property on:save={handleSave} on:cancel={() => (isEditing = false)} />
     {:else}
-      <PropertyDisplay property={property as Property} />
+      <div class="flex items-center justify-center">
+        <Tabs.Root value="details" class="w-[350px] md:w-full">
+          <Tabs.List>
+            <Tabs.Trigger value="details">Details</Tabs.Trigger>
+            <Tabs.Trigger value="images">Images</Tabs.Trigger>
+            <Tabs.Trigger value="history">History</Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="details">
+            <PropertyDisplay {property} />
+          </Tabs.Content>
+          <Tabs.Content value="images">
+            <PropertyImages {property} />
+          </Tabs.Content>
+          <Tabs.Content value="history">
+            <PropertyHistory {property} />
+          </Tabs.Content>
+        </Tabs.Root>
+      </div>
     {/if}
   {/snippet}
 </PageTemplate>
