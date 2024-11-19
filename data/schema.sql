@@ -414,7 +414,9 @@ CREATE TABLE IF NOT EXISTS "public"."properties" (
     "notes" "text",
     "metadata" "jsonb",
     "orgid" "uuid" NOT NULL,
-    "userid" "uuid" NOT NULL
+    "userid" "uuid" NOT NULL,
+    "title" "text",
+    "subtitle" "text"
 );
 
 
@@ -422,6 +424,14 @@ ALTER TABLE "public"."properties" OWNER TO "postgres";
 
 
 COMMENT ON TABLE "public"."properties" IS 'Properties for sale or rent';
+
+
+
+COMMENT ON COLUMN "public"."properties"."title" IS 'property title';
+
+
+
+COMMENT ON COLUMN "public"."properties"."subtitle" IS 'property subtitle';
 
 
 

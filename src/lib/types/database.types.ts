@@ -297,6 +297,8 @@ export type Database = {
           property_type: string | null
           region: string | null
           status: string | null
+          subtitle: string | null
+          title: string | null
           transaction_type: string | null
           userid: string
           year_built: number | null
@@ -327,6 +329,8 @@ export type Database = {
           property_type?: string | null
           region?: string | null
           status?: string | null
+          subtitle?: string | null
+          title?: string | null
           transaction_type?: string | null
           userid: string
           year_built?: number | null
@@ -357,6 +361,8 @@ export type Database = {
           property_type?: string | null
           region?: string | null
           status?: string | null
+          subtitle?: string | null
+          title?: string | null
           transaction_type?: string | null
           userid?: string
           year_built?: number | null

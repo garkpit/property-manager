@@ -113,6 +113,28 @@
 </script>
 
 <div class="max-w-2xl mx-auto p-4 space-y-6">
+  <!-- Basic Information -->
+  <div class="space-y-4">
+    <h3 class="text-lg font-semibold">Basic Information</h3>
+    <div class="grid grid-cols-1 gap-4">
+      <div class="space-y-2">
+        <Label for="title">Title</Label>
+        <Input
+          id="title"
+          bind:value={property.title}
+          placeholder="Enter property title"
+        />
+      </div>
+      <div class="space-y-2">
+        <Label for="subtitle">Subtitle</Label>
+        <Input
+          id="subtitle"
+          bind:value={property.subtitle}
+          placeholder="Enter property subtitle"
+        />
+      </div>
+    </div>
+  </div>
   <!-- Address Information -->
   <div class="space-y-4">
     <h3 class="text-lg font-semibold">Address</h3>
