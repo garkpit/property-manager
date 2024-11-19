@@ -40,12 +40,7 @@
   let loading = $state(false);
   let error = $state<string | null>(null);
 
-  async function load() {
-    if (isNew) return;
-
-    loading = true;
-    error = null;
-
+  const loadProperty = async () => {
     const { data, error: err } = await supabase
       .from("properties")
       .select("*")
@@ -59,6 +54,15 @@
     }
 
     property = data;
+  };
+  async function load() {
+    if (isNew) return;
+
+    loading = true;
+    error = null;
+
+    await loadProperty();
+
     loading = false;
   }
 
@@ -121,7 +125,7 @@
             <PropertyDisplay {property} />
           </Tabs.Content>
           <Tabs.Content value="images">
-            <PropertyImages {property} />
+            <PropertyImages {property} onReload={loadProperty} />
           </Tabs.Content>
           <Tabs.Content value="history">
             <PropertyHistory {property} />

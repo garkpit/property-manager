@@ -3,11 +3,13 @@
   import {
     uploadImages,
     deletePropertyImage,
+    type PropertyImage,
   } from "$lib/services/imageService.svelte";
   import ImageModal from "./ImageModal.svelte";
 
-  let { property } = $props<{
+  let { property, onReload } = $props<{
     property: Partial<Property>;
+    onReload: () => void;
   }>();
 
   let dragActive = $state(false);
@@ -136,6 +138,7 @@
 
         // Refresh the list of existing images
         await loadExistingImages();
+        onReload();
       } else if (result.error) {
         errorMessage = result.error;
       }
@@ -177,7 +180,9 @@
 
       if (result.success) {
         // Refresh the list after successful deletion
+        existingImages = existingImages.filter((img) => img.name !== fileName);
         await loadExistingImages();
+        onReload();
       } else {
         errorMessage = `Failed to delete image: ${result.error}`;
       }
