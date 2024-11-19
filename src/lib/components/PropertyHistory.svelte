@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { Property } from "$lib/services/propertyService.svelte";
 
-  export let property: Partial<Property>;
+  let { property } = $props<{
+    property: Partial<Property>;
+  }>();
 </script>
 
 <div class="p-4">

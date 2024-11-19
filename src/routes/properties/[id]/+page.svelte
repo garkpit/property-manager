@@ -97,12 +97,18 @@
   {#snippet Middle()}
     {#if loading}
       <div class="flex items-center justify-center h-full">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div
+          class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
+        ></div>
       </div>
     {:else if error}
       <div class="text-red-500 p-4">{error}</div>
     {:else if isEditing}
-      <PropertyEdit bind:property on:save={handleSave} on:cancel={() => (isEditing = false)} />
+      <PropertyEdit
+        bind:property
+        on:save={handleSave}
+        on:cancel={() => (isEditing = false)}
+      />
     {:else}
       <div class="flex items-center justify-center">
         <Tabs.Root value="details" class="w-[350px] md:w-full">
