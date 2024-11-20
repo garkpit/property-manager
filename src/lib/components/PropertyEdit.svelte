@@ -7,13 +7,11 @@
   import { Label } from "$lib/components/ui/label";
   import { Button } from "$lib/components/ui/button";
   import { Save, Check } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
 
-  const { property = $bindable() } = $props<{
+  const { property = $bindable(), onSave = $bindable() } = $props<{
     property: Partial<Property>;
+    onSave?: () => void;
   }>();
-
-  const dispatch = createEventDispatcher();
 
   let loading = $state(false);
   let error = $state<string | null>(null);
@@ -32,7 +30,7 @@
     }
 
     loading = false;
-    dispatch("save");
+    if (onSave) onSave();
   }
 
   const propertyTypes = [
