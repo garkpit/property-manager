@@ -221,13 +221,15 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
   class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
   role="dialog"
   aria-modal="true"
-  on:click={handleBackdropClick}
+  onclick={handleBackdropClick}
 >
   <div
     class="relative w-full max-w-4xl bg-white rounded-lg shadow-xl overflow-hidden"
@@ -237,7 +239,7 @@
       class="absolute top-2 right-2 z-10 bg-gray-800 bg-opacity-50 text-white rounded-full w-8 h-8
              flex items-center justify-center hover:bg-opacity-75 focus:outline-none
              focus:ring-2 focus:ring-white"
-      on:click={onClose}
+      onclick={onClose}
       aria-label="Close modal"
     >
       ×
@@ -249,7 +251,7 @@
         src={imageUrl}
         alt="Image to crop"
         class="max-h-full"
-        on:load={handleImageLoad}
+        onload={handleImageLoad}
       />
     </div>
 
@@ -259,37 +261,37 @@
       <div class="flex-1 flex justify-end space-x-4">
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200 min-w-[100px]"
-          on:click={toggleDragMode}
+          onclick={toggleDragMode}
         >
           {modeText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
-          on:click={handleRotateLeft}
+          onclick={handleRotateLeft}
         >
           {rotateLeftText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
-          on:click={handleRotateRight}
+          onclick={handleRotateRight}
         >
           {rotateRightText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
-          on:click={handleZoomIn}
+          onclick={handleZoomIn}
         >
           {zoomInText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
-          on:click={handleZoomOut}
+          onclick={handleZoomOut}
         >
           {zoomOutText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
-          on:click={resetChanges}
+          onclick={resetChanges}
         >
           {resetText}
         </button>
@@ -297,7 +299,7 @@
       <div class="flex-none">
         <button
           class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px]"
-          on:click={applyChanges}
+          onclick={applyChanges}
           disabled={isProcessing}
         >
           {buttonText}
