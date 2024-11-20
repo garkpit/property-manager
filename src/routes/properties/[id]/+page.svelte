@@ -3,7 +3,7 @@
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import type { Property } from "$lib/services/propertyService.svelte";
   import { supabase } from "$lib/services/backend.svelte";
-  import { ArrowLeft, Edit } from "lucide-svelte";
+  import { ArrowLeft, Edit, Check } from "lucide-svelte";
   import PropertyDetails from "@/components/PropertyDetails.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
   import PropertyImages from "$lib/components/PropertyImages.svelte";
@@ -11,10 +11,16 @@
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import { upsertProperty } from "$lib/services/propertyService.svelte";
 
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
   let isEditing = $state(isNew);
+
+  $effect(() => {
+    // Reset editing state when URL changes
+    isEditing = isNew;
+  });
 
   let property: Partial<Property> = $state(
     isNew
@@ -71,7 +77,21 @@
   }
 
   async function handleSave() {
-    // implement save logic here
+    loading = true;
+    error = null;
+
+    const { error: err } = await upsertProperty(property);
+
+    if (err) {
+      error = err.message;
+      loading = false;
+      return;
+    }
+
+    loading = false;
+    isEditing = false;
+    // No need to navigate since we're already on the correct page
+    // Just need to exit edit mode
   }
 
   $effect(() => {
@@ -95,6 +115,10 @@
       <Button variant="ghost" size="icon" onclick={() => (isEditing = true)}>
         <Edit class="h-4 w-4" />
       </Button>
+    {:else if isEditing}
+      <Button variant="ghost" size="icon" onclick={handleSave}>
+        <Check class="h-4 w-4" />
+      </Button>
     {/if}
   {/snippet}
 
@@ -108,10 +132,9 @@
     {:else if error}
       <div class="text-red-500 p-4">{error}</div>
     {:else if isEditing}
-      <PropertyEdit
-        bind:property
-        on:save={handleSave}
-        on:cancel={() => (isEditing = false)}
+      <PropertyEdit 
+        bind:property 
+        on:save={() => isEditing = false}
       />
     {:else}
       <div class="flex items-center justify-center">

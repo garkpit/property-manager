@@ -6,12 +6,14 @@
   import { Textarea } from "$lib/components/ui/textarea";
   import { Label } from "$lib/components/ui/label";
   import { Button } from "$lib/components/ui/button";
-  import { Save } from "lucide-svelte";
-  import { goto } from "$app/navigation";
+  import { Save, Check } from "lucide-svelte";
+  import { createEventDispatcher } from "svelte";
 
   const { property = $bindable() } = $props<{
     property: Partial<Property>;
   }>();
+
+  const dispatch = createEventDispatcher();
 
   let loading = $state(false);
   let error = $state<string | null>(null);
@@ -30,7 +32,7 @@
     }
 
     loading = false;
-    goto("/properties");
+    dispatch("save");
   }
 
   const propertyTypes = [
