@@ -28,6 +28,16 @@
     {#if property.title}
       <h1 class="text-4xl font-bold text-gray-900 mb-2">{property.title}</h1>
     {/if}
+    {#if property?.metadata?.images && property?.metadata?.images.length > 0}
+      <!-- Thumbnail Image -->
+      <div class="mb-6">
+        <img
+          src={property.metadata.images[0].url}
+          alt={property.title || "Property Image"}
+          class="w-full object-contain rounded-lg shadow-md"
+        />
+      </div>
+    {/if}
     {#if property.subtitle}
       <h2 class="text-2xl text-gray-700 mb-4">{property.subtitle}</h2>
     {/if}
