@@ -88,9 +88,12 @@
     selectedImage = null;
   }
 
-  async function handleImageUpdate(event: CustomEvent) {
-    const { croppedImageUrl, blob, cropData, originalImageUrl } = event.detail;
-
+  async function handleImageUpdate(detail: {
+    croppedImageUrl: string;
+    blob: Blob;
+    cropData: any;
+    originalImageUrl: string | null;
+  }) {
     try {
       if (!property.id) return;
 
@@ -98,13 +101,13 @@
       errorMessage = null;
 
       // Get the original image name from the URL or create a new one
-      let originalImageName = originalImageUrl?.split('/').pop();
+      let originalImageName = detail.originalImageUrl?.split('/').pop();
       if (!originalImageName || originalImageName.includes('?')) {
         originalImageName = `image-${Date.now()}.jpg`;
       }
 
       // Create a File from the Blob with proper MIME type
-      const file = new File([blob], originalImageName, {
+      const file = new File([detail.blob], originalImageName, {
         type: "image/jpeg",
         lastModified: Date.now()
       });
@@ -465,7 +468,7 @@
     <ImageModal
       imageUrl={selectedImage}
       onClose={closeModal}
-      on:update={handleImageUpdate}
+      onUpdate={handleImageUpdate}
     />
   {/if}
 </div>

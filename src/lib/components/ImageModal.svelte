@@ -1,14 +1,17 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import Cropper from "cropperjs";
   import "cropperjs/dist/cropper.css";
 
-  let { imageUrl, onClose } = $props<{
+  let { imageUrl, onClose, onUpdate } = $props<{
     imageUrl: string;
     onClose: () => void;
+    onUpdate: (detail: {
+      croppedImageUrl: string;
+      blob: Blob;
+      cropData: any;
+      originalImageUrl: string | null;
+    }) => void;
   }>();
-
-  const dispatch = createEventDispatcher();
 
   let imageElement: HTMLImageElement;
   let cropper: Cropper;
@@ -200,7 +203,7 @@
       const croppedImageUrl = URL.createObjectURL(blob);
 
       // Emit the cropped image data to parent with the original image URL
-      dispatch("update", {
+      onUpdate({
         croppedImageUrl,
         blob,
         cropData: cropper.getData(),
