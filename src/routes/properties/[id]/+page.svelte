@@ -4,7 +4,7 @@
   import type { Property } from "$lib/services/propertyService.svelte";
   import { supabase } from "$lib/services/backend.svelte";
   import { ArrowLeft, Edit } from "lucide-svelte";
-  import PropertyDisplay from "$lib/components/PropertyDisplay.svelte";
+  import PropertyDetails from "@/components/PropertyDetails.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
   import PropertyImages from "$lib/components/PropertyImages.svelte";
   import PropertyHistory from "$lib/components/PropertyHistory.svelte";
@@ -122,7 +122,7 @@
             <Tabs.Trigger value="history">History</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content value="details">
-            <PropertyDisplay {property} />
+            <PropertyDetails {property} />
           </Tabs.Content>
           <Tabs.Content value="images">
             <PropertyImages {property} onReload={loadProperty} />
