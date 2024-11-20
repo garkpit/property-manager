@@ -9,7 +9,7 @@
   import { Save } from "lucide-svelte";
   import { goto } from "$app/navigation";
 
-  const { property } = $props<{
+  const { property = $bindable() } = $props<{
     property: Partial<Property>;
   }>();
 
