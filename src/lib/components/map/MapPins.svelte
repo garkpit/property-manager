@@ -3,7 +3,7 @@
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
   import PropertyDetailsModal from "../PropertyDetailsModal.svelte";
-  import { writable } from 'svelte/store';
+  import { writable } from "svelte/store";
 
   interface Props {
     locations: Array<{
@@ -19,7 +19,7 @@
 
   const modalState = writable({
     selectedProperty: null as any,
-    isOpen: false
+    isOpen: false,
   });
 
   function createPopupHTML(location: Props["locations"][0]) {
@@ -91,10 +91,10 @@
   // Add the function to window object for the popup to access
   $effect(() => {
     (window as any).__openPropertyModal = (property: any) => {
-      console.log('Opening modal with property:', property);
+      console.log("Opening modal with property:", property);
       modalState.set({
         selectedProperty: property,
-        isOpen: true
+        isOpen: true,
       });
     };
 
@@ -105,7 +105,7 @@
 
   // Debug effect to log state changes
   $effect(() => {
-    const unsubscribe = modalState.subscribe(state => {
+    const unsubscribe = modalState.subscribe((state) => {
       console.log("Modal state updated:", state);
     });
 
@@ -113,17 +113,13 @@
   });
 </script>
 
-<!-- Debug element to show current state -->
-<div class="fixed top-0 left-0 bg-white p-2 z-[10000] text-black text-sm">
-  Modal Open: {$modalState.isOpen}, Has Property: {!!$modalState.selectedProperty}
-</div>
-
 <!-- Mount the modal in a portal to ensure it's at the root level -->
 <div class="modal-container">
   <PropertyDetailsModal
     property={$modalState.selectedProperty}
     isOpen={$modalState.isOpen}
-    on:update:isOpen={(e) => modalState.update(state => ({ ...state, isOpen: e.detail }))}
+    on:update:isOpen={(e) =>
+      modalState.update((state) => ({ ...state, isOpen: e.detail }))}
   />
 </div>
 
