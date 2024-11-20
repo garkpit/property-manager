@@ -1,4 +1,3 @@
-<!-- svelte-ignore slot_element_deprecated -->
 <script lang="ts">
   let { Left, Center, Right, LeftData, CenterData, RightData } = $props<{
     Left?: (data: any) => unknown;

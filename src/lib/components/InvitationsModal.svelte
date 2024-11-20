@@ -135,13 +135,7 @@
         {/if}
       </div>
 
-      <Dialog.Footer>
-        <!--
-        <Button variant="outline" onclick={closeModal}>
-          {$t("common.close")}
-        </Button>
-        -->
-      </Dialog.Footer>
+      <Dialog.Footer></Dialog.Footer>
       <Dialog.Close on:click={closeModal} />
     </Dialog.Content>
   </Dialog.Root>

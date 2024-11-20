@@ -44,11 +44,6 @@
     getUnreadMessageCount();
     getInviteCount();
   });
-  /*
-  $effect.root(() => {
-    console.log("showInvitations:", showInvitations); // Debug log
-  });
-*/
   function setTheme(mode: "light" | "dark" | "system") {
     setMode(mode);
     open = false;
@@ -57,7 +52,6 @@
     showInvitations = true;
     open = false;
   };
-  // Bell class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
 </script>
 
 <Popover.Root bind:open>

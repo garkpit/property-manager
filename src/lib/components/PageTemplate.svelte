@@ -11,16 +11,6 @@
   import DarkModeToggle from "$lib/components/DarkModeToggle.svelte";
   import MessageIndicator from "$lib/components/MessageIndicator.svelte";
 
-  /*
-  let { Left, Center, Right, LeftData, CenterData, RightData } = $props<{
-    Left?: (data: any) => unknown;
-    Center?: (data: any) => unknown;
-    Right?: (data: any) => unknown;
-    LeftData?: any;
-    CenterData?: any;
-    RightData?: any;
-  }>();
-  */
   let {
     actionItems,
     TopLeft,

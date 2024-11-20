@@ -21,13 +21,8 @@
 
   let orgs = $state([] as Org[]);
 
-  // This should be `Component` after lucide-svelte updates types
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //  let { teams }: { teams: { name: string; logo: any; plan: string }[] } =
-  //   $props();
   const sidebar = useSidebar();
   const load = async () => {
-    // const { data, error } = await getAllOrgs();
     const { data, error } = await fetchOrgs();
     if (error) {
     } else {

@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   let { Middle, MiddleData } = $props<{
-    //Middle?: (data: any) => unknown,
     Middle?: Snippet;
     MiddleData?: any;
   }>();

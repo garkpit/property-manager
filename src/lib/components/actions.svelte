@@ -57,18 +57,4 @@
       {/if}
     {/each}
   </DropdownMenu.Content>
-  <!--
-  <DropdownMenu.Content align="end" class="w-52">
-    {#each items as item}
-      {#if item.separator}
-        <DropdownMenu.Separator />
-      {/if}
-      <DropdownMenu.Item onclick={item.onClick}>
-        {#if item.icon}
-          <item.icon class="mr-2 size-4" />
-        {/if}
-        {item.label}
-      </DropdownMenu.Item>
-    {/each}
-  </DropdownMenu.Content>-->
 </DropdownMenu.Root>

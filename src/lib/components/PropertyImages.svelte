@@ -4,7 +4,6 @@
     uploadImages,
     deletePropertyImage,
     updatePropertyImageOrder,
-    type PropertyImage,
   } from "$lib/services/imageService.svelte";
   import ImageModal from "./ImageModal.svelte";
   import { Button } from "$lib/components/ui/button";
@@ -101,15 +100,15 @@
       errorMessage = null;
 
       // Get the original image name from the URL or create a new one
-      let originalImageName = detail.originalImageUrl?.split('/').pop();
-      if (!originalImageName || originalImageName.includes('?')) {
+      let originalImageName = detail.originalImageUrl?.split("/").pop();
+      if (!originalImageName || originalImageName.includes("?")) {
         originalImageName = `image-${Date.now()}.jpg`;
       }
 
       // Create a File from the Blob with proper MIME type
       const file = new File([detail.blob], originalImageName, {
         type: "image/jpeg",
-        lastModified: Date.now()
+        lastModified: Date.now(),
       });
 
       // Create a proper array with the single file
@@ -153,7 +152,7 @@
         e.dataTransfer.setDragImage(
           container,
           container.offsetWidth / 2,
-          container.offsetHeight / 2
+          container.offsetHeight / 2,
         );
       }
     }
@@ -198,7 +197,7 @@
     // Save the new order using the image service
     const { success, error } = await updatePropertyImageOrder(
       property.id,
-      items
+      items,
     );
 
     if (!success) {

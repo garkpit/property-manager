@@ -131,7 +131,6 @@
       }
     });
   });
-  // pt-[var(--header-height)] pb-[var(--footer-height)]
 </script>
 
 <Sidebar.Root class="z-50">
@@ -201,7 +200,7 @@
   </Sidebar.Content>
   <Sidebar.Footer>
     <div class="pb-[var(--safe-area-inset-bottom,0px)]">
-      <NavUser user={data.user} />
+      <NavUser />
     </div>
   </Sidebar.Footer>
   <Sidebar.Rail />
