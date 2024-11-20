@@ -3,17 +3,14 @@
   import PropertyDetails from "./PropertyDetails.svelte";
   import { fade, scale } from "svelte/transition";
   import { X } from "lucide-svelte";
-  import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
-
-  const { property, isOpen } = $props<{
+  let { property, isOpen } = $props<{
     property: Property;
     isOpen: boolean;
   }>();
 
   function handleClose() {
-    dispatch("update:isOpen", false);
+    isOpen = false;
   }
 
   function handleKeydown(event: KeyboardEvent) {
