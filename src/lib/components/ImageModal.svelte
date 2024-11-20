@@ -1,22 +1,30 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import Cropper from "cropperjs";
   import "cropperjs/dist/cropper.css";
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
 
   let { imageUrl, onClose } = $props<{
     imageUrl: string;
     onClose: () => void;
   }>();
 
+  const dispatch = createEventDispatcher();
+
   let imageElement: HTMLImageElement;
   let cropper: Cropper;
   let rotation = 0;
   let zoom = 1;
-  let isCropMode = true;
+  let isCropMode = $state(true);
   let savedCropData: any = null;
-  let isProcessing = false;
+  let isProcessing = $state(false);
+
+  let buttonText = $derived(isProcessing ? "Processing..." : "Apply Changes");
+  let modeText = $derived(isCropMode ? "Mode: Crop" : "Mode: Move");
+  const rotateLeftText = "Rotate Left";
+  const rotateRightText = "Rotate Right";
+  const zoomInText = "Zoom In";
+  const zoomOutText = "Zoom Out";
+  const resetText = "Reset";
 
   function initializeCropper() {
     if (!imageElement) return;
@@ -201,7 +209,6 @@
 
       // Close the modal after successful update
       onClose();
-
     } catch (error) {
       console.error("Error applying changes:", error);
       // You might want to show an error message to the user here
@@ -251,37 +258,37 @@
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200 min-w-[100px]"
           on:click={toggleDragMode}
         >
-          {isCropMode ? "Mode: Crop" : "Mode: Move"}
+          {modeText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
           on:click={handleRotateLeft}
         >
-          Rotate Left
+          {rotateLeftText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
           on:click={handleRotateRight}
         >
-          Rotate Right
+          {rotateRightText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
           on:click={handleZoomIn}
         >
-          Zoom In
+          {zoomInText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
           on:click={handleZoomOut}
         >
-          Zoom Out
+          {zoomOutText}
         </button>
         <button
           class="bg-white text-gray-800 px-3 py-1 rounded hover:bg-gray-200"
           on:click={resetChanges}
         >
-          Reset
+          {resetText}
         </button>
       </div>
       <div class="flex-none">
@@ -290,7 +297,7 @@
           on:click={applyChanges}
           disabled={isProcessing}
         >
-          {isProcessing ? "Processing..." : "Apply Changes"}
+          {buttonText}
         </button>
       </div>
     </div>
