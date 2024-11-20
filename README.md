@@ -145,9 +145,10 @@ An opinionated development template designed to create large-scale business apps
 
 - make sure the [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) is installed
 - create a new Supabase project at (https://supabase.com)
-- execute [public-schema.sql](./data/schema.sql) to create the public database schema
-- execute [auth-schema.sql](./data/auth-schema.sql) to create the auth schema trigger on the users table
-- execute [storage-schema.sql](./data/storage-schema.sql) to create the property-images bucket
+- go to the Supabase dashboard [SQL Editor](https://supabase.com/dashboard/project/_/sql)
+  - execute the contents of[public-schema.sql](./data/schema.sql) to create the public database schema
+  - execute the contents of [auth-schema.sql](./data/auth-schema.sql) to create the auth schema trigger on the users table
+  - execute the contents of [storage-schema.sql](./data/storage-schema.sql) to create the property-images bucket
 
 ## Set Up Keys
 
