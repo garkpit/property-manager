@@ -8,20 +8,57 @@ function sanitizeFileName(fileName: string): string {
         .toLowerCase();
 }
 
+async function getNextAvailableFilename(basePath: string, filename: string): Promise<string> {
+    // Split filename into name and extension
+    const lastDotIndex = filename.lastIndexOf('.');
+    const name = lastDotIndex !== -1 ? filename.slice(0, lastDotIndex) : filename;
+    const ext = lastDotIndex !== -1 ? filename.slice(lastDotIndex) : '';
+
+    // Check if the name already ends with -number
+    const match = name.match(/(.*?)-(\d+)$/);
+    const baseName = match ? match[1] : name;
+    let currentNum = match ? parseInt(match[2]) : 0;
+
+    // List all files in the directory
+    const { data: existingFiles } = await supabase.storage
+        .from("property-images")
+        .list(basePath);
+
+    if (!existingFiles) return `${baseName}-1${ext}`;
+
+    // Find the highest number for this base filename
+    const regex = new RegExp(`^${baseName}-\\d+${ext}$`);
+    const numbers = existingFiles
+        .map(file => {
+            const match = file.name.match(new RegExp(`^${baseName}-(\\d+)${ext}$`));
+            return match ? parseInt(match[1]) : 0;
+        })
+        .filter(num => num > 0);
+
+    const highestNum = numbers.length > 0 ? Math.max(...numbers) : 0;
+    currentNum = highestNum + 1;
+
+    return `${baseName}-${currentNum}${ext}`;
+}
+
 export async function uploadImage(file: File, propertyId: string) {
     console.log("Uploading image for property:", propertyId, file);
 
     try {
-        // Create a sanitized filename
+        // Create a sanitized base filename
         const sanitizedFileName = sanitizeFileName(file.name);
-        const filePath = `properties/${propertyId}/${sanitizedFileName}`;
+        const basePath = `properties/${propertyId}`;
+
+        // Get the next available filename
+        const nextFileName = await getNextAvailableFilename(basePath, sanitizedFileName);
+        const filePath = `${basePath}/${nextFileName}`;
 
         // Check if file exists first
         const { data: existingFile } = await supabase.storage
             .from("property-images")
             .list(`properties/${propertyId}`);
 
-        const fileExists = existingFile?.some(f => f.name === sanitizedFileName);
+        const fileExists = existingFile?.some(f => f.name === nextFileName);
 
         if (fileExists) {
             // If file exists, delete it first
@@ -44,7 +81,7 @@ export async function uploadImage(file: File, propertyId: string) {
             return {
                 success: false,
                 error: error.message,
-                name: sanitizedFileName
+                name: nextFileName
             };
         }
 
@@ -56,7 +93,7 @@ export async function uploadImage(file: File, propertyId: string) {
         return {
             success: true,
             url: urlData.publicUrl,
-            name: sanitizedFileName
+            name: nextFileName
         };
     } catch (error) {
         console.error("Error in uploadImage:", error);

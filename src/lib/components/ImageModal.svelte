@@ -199,6 +199,9 @@
         originalImageUrl: imageUrl || null,
       });
 
+      // Close the modal after successful update
+      onClose();
+
     } catch (error) {
       console.error("Error applying changes:", error);
       // You might want to show an error message to the user here

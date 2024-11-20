@@ -116,20 +116,12 @@
       const result = await uploadImages(filesArray, property.id);
 
       if (result.success) {
-        // Update the existing images array with the new image URL
-        if (originalImageUrl) {
-          existingImages = existingImages.map(img => 
-            img.url === originalImageUrl 
-              ? { ...img, url: result.images[0].url } 
-              : img
-          );
-        } else {
-          existingImages = [...existingImages, result.images[0]];
-        }
-        
+        // Add the new image to the existing images array
+        existingImages = [...existingImages, result.images[0]];
+
         // Update the selected image to show the new version
         selectedImage = result.images[0].url;
-        
+
         onReload();
       } else {
         errorMessage = `Failed to upload cropped image: ${result.error}`;
