@@ -141,6 +141,13 @@ An opinionated development template designed to create large-scale business apps
 
 # Setup / Quickstart
 
+## Set Up Supabase Project
+
+- make sure the [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) is installed
+- create a new Supabase project at (https://supabase.com)
+- execute [schema.sql](./data/schema.sql) to create the database schema
+- execute [auth-schema.sql](./data/auth-schema.sql) to create the auth schema trigger on the users table
+
 ## Set Up Keys
 
 - Server URL and ANON_KEY are encrypted (for obfuscation)
