@@ -246,6 +246,7 @@
     </button>
 
     <div class="relative h-[70vh]">
+      <!-- svelte-ignore a11y_img_redundant_alt -->
       <img
         bind:this={imageElement}
         src={imageUrl}
