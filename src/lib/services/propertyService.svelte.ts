@@ -71,3 +71,15 @@ export async function upsertProperty(
 
     return { data, error };
 }
+
+export async function getPropertyById(
+    propertyId: string
+): Promise<{ data: Property | null; error: Error | null }> {
+    const { data, error } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("id", propertyId)
+        .single();
+
+    return { data, error };
+}

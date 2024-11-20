@@ -2,7 +2,6 @@
   import { page } from "$app/stores";
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import type { Property } from "$lib/services/propertyService.svelte";
-  import { supabase } from "$lib/services/backend.svelte";
   import { ArrowLeft, Edit, Check } from "lucide-svelte";
   import PropertyDetails from "@/components/PropertyDetails.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
@@ -11,7 +10,10 @@
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
-  import { upsertProperty } from "$lib/services/propertyService.svelte";
+  import {
+    upsertProperty,
+    getPropertyById,
+  } from "$lib/services/propertyService.svelte";
 
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
@@ -50,11 +52,7 @@
   let error = $state<string | null>(null);
 
   const loadProperty = async () => {
-    const { data, error: err } = await supabase
-      .from("properties")
-      .select("*")
-      .eq("id", propertyId)
-      .single();
+    const { data, error: err } = await getPropertyById(propertyId);
 
     if (err) {
       error = err.message;
@@ -64,6 +62,7 @@
 
     property = data;
   };
+
   async function load() {
     if (isNew) return;
 
