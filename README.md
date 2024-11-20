@@ -156,10 +156,11 @@ An opinionated development template designed to create large-scale business apps
   - `cp .keys.json.sample .keys.json`
   - locate your Supabase URL and ANON KEY in the Supabase Dashboard [API Settings](https://supabase.com/dashboard/project/_/settings/api)
   - enter your URL and ANON_KEY in `.keys.json`
-  - make sure **Deno 2.0** is installed
+  - make sure **Deno 2.0** is installed See: [Deno 2.0](https://deno.com/)
   - run: `./lock-up-keys.sh` _OR_ `deno run --allow-read --allow-write lock-up-keys.deno.ts`
 - Copy keys to Github Secrets (necessary to run Github Actions to create Desktop versions with Tauri)
-  - make sure `gh` (Github Command Line) is installed
+  - make sure `gh` [Github Command Line](https://github.com/cli/cli?tab=readme-ov-file#installation) is installed
+  - run `gh auth login` (if not already logged in)
   - run `gh secret set -f .env`
 
 ## Set up Supabase Edge Functions
@@ -168,7 +169,7 @@ An opinionated development template designed to create large-scale business apps
 - run: `supabase init` from the root of your project
   - a file `supabase/config.toml` will be created
   - by default this file is excluded from source control
-  - you can add it source control by commenting it out in `supabase/.gitignore`
+  - you can add it to source control by commenting it out in `supabase/.gitignore` (though this is not recommended)
 - run: `supabase link` from the root of your project
 - setup keys
   - create the `.env` file: `cp supabase/.env-sample supabase/.env`
@@ -177,9 +178,27 @@ An opinionated development template designed to create large-scale business apps
       - Set up auth hook here: [Supabase Auth Hooks](https://supabase.com/dashboard/project/_/auth/hooks)
       - Set up auth hook for your edge function: send-email **TODO**
     - `MAILGUN_API_KEY=your_mailgun_api_key`
+      - [Mailgun](https://www.mailgun.com/)
     - `MAILGUN_DOMAIN=your_mailgun_domain`
+      - [Mailgun](https://www.mailgun.com/)
     - `GEOAPIFY_API_KEY=your_geoapify_api_key`
       - [Geoapify](https://www.geoapify.com/)
+
+### Set up Supabase Auth
+
+- Go to the Supabase dashboard [Auth Settings](https://supabase.com/dashboard/project/_/settings/auth)
+  - Under **SMTP Setting**
+    - Turn **Enable Custom SMTP** ON
+    - Set **SMTP Host** to `smtp.mailgun.org`
+    - Set **SMTP Port** to `587`
+    - Enter your Sender Details, Username and Password from Mailgun
+- Set up Google OAuth
+  - Set up your [Google Provider](https://supabase.com/docs/guides/auth/social-login/auth-google)
+    - (You will obtain your Client ID and Client Secret from the Google Developer Console)
+  - Go to the Supabase Dashboard [Auth Providers](https://supabase.com/dashboard/project/_/auth/providers)
+    - Toggle **Enable Sign in with Google** to ON
+    - Enter your Client ID
+    - Enter your Client Secret
 
 ### Deploy Supabase Edge Functions
 
