@@ -15,15 +15,18 @@
 
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
-  let isEditing = $state(isNew);
+  let isEditing = $state(false);
 
   $effect(() => {
-    // Reset editing state when URL changes
+    // Set initial editing state based on isNew
     isEditing = isNew;
   });
 
-  let property: Partial<Property> = $state(
-    isNew
+  let property: Partial<Property> = $state({});
+
+  $effect(() => {
+    // Initialize property based on isNew condition
+    property = isNew
       ? {
           property_type: "",
           property_subtype: "",
@@ -40,8 +43,8 @@
           year_built: new Date().getFullYear(),
           metadata: {},
         }
-      : {},
-  );
+      : {};
+  });
 
   let loading = $state(false);
   let error = $state<string | null>(null);
@@ -132,10 +135,7 @@
     {:else if error}
       <div class="text-red-500 p-4">{error}</div>
     {:else if isEditing}
-      <PropertyEdit 
-        bind:property 
-        on:save={() => isEditing = false}
-      />
+      <PropertyEdit bind:property on:save={() => (isEditing = false)} />
     {:else}
       <div class="flex items-center justify-center">
         <Tabs.Root value="details" class="inline-block">
