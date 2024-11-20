@@ -88,6 +88,60 @@
     selectedImage = null;
   }
 
+  async function handleImageUpdate(event: CustomEvent) {
+    const { croppedImageUrl, blob, cropData, originalImageUrl } = event.detail;
+
+    try {
+      if (!property.id) return;
+
+      isUploading = true;
+      errorMessage = null;
+
+      // Get the original image name from the URL or create a new one
+      let originalImageName = originalImageUrl?.split('/').pop();
+      if (!originalImageName || originalImageName.includes('?')) {
+        originalImageName = `image-${Date.now()}.jpg`;
+      }
+
+      // Create a File from the Blob with proper MIME type
+      const file = new File([blob], originalImageName, {
+        type: "image/jpeg",
+        lastModified: Date.now()
+      });
+
+      // Create a proper array with the single file
+      const filesArray = [file];
+
+      // Upload the cropped image
+      const result = await uploadImages(filesArray, property.id);
+
+      if (result.success) {
+        // Update the existing images array with the new image URL
+        if (originalImageUrl) {
+          existingImages = existingImages.map(img => 
+            img.url === originalImageUrl 
+              ? { ...img, url: result.images[0].url } 
+              : img
+          );
+        } else {
+          existingImages = [...existingImages, result.images[0]];
+        }
+        
+        // Update the selected image to show the new version
+        selectedImage = result.images[0].url;
+        
+        onReload();
+      } else {
+        errorMessage = `Failed to upload cropped image: ${result.error}`;
+      }
+    } catch (error) {
+      console.error("Error uploading cropped image:", error);
+      errorMessage = "Failed to upload cropped image. Please try again.";
+    } finally {
+      isUploading = false;
+    }
+  }
+
   function handleDragStart(e: DragEvent, index: number) {
     dragSource = index;
     if (e.dataTransfer && e.target instanceof HTMLElement) {
@@ -104,7 +158,7 @@
         e.dataTransfer.setDragImage(
           container,
           container.offsetWidth / 2,
-          container.offsetHeight / 2,
+          container.offsetHeight / 2
         );
       }
     }
@@ -149,7 +203,7 @@
     // Save the new order using the image service
     const { success, error } = await updatePropertyImageOrder(
       property.id,
-      items,
+      items
     );
 
     if (!success) {
@@ -416,6 +470,10 @@
   {/if}
 
   {#if selectedImage}
-    <ImageModal imageUrl={selectedImage} onClose={closeModal} />
+    <ImageModal
+      imageUrl={selectedImage}
+      onClose={closeModal}
+      on:update={handleImageUpdate}
+    />
   {/if}
 </div>

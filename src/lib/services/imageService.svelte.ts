@@ -11,44 +11,61 @@ function sanitizeFileName(fileName: string): string {
 export async function uploadImage(file: File, propertyId: string) {
     console.log("Uploading image for property:", propertyId, file);
 
-    // Create a sanitized filename
-    const sanitizedFileName = sanitizeFileName(file.name);
-    const filePath = `properties/${propertyId}/${sanitizedFileName}`;
+    try {
+        // Create a sanitized filename
+        const sanitizedFileName = sanitizeFileName(file.name);
+        const filePath = `properties/${propertyId}/${sanitizedFileName}`;
 
-    const { data, error } = await supabase.storage
-        .from("property-images")
-        .upload(filePath, file);
+        // Check if file exists first
+        const { data: existingFile } = await supabase.storage
+            .from("property-images")
+            .list(`properties/${propertyId}`);
 
-    if (error) {
-        // If the file already exists, just get its URL and return success
-        if (error.message?.includes("already exists")) {
-            const { data: urlData } = supabase.storage
+        const fileExists = existingFile?.some(f => f.name === sanitizedFileName);
+
+        if (fileExists) {
+            // If file exists, delete it first
+            await supabase.storage
                 .from("property-images")
-                .getPublicUrl(filePath);
+                .remove([filePath]);
+        }
 
+        // Upload the new file
+        const { data, error } = await supabase.storage
+            .from("property-images")
+            .upload(filePath, file, {
+                cacheControl: "3600",
+                upsert: true,
+                contentType: file.type
+            });
+
+        if (error) {
+            console.error("Error uploading to Supabase:", error);
             return {
-                success: true,
-                url: urlData.publicUrl,
-                skipped: true,
+                success: false,
+                error: error.message,
+                name: sanitizedFileName
             };
         }
 
-        console.error("Error uploading to Supabase:", error);
+        // Get the public URL for the uploaded file
+        const { data: urlData } = supabase.storage
+            .from("property-images")
+            .getPublicUrl(filePath);
+
+        return {
+            success: true,
+            url: urlData.publicUrl,
+            name: sanitizedFileName
+        };
+    } catch (error) {
+        console.error("Error in uploadImage:", error);
         return {
             success: false,
-            error: error.message,
+            error: error instanceof Error ? error.message : "Unknown error",
+            name: sanitizeFileName(file.name)
         };
     }
-
-    // Get the public URL for the uploaded file
-    const { data: urlData } = supabase.storage
-        .from("property-images")
-        .getPublicUrl(filePath);
-
-    return {
-        success: true,
-        url: urlData.publicUrl,
-    };
 }
 
 async function getCurrentMetadata(propertyId: string) {
@@ -110,9 +127,13 @@ export async function uploadImages(files: File[], propertyId: string) {
     console.log("Uploading images for property:", propertyId, files);
 
     try {
+        if (!Array.isArray(files)) {
+            throw new Error("Files must be an array");
+        }
+
         // Upload all files in parallel
         const results = await Promise.all(
-            files.map((file) => uploadImage(file, propertyId)),
+            files.map((file) => uploadImage(file, propertyId))
         );
 
         // Check if all uploads were successful
@@ -121,16 +142,23 @@ export async function uploadImages(files: File[], propertyId: string) {
         // Update property metadata with new image list
         await updatePropertyImageMetadata(propertyId);
 
+        // Format the response to match what PropertyImages expects
+        const images = results.map((result) => ({
+            url: result.url,
+            name: result.name || 'image.jpg'
+        }));
+
         return {
             success: allSuccessful,
-            urls: results.map((result) => result.url),
+            images,
+            error: allSuccessful ? null : "Failed to upload one or more images"
         };
     } catch (error) {
         console.error("Error uploading images:", error);
         return {
             success: false,
-            urls: [],
-            error: "Failed to upload one or more images",
+            images: [],
+            error: error instanceof Error ? error.message : "Failed to upload images"
         };
     }
 }
