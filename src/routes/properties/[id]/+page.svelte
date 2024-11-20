@@ -115,8 +115,8 @@
       />
     {:else}
       <div class="flex items-center justify-center">
-        <Tabs.Root value="details" class="w-[350px] md:w-full">
-          <Tabs.List>
+        <Tabs.Root value="details" class="inline-block">
+          <Tabs.List class="flex justify-center">
             <Tabs.Trigger value="details">Details</Tabs.Trigger>
             <Tabs.Trigger value="images">Images</Tabs.Trigger>
             <Tabs.Trigger value="history">History</Tabs.Trigger>
