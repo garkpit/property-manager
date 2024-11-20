@@ -168,6 +168,8 @@ An opinionated development template designed to create large-scale business apps
       - Set up auth hook for your edge function: send-email **TODO**
     - `MAILGUN_API_KEY=your_mailgun_api_key`
     - `MAILGUN_DOMAIN=your_mailgun_domain`
+    - `GEOAPIFY_API_KEY=your_geoapify_api_key`
+      - [Geoapify](https://www.geoapify.com/)
 
 ### Deploy Supabase Edge Functions
 
