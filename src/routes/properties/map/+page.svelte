@@ -69,9 +69,6 @@
       // Find the bounds of all places
       const bounds = new maplibregl.LngLatBounds();
       properties.forEach((place) => {
-        console.log("place", place);
-        console.log("place.lat", place.lat);
-        console.log("place.lng", place.lng);
         bounds.extend([place.lng, place.lat]);
       });
 
