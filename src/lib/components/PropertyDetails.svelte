@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Property } from "$lib/services/propertyService.svelte";
   import { fade } from "svelte/transition";
+  import PropertyImageGallery from "./PropertyImageGallery.svelte";
 
   const { property } = $props<{
     property: Property;
@@ -22,20 +23,17 @@
   };
 </script>
 
-<div class="max-w-4xl mx-auto p-6 space-y-8" transition:fade>
+<!--<div class="max-w-4xl mx-auto p-6 space-y-8" transition:fade>
+-->
+<div class="w-full p-4 md:p-6 lg:p-8 space-y-8" transition:fade>
   <!-- Property Header -->
   <div class="border-b border-gray-200 pb-6">
     {#if property.title}
       <h1 class="text-4xl font-bold text-gray-900 mb-2">{property.title}</h1>
     {/if}
     {#if property?.metadata?.images && property?.metadata?.images.length > 0}
-      <!-- Thumbnail Image -->
-      <div class="mb-6">
-        <img
-          src={property.metadata.images[0].url}
-          alt={property.title || "Property Image"}
-          class="w-full object-contain rounded-lg shadow-md"
-        />
+      <div class="w-full">
+        <PropertyImageGallery images={property.metadata.images} />
       </div>
     {/if}
     {#if property.subtitle}

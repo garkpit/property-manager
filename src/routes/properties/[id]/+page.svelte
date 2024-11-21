@@ -136,20 +136,20 @@
     {:else if isEditing}
       <PropertyEdit bind:property on:save={() => (isEditing = false)} />
     {:else}
-      <div class="flex items-center justify-center">
-        <Tabs.Root value="details" class="inline-block">
+      <div class="w-full">
+        <Tabs.Root value="details" class="w-full">
           <Tabs.List class="flex justify-center">
             <Tabs.Trigger value="details">Details</Tabs.Trigger>
             <Tabs.Trigger value="images">Images</Tabs.Trigger>
             <Tabs.Trigger value="history">History</Tabs.Trigger>
           </Tabs.List>
-          <Tabs.Content value="details">
+          <Tabs.Content value="details" class="w-full">
             <PropertyDetails {property} />
           </Tabs.Content>
-          <Tabs.Content value="images">
+          <Tabs.Content value="images" class="w-full">
             <PropertyImages {property} onReload={loadProperty} />
           </Tabs.Content>
-          <Tabs.Content value="history">
+          <Tabs.Content value="history" class="w-full">
             <PropertyHistory {property} />
           </Tabs.Content>
         </Tabs.Root>
