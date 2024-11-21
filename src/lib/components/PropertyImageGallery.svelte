@@ -54,15 +54,18 @@
   <div class="relative mb-6">
     <div class="w-full pb-[75%] relative">
       <!-- Image container with theme-aware background -->
-      <div class="absolute inset-0 bg-background rounded-t-lg">
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-        <!-- svelte-ignore a11y_img_redundant_alt -->
+      <div
+        class="absolute inset-0 bg-background rounded-t-lg"
+        role="button"
+        tabindex="0"
+        onclick={toggleFullscreen}
+        onkeydown={toggleFullscreen}
+        onmousedown={toggleFullscreen}
+      >
         <img
           src={currentImage}
-          alt="Property Image"
+          alt={"Property Image"}
           class="w-full h-full object-contain rounded-t-lg cursor-pointer"
-          onclick={toggleFullscreen}
         />
       </div>
     </div>
