@@ -22,6 +22,7 @@
   import { getUser } from "$lib/services/backend.svelte";
   import ComposeMessageModal from "$lib/components/modals/ComposeMessageModal.svelte";
   import { toast } from "svelte-sonner";
+  import HtmlContent from "$lib/components/HtmlContent.svelte";
   const user = $derived(getUser());
   const id = $derived($page.params.id);
   let message = $state<any | null>(null);
@@ -159,8 +160,8 @@
             <span>•</span>
             <span>{formatDate(message.created_at)}</span>
           </div>
-          <div class="whitespace-pre-wrap rounded-lg bg-muted/50 p-4 w-full">
-            {@html message.message}
+          <div class="rounded-lg bg-muted/50 p-4 w-full">
+            <HtmlContent content={message.message} />
           </div>
         </div>
 
