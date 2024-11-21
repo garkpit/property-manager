@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
+  import { fade, scale } from "svelte/transition";
   import {
     ChevronLeft,
     ChevronRight,
@@ -12,6 +12,7 @@
   }>();
 
   let currentImageIndex = $state(0);
+  let isFullscreen = $state(false);
   const totalImages = $derived(images.length);
   const currentImage = $derived(images[currentImageIndex]?.url);
 
@@ -34,7 +35,19 @@
   function lastImage() {
     currentImageIndex = totalImages - 1;
   }
+
+  function toggleFullscreen() {
+    isFullscreen = !isFullscreen;
+  }
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === "Escape" && isFullscreen) {
+      isFullscreen = false;
+    }
+  }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 {#if images && images.length > 0}
   <!-- Container with 4:3 aspect ratio -->
@@ -45,7 +58,8 @@
         <img
           src={currentImage}
           alt="Property Image"
-          class="w-full h-full object-contain rounded-t-lg"
+          class="w-full h-full object-contain rounded-t-lg cursor-pointer"
+          on:click={toggleFullscreen}
         />
       </div>
     </div>
@@ -92,6 +106,24 @@
           <ChevronsRight size={24} />
         </button>
       </div>
+    </div>
+  </div>
+{/if}
+
+{#if isFullscreen}
+  <!-- Fullscreen Modal -->
+  <div
+    class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
+    transition:fade
+    on:click={toggleFullscreen}
+  >
+    <div class="w-full h-full p-4 flex items-center justify-center">
+      <img
+        src={currentImage}
+        alt="Property Image Fullscreen"
+        class="max-w-full max-h-full object-contain"
+        transition:scale
+      />
     </div>
   </div>
 {/if}
