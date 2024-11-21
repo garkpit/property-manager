@@ -40,6 +40,9 @@
       height,
       buttonList,
       defaultStyle: "font-family: Arial; font-size: 14px;",
+      popupDisplay: "full",
+      position: "fixed",
+      iframe: false,
     });
     editor.onChange = function (contents) {
       console.log("Contents changed:", contents);
@@ -59,5 +62,51 @@
 <style>
   div {
     width: 100%;
+  }
+
+  :global(.sun-editor) {
+    z-index: 9999 !important;
+    position: relative !important;
+  }
+  
+  :global(.sun-editor-common) {
+    z-index: 9999 !important;
+  }
+
+  :global(.se-container) {
+    z-index: 9999 !important;
+  }
+
+  :global(.se-wrapper) {
+    z-index: 9999 !important;
+  }
+
+  :global(.se-dialog) {
+    z-index: 10000 !important;
+  }
+
+  :global(.se-dialog-content) {
+    z-index: 10000 !important;
+  }
+
+  :global(.se-dropdown-menu) {
+    z-index: 10000 !important;
+  }
+
+  :global(.se-dropdown-content) {
+    z-index: 10000 !important;
+  }
+
+  :global(.se-tooltip) {
+    z-index: 10000 !important;
+  }
+
+  :global(.se-menu-list) {
+    z-index: 10000 !important;
+  }
+
+  :global(.se-toolbar) {
+    z-index: 10000 !important;
+    position: relative !important;
   }
 </style>

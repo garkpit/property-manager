@@ -160,7 +160,7 @@
             <span>{formatDate(message.created_at)}</span>
           </div>
           <div class="whitespace-pre-wrap rounded-lg bg-muted/50 p-4 w-full">
-            {message.message}
+            {@html message.message}
           </div>
         </div>
 
@@ -198,12 +198,6 @@
   {/snippet}
 </PageTemplate>
 
-<ComposeMessageModal 
-  bind:open={composeModalOpen} 
-  replyToMessage={message} 
-/>
+<ComposeMessageModal bind:open={composeModalOpen} replyToMessage={message} />
 
-<ComposeMessageModal 
-  bind:open={forwardModalOpen} 
-  forwardMessage={message} 
-/>
+<ComposeMessageModal bind:open={forwardModalOpen} forwardMessage={message} />
