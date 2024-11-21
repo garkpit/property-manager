@@ -1,27 +1,14 @@
 <!-- richtext-test/+page.svelte -->
 <script>
   import RichText from "$lib/components/RichText.svelte";
-
   let editorContent = $state("<p>Hello, this is a test of the Suneditor!</p>");
-
-  function handleContentChange(newContent) {
-    editorContent = newContent;
-    console.log("Current content:", editorContent);
-  }
 </script>
 
 <div class="container">
   <h1>Rich Text Editor Test</h1>
 
   <div class="editor-container">
-    <RichText
-      content={editorContent}
-      height="400px"
-      update={(newContent) => {
-        console.log("New content:", newContent);
-        editorContent = newContent;
-      }}
-    />
+    <RichText bind:content={editorContent} height="400px" />
   </div>
 
   <div class="preview">

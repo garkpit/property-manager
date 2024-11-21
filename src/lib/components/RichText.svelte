@@ -8,17 +8,13 @@
   import type { SunEditorOptions } from "suneditor/src/options";
   import SunEditorCore from "suneditor/src/lib/core";
 
-  let editor: SunEditorCore; //ExtendedSunEditorOptions;
+  let editor: SunEditorCore;
   let editorElement: HTMLElement;
 
-  //interface ExtendedSunEditorOptions extends SunEditorOptions {
-  //  onChange?: (contents: string) => void;
-  //}
-
   // Props using new Svelte 5 syntax
-  const {
-    content = "",
-    height = "300px",
+  let { 
+    content = $bindable(""), 
+    height = "300px", 
     buttonList = [
       ["undo", "redo"],
       ["font", "fontSize", "formatBlock"],
@@ -29,8 +25,7 @@
       ["align", "horizontalRule", "list", "table"],
       ["link", "image"],
       ["fullScreen", "showBlocks", "codeView"],
-    ],
-    update = (content: string) => {},
+    ]
   } = $props();
 
   $effect(() => {
@@ -48,7 +43,7 @@
     });
     editor.onChange = function (contents) {
       console.log("Contents changed:", contents);
-      update(contents);
+      content = contents;  // This will update the bound value
     };
   });
 
