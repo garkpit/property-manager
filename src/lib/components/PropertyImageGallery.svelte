@@ -1,6 +1,11 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
-  import { ChevronLeft, ChevronRight } from "lucide-svelte";
+  import {
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+  } from "lucide-svelte";
 
   const { images = $bindable() } = $props<{
     images: Array<{ url: string }>;
@@ -21,6 +26,14 @@
       currentImageIndex--;
     }
   }
+
+  function firstImage() {
+    currentImageIndex = 0;
+  }
+
+  function lastImage() {
+    currentImageIndex = totalImages - 1;
+  }
 </script>
 
 {#if images && images.length > 0}
@@ -38,25 +51,47 @@
     </div>
     <!-- Navigation Bar (moved outside the image container) -->
     <div
-      class="w-full bg-black/50 text-white p-2 rounded-b-lg flex items-center justify-between"
+      class="w-full text-gray-700 p-2 rounded-b-lg flex items-center justify-between"
     >
-      <button
-        class="p-1 hover:bg-black/30 rounded-full transition-colors disabled:opacity-50"
-        on:click={previousImage}
-        disabled={currentImageIndex === 0}
-      >
-        <ChevronLeft size={24} />
-      </button>
+      <div class="flex items-center gap-1">
+        <button
+          class="p-1 hover:bg-black/30 rounded-full transition-colors disabled:opacity-50"
+          on:click={firstImage}
+          disabled={currentImageIndex === 0}
+          aria-label="First image"
+        >
+          <ChevronsLeft size={24} />
+        </button>
+        <button
+          class="p-1 hover:bg-black/30 rounded-full transition-colors disabled:opacity-50"
+          on:click={previousImage}
+          disabled={currentImageIndex === 0}
+          aria-label="Previous image"
+        >
+          <ChevronLeft size={24} />
+        </button>
+      </div>
       <span class="text-sm font-medium">
-        Image {currentImageIndex + 1} of {totalImages}
+        {currentImageIndex + 1} of {totalImages}
       </span>
-      <button
-        class="p-1 hover:bg-black/30 rounded-full transition-colors disabled:opacity-50"
-        on:click={nextImage}
-        disabled={currentImageIndex === totalImages - 1}
-      >
-        <ChevronRight size={24} />
-      </button>
+      <div class="flex items-center gap-1">
+        <button
+          class="p-1 hover:bg-black/30 rounded-full transition-colors disabled:opacity-50"
+          on:click={nextImage}
+          disabled={currentImageIndex === totalImages - 1}
+          aria-label="Next image"
+        >
+          <ChevronRight size={24} />
+        </button>
+        <button
+          class="p-1 hover:bg-black/30 rounded-full transition-colors disabled:opacity-50"
+          on:click={lastImage}
+          disabled={currentImageIndex === totalImages - 1}
+          aria-label="Last image"
+        >
+          <ChevronsRight size={24} />
+        </button>
+      </div>
     </div>
   </div>
 {/if}
