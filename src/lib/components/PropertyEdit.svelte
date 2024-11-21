@@ -208,17 +208,11 @@
     <h3 class="text-lg font-semibold">Property Details</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="space-y-2">
-        <Label for="beds">Beds</Label>
-        <Input
-          id="beds"
-          type="number"
-          bind:value={property.beds}
-          min="0"
-          step="1"
-        />
+        <Label for="beds">Bedrooms</Label>
+        <Input id="beds" type="number" bind:value={property.beds} min="0" />
       </div>
       <div class="space-y-2">
-        <Label for="baths">Baths</Label>
+        <Label for="baths">Bathrooms</Label>
         <Input
           id="baths"
           type="number"
@@ -228,23 +222,21 @@
         />
       </div>
       <div class="space-y-2">
-        <Label for="living_area">Living Area (sqft)</Label>
+        <Label for="living_area">Living Area (sq ft)</Label>
         <Input
           id="living_area"
           type="number"
           bind:value={property.living_area}
           min="0"
-          step="1"
         />
       </div>
       <div class="space-y-2">
-        <Label for="land_area">Land Area (sqft)</Label>
+        <Label for="land_area">Land Area (sq ft)</Label>
         <Input
           id="land_area"
           type="number"
           bind:value={property.land_area}
           min="0"
-          step="1"
         />
       </div>
       <div class="space-y-2">
@@ -255,7 +247,33 @@
           bind:value={property.year_built}
           min="1800"
           max={new Date().getFullYear()}
-          step="1"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Price Information -->
+  <div class="space-y-4">
+    <h3 class="text-lg font-semibold">Price Information</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <Label for="list_price">List Price ($)</Label>
+        <Input
+          id="list_price"
+          type="number"
+          bind:value={property.list_price}
+          min="0"
+          step="1000"
+        />
+      </div>
+      <div class="space-y-2">
+        <Label for="sale_price">Sale Price ($)</Label>
+        <Input
+          id="sale_price"
+          type="number"
+          bind:value={property.sale_price}
+          min="0"
+          step="1000"
         />
       </div>
     </div>
@@ -310,8 +328,8 @@
       <Textarea
         id="notes"
         bind:value={property.notes}
-        rows={4}
-        placeholder="Add any additional notes about the property"
+        placeholder="Enter any additional notes about the property"
+        rows="4"
       />
     </div>
   </div>
