@@ -390,6 +390,7 @@
   >
     <input
       type="file"
+      id="image-upload"
       multiple
       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
