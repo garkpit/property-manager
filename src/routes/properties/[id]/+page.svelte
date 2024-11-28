@@ -2,7 +2,7 @@
   import { page } from "$app/stores";
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import type { Property } from "$lib/services/propertyService.svelte";
-  import { ArrowLeft, Edit, Check } from "lucide-svelte";
+  import { ArrowLeft, Edit, Check, Printer } from "lucide-svelte";
   import PropertyDetails from "@/components/PropertyDetails.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
   import PropertyImages from "$lib/components/PropertyImages.svelte";
@@ -14,6 +14,7 @@
     upsertProperty,
     getPropertyById,
   } from "$lib/services/propertyService.svelte";
+  import { getPDF } from "$lib/services/export.service.svelte";
 
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
@@ -99,6 +100,20 @@
   $effect(() => {
     load();
   });
+
+  const exportPDF = async () => {
+    console.log("exportPDF");
+    // Get the property details container element
+    const propertyContent =
+      document.getElementById("property-details")?.innerHTML;
+    console.log("propertyContent", propertyContent);
+    if (propertyContent) {
+      // Generate a title for the PDF
+      const title = `Property_${property.address || "Details"}_${new Date().toISOString().split("T")[0]}`;
+      const pdf = await getPDF(propertyContent, title);
+      console.log("pdf", pdf);
+    }
+  };
 </script>
 
 <PageTemplate>
@@ -116,6 +131,9 @@
     {#if !isNew && !isEditing}
       <Button variant="ghost" size="icon" onclick={() => (isEditing = true)}>
         <Edit class="h-4 w-4" />
+      </Button>
+      <Button variant="ghost" size="icon" onclick={exportPDF}>
+        <Printer class="h-4 w-4" />
       </Button>
     {:else if isEditing}
       <Button variant="ghost" size="icon" onclick={handleSave}>

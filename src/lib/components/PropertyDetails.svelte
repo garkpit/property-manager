@@ -25,7 +25,11 @@
 
 <!--<div class="max-w-4xl mx-auto p-6 space-y-8" transition:fade>
 -->
-<div class="w-full p-4 md:p-6 lg:p-8 space-y-8" transition:fade>
+<div
+  id="property-details"
+  class="w-full p-4 md:p-6 lg:p-8 space-y-8"
+  transition:fade
+>
   <!-- Property Header -->
   <div class="border-b border-gray-200 pb-6">
     {#if property.title}

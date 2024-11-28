@@ -201,7 +201,7 @@ export const getPDF = async (content: string, title: string) => {
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
         };
-        html2pdf().set(opt).from(content).toPdf().output("blob").then(
+        (html2pdf() as any).set(opt).from(content).toPdf().output("blob").then(
             (result: Blob) => {
                 resolve(result);
             },
