@@ -16,6 +16,8 @@
   let open = $state(true);
   let saving = $state(false);
   let error = $state<string | null>(null);
+  let modalTitle = $derived(existingTransaction ? "Edit Transaction" : "Add Transaction");
+  let modalDescription = $derived(existingTransaction ? "Edit transaction details for this property." : "Add a new transaction for this property.");
 
   let transaction = $state<Partial<Transaction>>(
     existingTransaction 
@@ -63,9 +65,9 @@
 <Dialog.Root bind:open>
   <Dialog.Content class="sm:max-w-[425px]">
     <Dialog.Header>
-      <Dialog.Title>Add Transaction</Dialog.Title>
+      <Dialog.Title>{modalTitle}</Dialog.Title>
       <Dialog.Description>
-        Add a new transaction for this property.
+        {modalDescription}
       </Dialog.Description>
     </Dialog.Header>
 
