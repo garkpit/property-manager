@@ -157,12 +157,6 @@
       onClick: () => (flyerMakerOpen = true),
       show: !isEditing && !isNew,
     },
-    {
-      icon: Printer,
-      label: "Export PDF",
-      onClick: exportPDF,
-      show: !isEditing && !isNew,
-    },
   ]);
 </script>
 
@@ -215,7 +209,4 @@
   {/snippet}
 </PageTemplate>
 
-<FlyerMaker
-  {property}
-  bind:open={flyerMakerOpen}
-/>
+<FlyerMaker {property} bind:open={flyerMakerOpen} />
