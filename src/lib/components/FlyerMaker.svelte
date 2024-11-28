@@ -6,6 +6,9 @@
     DialogHeader,
     DialogTitle,
   } from "$lib/components/ui/dialog";
+  import { Button } from "$lib/components/ui/button";
+  import { Printer } from "lucide-svelte";
+  import { getPDF } from "$lib/services/export.service.svelte";
   import { cn } from "$lib/utils";
 
   let { property, open = $bindable() } = $props<{
@@ -37,12 +40,34 @@
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  const handleExportPDF = async () => {
+    const content = document.getElementById("flyer-content");
+    if (content) {
+      const pdf = await getPDF(content.innerHTML, `${property.address}-flyer`);
+      if (pdf) {
+        const url = URL.createObjectURL(pdf);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${property.address}-flyer.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    }
+  };
 </script>
 
 <Dialog {open}>
   <DialogContent class="max-w-6xl h-[80vh]">
     <DialogHeader>
       <DialogTitle>Flyer Maker</DialogTitle>
+      <div class="flex gap-2">
+        <Button variant="outline" size="icon" onclick={handleExportPDF}>
+          <Printer class="h-4 w-4" />
+        </Button>
+      </div>
     </DialogHeader>
 
     <div class="grid grid-cols-[250px_1fr] gap-6 h-full overflow-hidden">
@@ -68,7 +93,7 @@
       </div>
 
       <!-- Preview Area -->
-      <div class="overflow-y-auto px-4">
+      <div class="overflow-y-auto px-4" id="flyer-content">
         {#if selectedStyle === "modern"}
           <!-- Modern Minimal Layout -->
           <div class="max-w-3xl mx-auto bg-white p-8 shadow-lg">
