@@ -61,11 +61,58 @@ function dataURItoBlob(dataURI: string) {
     var blob = new Blob([ab], { type: mimeString });
     return blob;
 }
+
 export const getDOC = async (content: string, filename: string = "ESV") => {
+    // Create a temporary div to manipulate the content
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
+
+    // Convert all images to base64 and add size constraints
+    const images = tempDiv.getElementsByTagName('img');
+    await Promise.all(Array.from(images).map(async (img) => {
+        try {
+            const response = await fetch(img.src);
+            const blob = await response.blob();
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    img.src = reader.result as string;
+                    // Add explicit width and height using Word-compatible styles
+                    img.style.width = '500px';
+                    img.style.height = 'auto';
+                    img.style.maxWidth = '100%';
+                    // Add Word-specific attributes
+                    img.setAttribute('width', '500');
+                    img.setAttribute('height', 'auto');
+                    resolve(null);
+                };
+                reader.readAsDataURL(blob);
+            });
+        } catch (error) {
+            console.error('Error converting image:', error);
+            return null;
+        }
+    }));
+
     var preHtml =
-        "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+        `<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+              xmlns:w='urn:schemas-microsoft-com:office:word' 
+              xmlns='http://www.w3.org/TR/REC-html40'>
+         <head>
+           <meta charset='utf-8'>
+           <title>Export HTML To Doc</title>
+           <style>
+             /* Word-specific styles */
+             body { width: 100%; margin: 0; padding: 20px; }
+             img { max-width: 500px; width: 500px; height: auto; display: block; margin: 10px 0; }
+             p { margin: 0; padding: 0; }
+             table { width: 100%; }
+             td { padding: 5px; }
+           </style>
+         </head>
+         <body>`;
     var postHtml = "</body></html>";
-    var html = preHtml + content + postHtml;
+    var html = preHtml + tempDiv.innerHTML + postHtml;
 
     var blob = new Blob(["\ufeff", html], {
         type: "application/msword",
@@ -146,6 +193,7 @@ export const OpenAsHTML = async (
     // a.click();                    // so that we can do this,
     // document.body.removeChild(a); // after which we do this.
 };
+
 export const Export2HTML = async (content: string, filename: string = "") => {
     let preHtml = "<html><head><title>" + filename +
         '</title></head><body><div class="exportDiv">';

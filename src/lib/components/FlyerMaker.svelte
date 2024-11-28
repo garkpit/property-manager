@@ -7,8 +7,8 @@
     DialogTitle,
   } from "$lib/components/ui/dialog";
   import { Button } from "$lib/components/ui/button";
-  import { Printer } from "lucide-svelte";
-  import { getPDF } from "$lib/services/export.service.svelte";
+  import { Printer, FileText } from "lucide-svelte";
+  import { getPDF, getDOC } from "$lib/services/export.service.svelte";
   import { cn } from "$lib/utils";
 
   let { property, open = $bindable() } = $props<{
@@ -57,6 +57,23 @@
       }
     }
   };
+
+  const handleExportDOC = async () => {
+    const content = document.getElementById("flyer-content");
+    if (content) {
+      const doc = await getDOC(content.innerHTML, `${property.address}-flyer`);
+      if (doc) {
+        const url = URL.createObjectURL(doc);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${property.address}-flyer.doc`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    }
+  };
 </script>
 
 <Dialog {open}>
@@ -66,6 +83,9 @@
       <div class="flex gap-2">
         <Button variant="outline" size="icon" onclick={handleExportPDF}>
           <Printer class="h-4 w-4" />
+        </Button>
+        <Button variant="outline" size="icon" onclick={handleExportDOC}>
+          <FileText class="h-4 w-4" />
         </Button>
       </div>
     </DialogHeader>
