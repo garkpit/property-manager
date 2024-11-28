@@ -138,7 +138,9 @@
     }
   };
 
-  const actionItems = $derived([
+  let currentTab = $state("details");
+
+  const detailsActionItems = [
     {
       icon: Edit,
       label: "Edit",
@@ -157,7 +159,37 @@
       onClick: () => (flyerMakerOpen = true),
       show: !isEditing && !isNew,
     },
-  ]);
+  ];
+
+  const imageActionItems = [
+    {
+      icon: FileText,
+      label: "Upload Images",
+      onClick: () => document.getElementById("image-upload")?.click(),
+      show: !isNew,
+    },
+  ];
+
+  const transactionActionItems = [
+    {
+      icon: FileText,
+      label: "Add Transaction",
+      onClick: () => {
+        /* TODO: Implement add transaction */
+      },
+      show: !isNew,
+    },
+  ];
+
+  const actionItems = $derived(
+    currentTab === "details"
+      ? detailsActionItems
+      : currentTab === "images"
+        ? imageActionItems
+        : currentTab === "transactions"
+          ? transactionActionItems
+          : [],
+  );
 </script>
 
 <PageTemplate {actionItems}>
@@ -185,7 +217,11 @@
     {:else}
       <div class="w-full flex justify-center">
         <div class="max-w-4xl w-full">
-          <Tabs.Root value="details" class="w-full">
+          <Tabs.Root
+            value="details"
+            class="w-full"
+            onValueChange={(value) => (currentTab = value)}
+          >
             <Tabs.List class="flex justify-center">
               <Tabs.Trigger value="details">Details</Tabs.Trigger>
               <Tabs.Trigger value="images">Images</Tabs.Trigger>
