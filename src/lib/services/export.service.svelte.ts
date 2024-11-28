@@ -196,41 +196,46 @@ export const getPDF = async (content: string, title: string) => {
         const opt = {
             margin: 0.75,
             filename: title + ".pdf",
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2 },
+            image: {
+                type: "jpeg",
+                quality: 0.98,
+                windowWidth: 1920,
+                useCORS: true,
+                enableLinks: true,
+            },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                logging: true,
+                allowTaint: true,
+                imageTimeout: 15000,
+                onclone: (clonedDoc: Document) => {
+                    // Ensure all images are loaded before conversion
+                    const images = Array.from(clonedDoc.getElementsByTagName('img'));
+                    return Promise.all(images.map(img => {
+                        if (img.complete) return Promise.resolve();
+                        return new Promise((resolve) => {
+                            img.onload = resolve;
+                            img.onerror = resolve;
+                        });
+                    }));
+                }
+            },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
         };
-        (html2pdf() as any).set(opt).from(content).toPdf().output("blob").then(
-            (result: Blob) => {
+        
+        (html2pdf() as any)
+            .set(opt)
+            .from(content)
+            .toPdf()
+            .output("blob")
+            .then((result: Blob) => {
                 resolve(result);
-            },
-        );
-
-        //   html2pdf(content, opt).outputPdf('blob').then((result: any) => {
-        //     resolve(result);
-        //   });
+            })
+            .catch((error: any) => {
+                console.error('PDF generation error:', error);
+                resolve(null);
+            });
     });
-
-    // return new Promise((resolve) => {
-    //     // const doc = new jsPDF();
-    //     const ddiv = document.createElement('div');
-    //     ddiv.innerHTML = content;
-    //     ddiv.style.fontFamily = '"Times New Roman", Times, serif';
-    //     ddiv.style.letterSpacing = '0.25px';
-    //     const doc = new jsPDF("p", "pt", "letter");
-
-    //     doc.html(ddiv, {
-    //       callback: function (pdf) {
-    //         resolve(pdf.output('blob'));
-    //       },
-    //       width: 504, // 612,
-    //       windowWidth: 612,
-    //       margin: 54, // [54, 54, 54, 54], // 0.75 inch margins
-    //       autoPaging: 'text',
-    //       fontFaces: [
-    //       ],
-    //     });
-
-    // })
 };
