@@ -10,6 +10,7 @@
   import { Printer, FileText } from "lucide-svelte";
   import { getPDF, getDOC } from "$lib/services/export.service.svelte";
   import { cn } from "$lib/utils";
+  import * as Tooltip from "$lib/components/ui/tooltip";
 
   let { property, open = $bindable() } = $props<{
     property: Property;
@@ -81,12 +82,28 @@
     <DialogHeader>
       <DialogTitle>Flyer Maker</DialogTitle>
       <div class="flex gap-2">
-        <Button variant="outline" size="icon" onclick={handleExportPDF}>
-          <Printer class="h-4 w-4" />
-        </Button>
-        <Button variant="outline" size="icon" onclick={handleExportDOC}>
-          <FileText class="h-4 w-4" />
-        </Button>
+        <Tooltip.Provider>
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              <Button variant="outline" size="icon" onclick={handleExportPDF}>
+                <Printer class="h-4 w-4" />
+              </Button>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+              <p>Export to PDF</p>
+            </Tooltip.Content>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger>
+              <Button variant="outline" size="icon" onclick={handleExportDOC}>
+                <FileText class="h-4 w-4" />
+              </Button>
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+              <p>Export to Word</p>
+            </Tooltip.Content>
+          </Tooltip.Root>
+        </Tooltip.Provider>
       </div>
     </DialogHeader>
 
