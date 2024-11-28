@@ -2,9 +2,11 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import { useSidebar } from "$lib/components/ui/sidebar/index.js";
-  import { ChevronsUpDown, Plus } from "lucide-svelte";
+  import LoginModal from "$lib/components/LoginModal.svelte";
+  import { ChevronsUpDown, Plus, UserPlus } from "lucide-svelte";
   import {
     getCurrentOrg,
+    getUser,
     updateCurrentOrg,
   } from "$lib/services/backend.svelte";
   import { fetchOrgs } from "$lib/services/orgService.svelte";
@@ -18,8 +20,10 @@
     user_role: string;
   }
   const org: Org | null = $derived(getCurrentOrg());
+  const user = $derived(getUser());
 
   let orgs = $state([] as Org[]);
+  let showLoginModal = $state(false);
 
   const sidebar = useSidebar();
   const load = async () => {
@@ -42,6 +46,8 @@
     }
   };
 </script>
+
+<LoginModal bind:open={showLoginModal} />
 
 <Sidebar.Menu>
   <Sidebar.MenuItem>
@@ -92,19 +98,37 @@
           </DropdownMenu.Item>
         {/each}
         <DropdownMenu.Separator />
-        <DropdownMenu.Item
-          class="gap-2 p-2"
-          onclick={() => {
-            goto("/orgs/new");
-          }}
-        >
-          <div
-            class="bg-background flex size-6 items-center justify-center rounded-md border"
+        {#if user}
+          <DropdownMenu.Item
+            class="gap-2 p-2"
+            onclick={() => {
+              goto("/orgs/new");
+            }}
           >
-            <Plus class="size-4" />
-          </div>
-          <div class="text-muted-foreground font-medium">Add New Org</div>
-        </DropdownMenu.Item>
+            <div
+              class="bg-background flex size-6 items-center justify-center rounded-md border"
+            >
+              <Plus class="size-4" />
+            </div>
+            <div class="text-muted-foreground font-medium">Add New Org</div>
+          </DropdownMenu.Item>
+        {:else}
+          <DropdownMenu.Item
+            class="gap-2 p-2"
+            onclick={() => {
+              showLoginModal = true;
+            }}
+          >
+            <div
+              class="bg-background flex size-6 items-center justify-center rounded-md border"
+            >
+              <UserPlus class="size-4" />
+            </div>
+            <div class="text-muted-foreground font-medium">
+              Login to see your orgs
+            </div>
+          </DropdownMenu.Item>
+        {/if}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </Sidebar.MenuItem>

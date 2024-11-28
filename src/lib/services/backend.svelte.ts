@@ -309,6 +309,12 @@ export const updateUser = async (obj: any) => {
 
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
+  if (!error) {
+    user = null;
+    profile = null;
+    currentOrg = null;
+  }
+
   return {
     error,
   };

@@ -17,6 +17,12 @@ export async function getOrgProperties(): Promise<{
     data: Property[] | null;
     error: Error | null;
 }> {
+    if (!user) {
+        return {
+            data: null,
+            error: new Error("You need to be logged in to view properties"),
+        };
+    }
     if (!currentOrg?.id) {
         return { data: null, error: new Error("No organization selected") };
     }
@@ -33,11 +39,15 @@ export async function getOrgProperties(): Promise<{
 export async function upsertProperty(
     property: Partial<Property>,
 ): Promise<{ data: Property | null; error: Error | null }> {
+    if (!user) {
+        return {
+            data: null,
+            error: new Error("You need to be logged in to view properties"),
+        };
+    }
+
     if (!currentOrg?.id) {
         return { data: null, error: new Error("No organization selected") };
-    }
-    if (!user) {
-        return { data: null, error: new Error("No user logged in") };
     }
 
     // Ensure the property is associated with the current org
@@ -73,7 +83,7 @@ export async function upsertProperty(
 }
 
 export async function getPropertyById(
-    propertyId: string
+    propertyId: string,
 ): Promise<{ data: Property | null; error: Error | null }> {
     const { data, error } = await supabase
         .from("properties")
