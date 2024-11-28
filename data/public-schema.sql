@@ -660,6 +660,10 @@ CREATE POLICY "User must belong to org" ON "public"."contacts" TO "authenticated
 
 
 
+CREATE POLICY "any org member can view transactions" ON "public"."transactions" FOR SELECT TO "authenticated" USING (("public"."get_org_role_for_user"("orgid", "userid") IS NOT NULL));
+
+
+
 CREATE POLICY "anyone can view" ON "public"."properties" FOR SELECT USING (true);
 
 
@@ -667,7 +671,15 @@ CREATE POLICY "anyone can view" ON "public"."properties" FOR SELECT USING (true)
 ALTER TABLE "public"."contacts" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "delete not allowed" ON "public"."transactions_events" FOR DELETE USING (false);
+
+
+
 CREATE POLICY "deletion not allowed" ON "public"."properties" FOR DELETE USING (false);
+
+
+
+CREATE POLICY "deletion not allowed" ON "public"."transactions" FOR DELETE USING (false);
 
 
 
@@ -760,6 +772,26 @@ ALTER TABLE "public"."transactions" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."transactions_events" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "user belong to org to view" ON "public"."transactions_events" FOR SELECT TO "authenticated" USING (("public"."get_org_role_for_user"("orgid", "userid") IS NOT NULL));
+
+
+
+CREATE POLICY "user must be an org owner or manager to insert" ON "public"."transactions" FOR INSERT TO "authenticated" WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+
+
+
+CREATE POLICY "user must be org owner or manager to update" ON "public"."transactions" FOR UPDATE TO "authenticator" USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+
+
+
+CREATE POLICY "user must be owner or manager of org to insert" ON "public"."transactions_events" FOR INSERT TO "authenticated" WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+
+
+
+CREATE POLICY "user must be owner or manager of org to update" ON "public"."transactions_events" FOR UPDATE TO "authenticated" USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+
 
 
 CREATE POLICY "users can modify their own profile" ON "public"."profiles" FOR UPDATE USING (("id" = "auth"."uid"())) WITH CHECK (("id" = "auth"."uid"()));
