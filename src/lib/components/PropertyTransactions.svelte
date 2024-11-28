@@ -4,6 +4,7 @@
   import { getPropertyTransactions } from "$lib/services/transactionService.svelte";
   import TransactionModal from "./TransactionModal.svelte";
   import { createEventDispatcher } from "svelte";
+  import { fade } from "svelte/transition";
 
   const dispatch = createEventDispatcher();
 
@@ -39,65 +40,104 @@
   });
 
   function formatCurrency(amount: number) {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
   }
 
-  function formatDate(date: string) {
+  function formatDate(date: string | null) {
+    if (!date) return "";
     return new Date(date).toLocaleDateString();
   }
 </script>
 
-<div class="p-4">
-  <h2 class="text-2xl font-semibold mb-4">Property Transactions</h2>
-
+<div class="w-full p-4 md:p-6 lg:p-8 space-y-8" transition:fade>
   {#if loading}
-    <div class="text-center py-4">
-      <span class="loading loading-spinner loading-md"></span>
+    <div class="flex items-center justify-center h-32">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
     </div>
   {:else if error}
-    <p class="text-red-500">{error}</p>
-  {:else if transactions.length === 0}
-    <p class="text-gray-500">No transactions found for this property.</p>
+    <div class="bg-red-50 text-red-500 p-4 rounded-lg">{error}</div>
   {:else}
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b">
-            <th class="text-left py-2">Type</th>
-            <th class="text-left py-2">Start Date</th>
-            <th class="text-left py-2">End Date</th>
-            <th class="text-right py-2">Amount</th>
-            <th class="text-right py-2">Balance</th>
-            <th class="text-left py-2">Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each transactions as transaction}
-            <tr class="border-b hover:bg-gray-50">
-              <td class="py-2 capitalize">{transaction.transaction_type}</td>
-              <td class="py-2">{formatDate(transaction.start_date)}</td>
-              <td class="py-2">{transaction.end_date ? formatDate(transaction.end_date) : '-'}</td>
-              <td class="py-2 text-right">{formatCurrency(transaction.amount)}</td>
-              <td class="py-2 text-right">{formatCurrency(transaction.balance)}</td>
-              <td class="py-2">{transaction.description}</td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <div class="overflow-x-auto -mx-6">
+        <div class="inline-block min-w-full align-middle">
+          <div class="overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left p-4 font-semibold text-gray-900">Type</th>
+                  <th class="text-left p-4 font-semibold text-gray-900">Start Date</th>
+                  <th class="text-left p-4 font-semibold text-gray-900 hidden md:table-cell">End Date</th>
+                  <th class="text-right p-4 font-semibold text-gray-900 hidden md:table-cell">Amount</th>
+                  <th class="text-right p-4 font-semibold text-gray-900 hidden md:table-cell">Balance</th>
+                  <th class="text-left p-4 font-semibold text-gray-900">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                {#if transactions.length === 0}
+                  <tr>
+                    <td colspan="6" class="text-center p-8 text-gray-500">
+                      No transactions found for this property.
+                    </td>
+                  </tr>
+                {:else}
+                  {#each transactions as transaction}
+                    {#if transaction.description}
+                      <tr class="border-b bg-gray-50">
+                        <td colspan="6" class="p-4 text-sm text-gray-600">
+                          {transaction.description}
+                        </td>
+                      </tr>
+                    {/if}
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="p-4 capitalize whitespace-nowrap">{transaction.type}</td>
+                      <td class="p-4 whitespace-nowrap">{formatDate(transaction.start_date)}</td>
+                      <td class="p-4 whitespace-nowrap hidden md:table-cell">
+                        {transaction.end_date ? formatDate(transaction.end_date) : "-"}
+                      </td>
+                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell">
+                        {formatCurrency(transaction.amount)}
+                      </td>
+                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell">
+                        {formatCurrency(transaction.balance)}
+                      </td>
+                      <td class="p-4 whitespace-nowrap">
+                        <span class={`px-2 py-1 rounded-full text-xs font-medium
+                          ${
+                            transaction.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : transaction.status === "pending"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : transaction.status === "completed"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-gray-100 text-gray-800"
+                          }`}>
+                          {transaction.status}
+                        </span>
+                      </td>
+                    </tr>
+                  {/each}
+                {/if}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   {/if}
-
-  {#if showModal}
-    <TransactionModal
-      propertyId={property.id || ""}
-      onClose={() => dispatch('modalClose')}
-      onSave={() => {
-        dispatch('modalClose');
-        loadTransactions();
-      }}
-    />
-  {/if}
 </div>
+
+{#if showModal}
+  <TransactionModal
+    propertyId={property.id || ""}
+    onClose={() => dispatch("modalClose")}
+    onSave={() => {
+      dispatch("modalClose");
+      loadTransactions();
+    }}
+  />
+{/if}

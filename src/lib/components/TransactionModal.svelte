@@ -134,6 +134,21 @@
         />
       </div>
 
+      <div class="grid gap-2">
+        <Label for="status">Status</Label>
+        <select
+          id="status"
+          class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+          bind:value={transaction.status}
+          required
+        >
+          <option value="active">Active</option>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
       {#if error}
         <p class="text-sm text-red-500">{error}</p>
       {/if}
