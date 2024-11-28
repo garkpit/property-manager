@@ -437,7 +437,7 @@ COMMENT ON COLUMN "public"."properties"."subtitle" IS 'property subtitle';
 
 CREATE TABLE IF NOT EXISTS "public"."transactions" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "parentid" "uuid" DEFAULT "gen_random_uuid"(),
+    "parentid" "uuid",
     "orgid" "uuid" NOT NULL,
     "propertyid" "uuid" NOT NULL,
     "userid" "uuid" NOT NULL,
@@ -782,7 +782,7 @@ CREATE POLICY "user must be an org owner or manager to insert" ON "public"."tran
 
 
 
-CREATE POLICY "user must be org owner or manager to update" ON "public"."transactions" FOR UPDATE TO "authenticator" USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+CREATE POLICY "user must be org owner or manager to update" ON "public"."transactions" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
 
 
 
