@@ -664,6 +664,11 @@ CREATE POLICY "users can modify their own profile" ON "public"."profiles" FOR UP
 
 
 
+CREATE POLICY "users can view profiles from invites owners" ON "public"."profiles" FOR SELECT USING ((("id" = ( SELECT "auth"."uid"() AS "uid")) OR ("id" IN ( SELECT "orgs_invites"."owner"
+   FROM "public"."orgs_invites"))));
+
+
+
 CREATE POLICY "users can view their own profiles or those in their own orgs" ON "public"."profiles" FOR SELECT USING ((("id" = ( SELECT "auth"."uid"() AS "uid")) OR ("id" IN ( SELECT "orgs_users"."userid"
    FROM "public"."orgs_users"))));
 
