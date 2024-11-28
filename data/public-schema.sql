@@ -435,6 +435,57 @@ COMMENT ON COLUMN "public"."properties"."subtitle" IS 'property subtitle';
 
 
 
+CREATE TABLE IF NOT EXISTS "public"."transactions" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "parentid" "uuid" DEFAULT "gen_random_uuid"(),
+    "orgid" "uuid" NOT NULL,
+    "propertyid" "uuid" NOT NULL,
+    "userid" "uuid" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "start_date" timestamp with time zone,
+    "end_date" timestamp with time zone,
+    "type" "text" NOT NULL,
+    "status" "text" NOT NULL,
+    "description" "text",
+    "notes" "text",
+    "amount" numeric DEFAULT '0'::numeric NOT NULL,
+    "balance" numeric DEFAULT '0'::numeric NOT NULL,
+    "metadata" "jsonb"
+);
+
+
+ALTER TABLE "public"."transactions" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."transactions" IS 'property transactions';
+
+
+
+CREATE TABLE IF NOT EXISTS "public"."transactions_events" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "transactionid" "uuid" NOT NULL,
+    "orgid" "uuid" NOT NULL,
+    "propertyid" "uuid" NOT NULL,
+    "userid" "uuid" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "type" "text" NOT NULL,
+    "status" "text" NOT NULL,
+    "description" "text",
+    "notes" "text",
+    "amount" numeric DEFAULT '0'::numeric NOT NULL,
+    "metadata" "jsonb"
+);
+
+
+ALTER TABLE "public"."transactions_events" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."transactions_events" IS 'events related to a transaction';
+
+
+
 ALTER TABLE ONLY "public"."contacts"
     ADD CONSTRAINT "contacts_pkey" PRIMARY KEY ("id");
 
@@ -472,6 +523,16 @@ ALTER TABLE ONLY "public"."profiles"
 
 ALTER TABLE ONLY "public"."properties"
     ADD CONSTRAINT "properties_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."transactions_events"
+    ADD CONSTRAINT "transactions_events_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."transactions"
+    ADD CONSTRAINT "transactions_pkey" PRIMARY KEY ("id");
 
 
 
@@ -545,6 +606,41 @@ ALTER TABLE ONLY "public"."properties"
 
 ALTER TABLE ONLY "public"."properties"
     ADD CONSTRAINT "properties_userid_fkey" FOREIGN KEY ("userid") REFERENCES "public"."profiles"("id");
+
+
+
+ALTER TABLE ONLY "public"."transactions_events"
+    ADD CONSTRAINT "transactions_events_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id");
+
+
+
+ALTER TABLE ONLY "public"."transactions_events"
+    ADD CONSTRAINT "transactions_events_propertyid_fkey" FOREIGN KEY ("propertyid") REFERENCES "public"."properties"("id");
+
+
+
+ALTER TABLE ONLY "public"."transactions_events"
+    ADD CONSTRAINT "transactions_events_transactionid_fkey" FOREIGN KEY ("transactionid") REFERENCES "public"."transactions"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."transactions_events"
+    ADD CONSTRAINT "transactions_events_userid_fkey" FOREIGN KEY ("userid") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."transactions"
+    ADD CONSTRAINT "transactions_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."transactions"
+    ADD CONSTRAINT "transactions_propertyid_fkey" FOREIGN KEY ("propertyid") REFERENCES "public"."properties"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."transactions"
+    ADD CONSTRAINT "transactions_userid_fkey" FOREIGN KEY ("userid") REFERENCES "auth"."users"("id");
 
 
 
@@ -658,6 +754,12 @@ CREATE POLICY "sender or recipient can select" ON "public"."messages_recipients"
 
 CREATE POLICY "sender or recipients can view" ON "public"."messages" FOR SELECT USING (true);
 
+
+
+ALTER TABLE "public"."transactions" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."transactions_events" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "users can modify their own profile" ON "public"."profiles" FOR UPDATE USING (("id" = "auth"."uid"())) WITH CHECK (("id" = "auth"."uid"()));
@@ -784,6 +886,18 @@ GRANT ALL ON TABLE "public"."profiles" TO "service_role";
 GRANT ALL ON TABLE "public"."properties" TO "anon";
 GRANT ALL ON TABLE "public"."properties" TO "authenticated";
 GRANT ALL ON TABLE "public"."properties" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."transactions" TO "anon";
+GRANT ALL ON TABLE "public"."transactions" TO "authenticated";
+GRANT ALL ON TABLE "public"."transactions" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."transactions_events" TO "anon";
+GRANT ALL ON TABLE "public"."transactions_events" TO "authenticated";
+GRANT ALL ON TABLE "public"."transactions_events" TO "service_role";
 
 
 
