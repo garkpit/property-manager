@@ -25,7 +25,7 @@
 - for a year lease, there will be a parent transaction, then a child transaction for each month in the lease
 - invoicing / payments are done on individual transactions (i.e. each month)
 
-# transaction_events
+# transactions_events
 
 - id uuid
 - transactionid uuid

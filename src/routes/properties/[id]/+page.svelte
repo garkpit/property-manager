@@ -13,7 +13,7 @@
   import PropertyDetails from "@/components/PropertyDetails.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
   import PropertyImages from "$lib/components/PropertyImages.svelte";
-  import PropertyHistory from "$lib/components/PropertyHistory.svelte";
+  import PropertyTransactions from "@/components/PropertyTransactions.svelte";
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
@@ -189,7 +189,7 @@
             <Tabs.List class="flex justify-center">
               <Tabs.Trigger value="details">Details</Tabs.Trigger>
               <Tabs.Trigger value="images">Images</Tabs.Trigger>
-              <Tabs.Trigger value="history">History</Tabs.Trigger>
+              <Tabs.Trigger value="transactions">Transactions</Tabs.Trigger>
             </Tabs.List>
             <div id="property-details">
               <Tabs.Content value="details" class="w-full">
@@ -198,8 +198,8 @@
               <Tabs.Content value="images" class="w-full">
                 <PropertyImages {property} onReload={loadProperty} />
               </Tabs.Content>
-              <Tabs.Content value="history" class="w-full">
-                <PropertyHistory {property} />
+              <Tabs.Content value="transactions" class="w-full">
+                <PropertyTransactions {property} />
               </Tabs.Content>
             </div>
           </Tabs.Root>
