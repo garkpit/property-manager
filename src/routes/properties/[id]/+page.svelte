@@ -2,7 +2,7 @@
   import { page } from "$app/stores";
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import type { Property } from "$lib/services/propertyService.svelte";
-  import { ArrowLeft, Edit, Check, Printer } from "lucide-svelte";
+  import { ArrowLeft, Edit, Check, Printer, Save } from "lucide-svelte";
   import PropertyDetails from "@/components/PropertyDetails.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
   import PropertyImages from "$lib/components/PropertyImages.svelte";
@@ -83,18 +83,16 @@
     loading = true;
     error = null;
 
-    const { error: err } = await upsertProperty(property);
-
-    if (err) {
-      error = err.message;
-      loading = false;
+    // If this was a new property, navigate to the property list
+    if (isNew) {
+      goto("/properties");
       return;
     }
 
+    // For existing properties, reload the data and exit edit mode
+    await loadProperty();
     loading = false;
     isEditing = false;
-    // No need to navigate since we're already on the correct page
-    // Just need to exit edit mode
   }
 
   $effect(() => {
@@ -130,9 +128,62 @@
       URL.revokeObjectURL(url);
     }
   };
+
+  let actionItems = $state([
+    {
+      groupName: "Actions",
+      groupItems: [
+        {
+          icon: Edit,
+          label: "Edit Property",
+          onClick: () => (isEditing = true),
+        },
+        {
+          icon: Printer,
+          label: "Export PDF",
+          onClick: exportPDF,
+        },
+      ],
+    },
+  ]);
+
+  $effect(() => {
+    if (isNew || isEditing) {
+      actionItems = [
+        {
+          groupName: "Actions",
+          groupItems: [
+            {
+              icon: Save,
+              label: "Save Changes",
+              onClick: handleSave,
+            },
+          ],
+        },
+      ];
+    } else {
+      actionItems = [
+        {
+          groupName: "Actions",
+          groupItems: [
+            {
+              icon: Edit,
+              label: "Edit Property",
+              onClick: () => (isEditing = true),
+            },
+            {
+              icon: Printer,
+              label: "Export PDF",
+              onClick: exportPDF,
+            },
+          ],
+        },
+      ];
+    }
+  });
 </script>
 
-<PageTemplate>
+<PageTemplate {actionItems}>
   {#snippet TopLeft()}
     <Button variant="ghost" size="icon" onclick={() => goto("/properties")}>
       <ArrowLeft class="h-4 w-4" />
@@ -141,21 +192,6 @@
 
   {#snippet TopCenter()}
     Property Details
-  {/snippet}
-
-  {#snippet TopRight()}
-    {#if !isNew && !isEditing}
-      <Button variant="ghost" size="icon" onclick={() => (isEditing = true)}>
-        <Edit class="h-4 w-4" />
-      </Button>
-      <Button variant="ghost" size="icon" onclick={exportPDF}>
-        <Printer class="h-4 w-4" />
-      </Button>
-    {:else if isEditing}
-      <Button variant="ghost" size="icon" onclick={handleSave}>
-        <Check class="h-4 w-4" />
-      </Button>
-    {/if}
   {/snippet}
 
   {#snippet Middle()}
@@ -168,7 +204,7 @@
     {:else if error}
       <div class="text-red-500 p-4">{error}</div>
     {:else if isEditing}
-      <PropertyEdit bind:property on:save={() => (isEditing = false)} />
+      <PropertyEdit bind:property onSave={handleSave} />
     {:else}
       <div class="w-full flex justify-center">
         <div class="max-w-4xl w-full">
@@ -178,15 +214,17 @@
               <Tabs.Trigger value="images">Images</Tabs.Trigger>
               <Tabs.Trigger value="history">History</Tabs.Trigger>
             </Tabs.List>
-            <Tabs.Content value="details" class="w-full">
-              <PropertyDetails {property} />
-            </Tabs.Content>
-            <Tabs.Content value="images" class="w-full">
-              <PropertyImages {property} onReload={loadProperty} />
-            </Tabs.Content>
-            <Tabs.Content value="history" class="w-full">
-              <PropertyHistory {property} />
-            </Tabs.Content>
+            <div id="property-details">
+              <Tabs.Content value="details" class="w-full">
+                <PropertyDetails {property} />
+              </Tabs.Content>
+              <Tabs.Content value="images" class="w-full">
+                <PropertyImages {property} onReload={loadProperty} />
+              </Tabs.Content>
+              <Tabs.Content value="history" class="w-full">
+                <PropertyHistory {property} />
+              </Tabs.Content>
+            </div>
           </Tabs.Root>
         </div>
       </div>
