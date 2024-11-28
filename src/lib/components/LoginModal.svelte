@@ -177,7 +177,7 @@
 </script>
 
 {#if open}
-  <Dialog.Root open={true} onOpenChange={(isOpen) => (open = isOpen)}>
+  <Dialog.Root bind:open onOpenChange={(isOpen) => (open = isOpen)}>
     <Dialog.Content class="sm:max-w-[425px]">
       {#if !showResetConfirm}
         <Dialog.Header>
