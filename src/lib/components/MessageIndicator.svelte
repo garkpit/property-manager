@@ -64,7 +64,7 @@
       <span class="sr-only">Message Indicator</span>
     </Button>
   </Popover.Trigger>
-  <Popover.Content class="w-56">
+  <Popover.Content class="w-56" align="end">
     <div class="grid gap-4 text-center">
       <h4 class="font-medium leading-none">Waiting For You</h4>
       <Button
@@ -98,4 +98,5 @@
     </div>
   </Popover.Content>
 </Popover.Root>
+
 <InvitationsModal bind:open={showInvitations} />

@@ -74,30 +74,24 @@ export async function updateCurrentOrg(orgId: string | null): Promise<boolean> {
   }
 
   try {
-    if (currentOrg) {
-      const newOrg = { ...currentOrg };
-      if (newOrg.id !== orgId) {
-        currentOrg = null;
-      }
-    }
-
     const { data, error } = await getOrgById(orgId);
     if (error) {
       console.error("Error fetching org:", error);
+      currentOrg = null;
       return false;
     }
-    
+
     // Update the current org in state
     currentOrg = data;
-    
+
     // Persist the selected org ID in user metadata
     if (user && !isUpdatingUserMetadata) {
       isUpdatingUserMetadata = true;
       try {
         const { error: updateError } = await supabase.auth.updateUser({
-          data: { currentOrgId: orgId }
+          data: { currentOrgId: orgId },
         });
-        
+
         if (updateError) {
           console.error("Error updating user metadata:", updateError);
           return false;
@@ -106,7 +100,7 @@ export async function updateCurrentOrg(orgId: string | null): Promise<boolean> {
         isUpdatingUserMetadata = false;
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error("Error updating current org:", error);
@@ -315,6 +309,12 @@ export const updateUser = async (obj: any) => {
 
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();
+  if (!error) {
+    user = null;
+    profile = null;
+    currentOrg = null;
+  }
+
   return {
     error,
   };

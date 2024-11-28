@@ -91,7 +91,7 @@
 </script>
 
 {#if open}
-  <Dialog.Root {open} onOpenChange={(isOpen) => (open = isOpen)}>
+  <Dialog.Root bind:open onOpenChange={(isOpen) => (open = isOpen)}>
     <Dialog.Content class="sm:max-w-[425px]">
       <Dialog.Header>
         <Dialog.Title>{$t("invitationsModal.title")}</Dialog.Title>
