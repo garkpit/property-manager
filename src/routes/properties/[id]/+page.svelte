@@ -112,6 +112,22 @@
       const title = `Property_${property.address || "Details"}_${new Date().toISOString().split("T")[0]}`;
       const pdf = await getPDF(propertyContent, title);
       console.log("pdf", pdf);
+      
+      // Create a URL for the PDF blob
+      const url = URL.createObjectURL(pdf);
+      
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${title}.pdf`;
+      
+      // Append to document, click, and cleanup
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Revoke the URL to free up memory
+      URL.revokeObjectURL(url);
     }
   };
 </script>
