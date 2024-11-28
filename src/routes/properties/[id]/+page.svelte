@@ -2,7 +2,14 @@
   import { page } from "$app/stores";
   import PageTemplate from "$lib/components/PageTemplate.svelte";
   import type { Property } from "$lib/services/propertyService.svelte";
-  import { ArrowLeft, Edit, Check, Printer, Save } from "lucide-svelte";
+  import {
+    ArrowLeft,
+    Edit,
+    Check,
+    Printer,
+    Save,
+    FileText,
+  } from "lucide-svelte";
   import PropertyDetails from "@/components/PropertyDetails.svelte";
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
   import PropertyImages from "$lib/components/PropertyImages.svelte";
@@ -10,6 +17,7 @@
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
+  import FlyerMaker from "$lib/components/FlyerMaker.svelte";
   import {
     upsertProperty,
     getPropertyById,
@@ -19,6 +27,7 @@
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
   let isEditing = $state(false);
+  let flyerMakerOpen = $state(false);
 
   $effect(() => {
     // Set initial editing state based on isNew
@@ -110,77 +119,51 @@
       const title = `Property_${property.address || "Details"}_${new Date().toISOString().split("T")[0]}`;
       const pdf = await getPDF(propertyContent, title);
       console.log("pdf", pdf);
-      
+
       // Create a URL for the PDF blob
       const url = URL.createObjectURL(pdf);
-      
+
       // Create a temporary link element
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = `${title}.pdf`;
-      
+
       // Append to document, click, and cleanup
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
+
       // Revoke the URL to free up memory
       URL.revokeObjectURL(url);
     }
   };
 
-  let actionItems = $state([
+  const actionItems = $derived([
     {
-      groupName: "Actions",
-      groupItems: [
-        {
-          icon: Edit,
-          label: "Edit Property",
-          onClick: () => (isEditing = true),
-        },
-        {
-          icon: Printer,
-          label: "Export PDF",
-          onClick: exportPDF,
-        },
-      ],
+      icon: Edit,
+      label: "Edit",
+      onClick: () => (isEditing = true),
+      show: !isEditing && !isNew,
+    },
+    {
+      icon: Check,
+      label: "Save",
+      onClick: handleSave,
+      show: isEditing || isNew,
+    },
+    {
+      icon: FileText,
+      label: "Create Flyer",
+      onClick: () => (flyerMakerOpen = true),
+      show: !isEditing && !isNew,
+    },
+    {
+      icon: Printer,
+      label: "Export PDF",
+      onClick: exportPDF,
+      show: !isEditing && !isNew,
     },
   ]);
-
-  $effect(() => {
-    if (isNew || isEditing) {
-      actionItems = [
-        {
-          groupName: "Actions",
-          groupItems: [
-            {
-              icon: Save,
-              label: "Save Changes",
-              onClick: handleSave,
-            },
-          ],
-        },
-      ];
-    } else {
-      actionItems = [
-        {
-          groupName: "Actions",
-          groupItems: [
-            {
-              icon: Edit,
-              label: "Edit Property",
-              onClick: () => (isEditing = true),
-            },
-            {
-              icon: Printer,
-              label: "Export PDF",
-              onClick: exportPDF,
-            },
-          ],
-        },
-      ];
-    }
-  });
 </script>
 
 <PageTemplate {actionItems}>
@@ -231,3 +214,8 @@
     {/if}
   {/snippet}
 </PageTemplate>
+
+<FlyerMaker
+  {property}
+  bind:open={flyerMakerOpen}
+/>

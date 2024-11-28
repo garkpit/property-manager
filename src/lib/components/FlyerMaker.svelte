@@ -1,0 +1,176 @@
+<script lang="ts">
+  import type { Property } from "$lib/services/propertyService.svelte";
+  import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+  } from "$lib/components/ui/dialog";
+  import { cn } from "$lib/utils";
+
+  export let property: Property;
+  export let open: boolean;
+
+  let selectedStyle = "modern";
+
+  const flyerStyles = [
+    {
+      id: "modern",
+      name: "Modern Minimal",
+      description: "Clean and contemporary design with emphasis on typography",
+    },
+    {
+      id: "luxury",
+      name: "Luxury Estate",
+      description: "Elegant and sophisticated layout for high-end properties",
+    },
+  ];
+
+  const formatPrice = (price: number | null) => {
+    if (!price) return "N/A";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+</script>
+
+<Dialog bind:open>
+  <DialogContent class="max-w-6xl h-[80vh]">
+    <DialogHeader>
+      <DialogTitle>Flyer Maker</DialogTitle>
+    </DialogHeader>
+
+    <div class="grid grid-cols-[250px_1fr] gap-6 h-full overflow-hidden">
+      <!-- Style Selector -->
+      <div class="border-r pr-4 space-y-4 overflow-y-auto">
+        <h3 class="font-semibold text-lg">Flyer Styles</h3>
+        <div class="space-y-2">
+          {#each flyerStyles as style}
+            <button
+              class={cn(
+                "w-full text-left p-3 rounded-lg transition-colors",
+                selectedStyle === style.id
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted",
+              )}
+              onclick={() => (selectedStyle = style.id)}
+            >
+              <div class="font-medium">{style.name}</div>
+              <div class="text-sm opacity-80">{style.description}</div>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Preview Area -->
+      <div class="overflow-y-auto px-4">
+        {#if selectedStyle === "modern"}
+          <!-- Modern Minimal Layout -->
+          <div class="max-w-3xl mx-auto bg-white p-8 shadow-lg">
+            {#if property?.metadata?.images?.[0]}
+              <img
+                src={property.metadata.images[0]}
+                alt={property.title}
+                class="w-full h-[400px] object-cover rounded-lg mb-8"
+              />
+            {/if}
+
+            <div class="space-y-6">
+              <h1 class="text-4xl font-light tracking-tight">
+                {property.title ||
+                  `${property.property_type} in ${property.city}`}
+              </h1>
+
+              <div class="text-3xl font-light text-primary">
+                {formatPrice(property.price)}
+              </div>
+
+              <div class="grid grid-cols-2 gap-4 text-lg">
+                <div>
+                  <span class="font-medium">Location:</span><br />
+                  {property.address}
+                  {#if property.address2}, {property.address2}{/if}
+                </div>
+                <div>
+                  <span class="font-medium">Property Type:</span><br />
+                  {property.property_type}
+                </div>
+              </div>
+
+              <p class="text-gray-600 text-lg leading-relaxed">
+                {property.description}
+              </p>
+            </div>
+          </div>
+        {:else if selectedStyle === "luxury"}
+          <!-- Luxury Estate Layout -->
+          <div class="max-w-3xl mx-auto bg-[#1a1a1a] text-white p-12 shadow-xl">
+            <div class="border border-gold p-8">
+              {#if property?.metadata?.images?.[0]}
+                <img
+                  src={property.metadata.images[0]}
+                  alt={property.title}
+                  class="w-full h-[400px] object-cover mb-8"
+                />
+              {/if}
+
+              <div class="text-center space-y-6">
+                <h1 class="text-5xl font-serif tracking-wide">
+                  {property.title ||
+                    `${property.property_type} in ${property.city}`}
+                </h1>
+
+                <div class="text-4xl font-light text-gold">
+                  {formatPrice(property.price)}
+                </div>
+
+                <div class="w-24 h-[1px] bg-gold mx-auto my-8" />
+
+                <div class="grid grid-cols-2 gap-8 text-lg max-w-2xl mx-auto">
+                  <div>
+                    <span class="text-gold uppercase tracking-wider text-sm"
+                      >Location</span
+                    >
+                    <p class="mt-2">
+                      {property.address}
+                      {#if property.address2}, {property.address2}{/if}
+                    </p>
+                  </div>
+                  <div>
+                    <span class="text-gold uppercase tracking-wider text-sm"
+                      >Property Type</span
+                    >
+                    <p class="mt-2">{property.property_type}</p>
+                  </div>
+                </div>
+
+                <p
+                  class="text-gray-300 text-lg leading-relaxed max-w-2xl mx-auto mt-8"
+                >
+                  {property.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        {/if}
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+
+<style>
+  .text-gold {
+    color: #c5a572;
+  }
+
+  .border-gold {
+    border-color: #c5a572;
+  }
+
+  .bg-gold {
+    background-color: #c5a572;
+  }
+</style>
