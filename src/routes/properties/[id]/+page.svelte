@@ -147,7 +147,7 @@
         ? "Property Images"
         : currentTab === "transactions"
           ? "Property Transactions"
-          : "Property"
+          : "Property",
   );
 
   const detailsActionItems = [
@@ -180,12 +180,14 @@
     },
   ];
 
+  let showTransactionModal = $state(false);
+
   const transactionActionItems = [
     {
       icon: FileText,
       label: "Add Transaction",
       onClick: () => {
-        /* TODO: Implement add transaction */
+        showTransactionModal = true;
       },
       show: !isNew,
     },
@@ -245,7 +247,11 @@
                 <PropertyImages {property} onReload={loadProperty} />
               </Tabs.Content>
               <Tabs.Content value="transactions" class="w-full">
-                <PropertyTransactions {property} />
+                <PropertyTransactions 
+                  {property} 
+                  showModal={showTransactionModal}
+                  on:modalClose={() => showTransactionModal = false}
+                />
               </Tabs.Content>
             </div>
           </Tabs.Root>
