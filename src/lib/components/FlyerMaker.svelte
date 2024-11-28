@@ -8,11 +8,13 @@
   } from "$lib/components/ui/dialog";
   import { cn } from "$lib/utils";
 
-  export let property: Property;
-  export let open: boolean;
+  let { property, open = $bindable() } = $props<{
+    property: Property;
+    open: boolean;
+  }>();
 
-  let selectedStyle = "modern";
-
+  let selectedStyle = $state("modern");
+  const image = $derived(property?.metadata?.images?.[0]?.url || "");
   const flyerStyles = [
     {
       id: "modern",
@@ -37,7 +39,7 @@
   };
 </script>
 
-<Dialog bind:open>
+<Dialog {open}>
   <DialogContent class="max-w-6xl h-[80vh]">
     <DialogHeader>
       <DialogTitle>Flyer Maker</DialogTitle>
@@ -70,9 +72,9 @@
         {#if selectedStyle === "modern"}
           <!-- Modern Minimal Layout -->
           <div class="max-w-3xl mx-auto bg-white p-8 shadow-lg">
-            {#if property?.metadata?.images?.[0]}
+            {#if image}
               <img
-                src={property.metadata.images[0]}
+                src={image}
                 alt={property.title}
                 class="w-full h-[400px] object-cover rounded-lg mb-8"
               />
@@ -109,9 +111,9 @@
           <!-- Luxury Estate Layout -->
           <div class="max-w-3xl mx-auto bg-[#1a1a1a] text-white p-12 shadow-xl">
             <div class="border border-gold p-8">
-              {#if property?.metadata?.images?.[0]}
+              {#if image}
                 <img
-                  src={property.metadata.images[0]}
+                  src={image}
                   alt={property.title}
                   class="w-full h-[400px] object-cover mb-8"
                 />
@@ -127,7 +129,7 @@
                   {formatPrice(property.price)}
                 </div>
 
-                <div class="w-24 h-[1px] bg-gold mx-auto my-8" />
+                <div class="w-24 h-[1px] bg-gold mx-auto my-8"></div>
 
                 <div class="grid grid-cols-2 gap-8 text-lg max-w-2xl mx-auto">
                   <div>
