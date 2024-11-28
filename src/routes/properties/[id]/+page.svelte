@@ -140,6 +140,16 @@
 
   let currentTab = $state("details");
 
+  const pageTitle = $derived(
+    currentTab === "details"
+      ? "Property Details"
+      : currentTab === "images"
+        ? "Property Images"
+        : currentTab === "transactions"
+          ? "Property Transactions"
+          : "Property"
+  );
+
   const detailsActionItems = [
     {
       icon: Edit,
@@ -200,7 +210,7 @@
   {/snippet}
 
   {#snippet TopCenter()}
-    Property Details
+    {pageTitle}
   {/snippet}
 
   {#snippet Middle()}
