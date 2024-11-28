@@ -384,6 +384,148 @@ export type Database = {
           },
         ]
       }
+      transactions: {
+        Row: {
+          amount: number
+          balance: number
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          metadata: Json | null
+          notes: string | null
+          orgid: string
+          parentid: string | null
+          propertyid: string
+          start_date: string | null
+          status: string
+          type: string
+          updated_at: string
+          userid: string
+        }
+        Insert: {
+          amount?: number
+          balance?: number
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          orgid: string
+          parentid?: string | null
+          propertyid: string
+          start_date?: string | null
+          status: string
+          type: string
+          updated_at?: string
+          userid: string
+        }
+        Update: {
+          amount?: number
+          balance?: number
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          orgid?: string
+          parentid?: string | null
+          propertyid?: string
+          start_date?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+          userid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_orgid_fkey"
+            columns: ["orgid"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_propertyid_fkey"
+            columns: ["propertyid"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions_events: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          notes: string | null
+          orgid: string
+          propertyid: string
+          status: string
+          transactionid: string
+          type: string
+          updated_at: string
+          userid: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          orgid: string
+          propertyid: string
+          status: string
+          transactionid: string
+          type: string
+          updated_at?: string
+          userid: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          orgid?: string
+          propertyid?: string
+          status?: string
+          transactionid?: string
+          type?: string
+          updated_at?: string
+          userid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_events_orgid_fkey"
+            columns: ["orgid"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_events_propertyid_fkey"
+            columns: ["propertyid"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_events_transactionid_fkey"
+            columns: ["transactionid"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
