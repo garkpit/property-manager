@@ -8,6 +8,7 @@
     label: string;
     onClick?: () => void;
     separator?: boolean;
+    show?: boolean;
   }
 
   let {
@@ -19,6 +20,8 @@
     triggerIcon: any;
     buttonClass?: string;
   }>();
+
+  const visibleItems = $derived(items?.filter(item => item.show !== false) ?? []);
 </script>
 
 <DropdownMenu.Root>
@@ -29,7 +32,7 @@
     </Button>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
-    {#each items as item}
+    {#each visibleItems as item}
       {#if item.separator}
         <DropdownMenu.Separator />
       {/if}
