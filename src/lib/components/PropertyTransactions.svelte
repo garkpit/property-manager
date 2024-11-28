@@ -16,6 +16,7 @@
   let transactions = $state<Transaction[]>([]);
   let loading = $state(true);
   let error = $state<string | null>(null);
+  let selectedTransaction = $state<Transaction | null>(null);
 
   async function loadTransactions() {
     if (!property.id) return;
@@ -87,13 +88,13 @@
                 {:else}
                   {#each transactions as transaction}
                     {#if transaction.description}
-                      <tr class="border-b bg-gray-50">
+                      <tr class="border-b bg-gray-50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
                         <td colspan="6" class="p-4 text-sm text-gray-600">
                           {transaction.description}
                         </td>
                       </tr>
                     {/if}
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="border-b hover:bg-gray-50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
                       <td class="p-4 capitalize whitespace-nowrap">{transaction.type}</td>
                       <td class="p-4 whitespace-nowrap">{formatDate(transaction.start_date)}</td>
                       <td class="p-4 whitespace-nowrap hidden md:table-cell">
@@ -131,12 +132,17 @@
   {/if}
 </div>
 
-{#if showModal}
+{#if showModal || selectedTransaction}
   <TransactionModal
     propertyId={property.id || ""}
-    onClose={() => dispatch("modalClose")}
+    existingTransaction={selectedTransaction}
+    onClose={() => {
+      dispatch("modalClose");
+      selectedTransaction = null;
+    }}
     onSave={() => {
       dispatch("modalClose");
+      selectedTransaction = null;
       loadTransactions();
     }}
   />

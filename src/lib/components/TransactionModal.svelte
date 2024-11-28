@@ -6,26 +6,35 @@
   import type { Transaction } from "$lib/services/transactionService.svelte";
   import { upsertTransaction } from "$lib/services/transactionService.svelte";
 
-  let { propertyId, onClose, onSave } = $props<{
+  let { propertyId, onClose, onSave, existingTransaction } = $props<{
     propertyId: string;
     onClose: () => void;
     onSave: () => void;
+    existingTransaction?: Transaction;
   }>();
 
   let open = $state(true);
   let saving = $state(false);
   let error = $state<string | null>(null);
 
-  let transaction = $state<Partial<Transaction>>({
-    propertyid: propertyId,
-    type: "",
-    amount: 0,
-    balance: 0,
-    start_date: new Date().toISOString().split('T')[0],
-    end_date: null,
-    description: "",
-    status: "active",
-  });
+  let transaction = $state<Partial<Transaction>>(
+    existingTransaction 
+      ? {
+          ...existingTransaction,
+          start_date: existingTransaction.start_date ? new Date(existingTransaction.start_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          end_date: existingTransaction.end_date ? new Date(existingTransaction.end_date).toISOString().split('T')[0] : null,
+        }
+      : {
+          propertyid: propertyId,
+          type: "",
+          amount: 0,
+          balance: 0,
+          start_date: new Date().toISOString().split('T')[0],
+          end_date: null,
+          description: "",
+          status: "active",
+        }
+  );
 
   async function handleSave() {
     saving = true;
