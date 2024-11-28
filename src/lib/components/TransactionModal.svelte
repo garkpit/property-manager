@@ -3,6 +3,7 @@
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
+  import { Textarea } from "$lib/components/ui/textarea";
   import type { Transaction } from "$lib/services/transactionService.svelte";
   import { upsertTransaction } from "$lib/services/transactionService.svelte";
 
@@ -34,6 +35,7 @@
           start_date: new Date().toISOString().split('T')[0],
           end_date: null,
           description: "",
+          notes: "",
           status: "active",
         }
   );
@@ -142,6 +144,16 @@
             id="description"
             bind:value={transaction.description}
             placeholder="Enter transaction details..."
+          />
+        </div>
+
+        <div class="grid gap-2">
+          <Label for="notes">Notes</Label>
+          <Textarea
+            id="notes"
+            bind:value={transaction.notes}
+            placeholder="Enter additional notes..."
+            rows={4}
           />
         </div>
 
