@@ -63,118 +63,115 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Content class="sm:max-w-[425px]">
-    <Dialog.Header>
+  <Dialog.Content class="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
+    <Dialog.Header class="pb-4">
       <Dialog.Title>{modalTitle}</Dialog.Title>
       <Dialog.Description>
         {modalDescription}
       </Dialog.Description>
     </Dialog.Header>
 
-    <form 
-      on:submit={(e) => {
-        e.preventDefault();
-        handleSave();
-      }} 
-      class="grid gap-4 py-4"
-    >
-      <div class="grid gap-2">
-        <Label for="type">Type</Label>
-        <select
-          id="type"
-          class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-          bind:value={transaction.type}
-          required
-        >
-          <option value="">Select type...</option>
-          <option value="sale">Sale</option>
-          <option value="purchase">Purchase</option>
-          <option value="rental">Rental</option>
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
-      </div>
+    <div class="grid gap-4 py-4">
+      <form 
+        on:submit={(e) => {
+          e.preventDefault();
+          handleSave();
+        }} 
+      >
+        <div class="grid gap-2">
+          <Label for="type">Type</Label>
+          <select
+            id="type"
+            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+            bind:value={transaction.type}
+            required
+          >
+            <option value="">Select type...</option>
+            <option value="sale">Sale</option>
+            <option value="purchase">Purchase</option>
+            <option value="rental">Rental</option>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
 
-      <div class="grid gap-2">
-        <Label for="amount">Amount</Label>
-        <Input
-          id="amount"
-          type="number"
-          step="0.01"
-          bind:value={transaction.amount}
-          required
-        />
-      </div>
+        <div class="grid gap-2">
+          <Label for="amount">Amount</Label>
+          <Input
+            id="amount"
+            type="number"
+            step="0.01"
+            bind:value={transaction.amount}
+            required
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <Label for="balance">Balance</Label>
-        <Input
-          id="balance"
-          type="number"
-          step="0.01"
-          bind:value={transaction.balance}
-          required
-        />
-      </div>
+        <div class="grid gap-2">
+          <Label for="balance">Balance</Label>
+          <Input
+            id="balance"
+            type="number"
+            step="0.01"
+            bind:value={transaction.balance}
+            required
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <Label for="start_date">Start Date</Label>
-        <Input
-          id="start_date"
-          type="date"
-          bind:value={transaction.start_date}
-          required
-        />
-      </div>
+        <div class="grid gap-2">
+          <Label for="start_date">Start Date</Label>
+          <Input
+            id="start_date"
+            type="date"
+            bind:value={transaction.start_date}
+            required
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <Label for="end_date">End Date</Label>
-        <Input
-          id="end_date"
-          type="date"
-          bind:value={transaction.end_date}
-        />
-      </div>
+        <div class="grid gap-2">
+          <Label for="end_date">End Date</Label>
+          <Input
+            id="end_date"
+            type="date"
+            bind:value={transaction.end_date}
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <Label for="description">Description</Label>
-        <Input
-          id="description"
-          bind:value={transaction.description}
-          placeholder="Enter transaction details..."
-        />
-      </div>
+        <div class="grid gap-2">
+          <Label for="description">Description</Label>
+          <Input
+            id="description"
+            bind:value={transaction.description}
+            placeholder="Enter transaction details..."
+          />
+        </div>
 
-      <div class="grid gap-2">
-        <Label for="status">Status</Label>
-        <select
-          id="status"
-          class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-          bind:value={transaction.status}
-          required
-        >
-          <option value="active">Active</option>
-          <option value="pending">Pending</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
+        <div class="grid gap-2">
+          <Label for="status">Status</Label>
+          <select
+            id="status"
+            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+            bind:value={transaction.status}
+            required
+          >
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
 
-      {#if error}
-        <p class="text-sm text-red-500">{error}</p>
-      {/if}
-
-      <Dialog.Footer>
-        <Button type="button" variant="outline" onclick={() => (open = false)}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={saving}>
-          {#if saving}
-            <span class="loading loading-spinner loading-xs mr-2"></span>
-          {/if}
-          Save
-        </Button>
-      </Dialog.Footer>
-    </form>
+        {#if error}
+          <p class="text-sm text-red-500">{error}</p>
+        {/if}
+      </form>
+    </div>
+    <Dialog.Footer class="pt-4">
+      <Button type="button" variant="outline" onclick={() => (open = false)}>
+        Cancel
+      </Button>
+      <Button type="submit" disabled={saving} onclick={handleSave}>
+        {saving ? "Saving..." : "Save"}
+      </Button>
+    </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
