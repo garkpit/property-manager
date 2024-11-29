@@ -227,35 +227,31 @@
     {:else if isEditing}
       <PropertyEdit bind:property onSave={handleSave} />
     {:else}
-      <div class="w-full flex justify-center">
-        <div class="max-w-4xl w-full">
-          <Tabs.Root
-            value="details"
-            class="w-full"
-            onValueChange={(value) => (currentTab = value)}
-          >
-            <Tabs.List class="flex justify-center">
-              <Tabs.Trigger value="details">Details</Tabs.Trigger>
-              <Tabs.Trigger value="images">Images</Tabs.Trigger>
-              <Tabs.Trigger value="transactions">Transactions</Tabs.Trigger>
-            </Tabs.List>
-            <div id="property-details">
-              <Tabs.Content value="details" class="w-full">
-                <PropertyDetails {property} />
-              </Tabs.Content>
-              <Tabs.Content value="images" class="w-full">
-                <PropertyImages {property} onReload={loadProperty} />
-              </Tabs.Content>
-              <Tabs.Content value="transactions" class="w-full">
-                <PropertyTransactions 
-                  {property} 
-                  showModal={showTransactionModal}
-                  on:modalClose={() => showTransactionModal = false}
-                />
-              </Tabs.Content>
-            </div>
-          </Tabs.Root>
-        </div>
+      <div class="flex items-center justify-center">
+        <Tabs.Root
+          value="details"
+          class="w-[350px] md:w-full"
+          onValueChange={(value) => (currentTab = value)}
+        >
+          <Tabs.List>
+            <Tabs.Trigger value="details">Details</Tabs.Trigger>
+            <Tabs.Trigger value="images">Images</Tabs.Trigger>
+            <Tabs.Trigger value="transactions">Transactions</Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="details">
+            <PropertyDetails {property} />
+          </Tabs.Content>
+          <Tabs.Content value="images">
+            <PropertyImages {property} onReload={loadProperty} />
+          </Tabs.Content>
+          <Tabs.Content value="transactions">
+            <PropertyTransactions 
+              {property} 
+              showModal={showTransactionModal}
+              on:modalClose={() => showTransactionModal = false}
+            />
+          </Tabs.Content>
+        </Tabs.Root>
       </div>
     {/if}
   {/snippet}
