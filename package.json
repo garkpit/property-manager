@@ -1,6 +1,6 @@
 {
 	"name": "svelte5-template",
-	"version": "0.8.1",
+	"version": "0.8.2",
 	"identifier": "com.example.svelte5template",
 	"description": "Svelte 5 Template App",
 	"type": "module",
