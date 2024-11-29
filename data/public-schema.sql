@@ -278,7 +278,8 @@ CREATE TABLE IF NOT EXISTS "public"."contacts" (
     "city" "text",
     "region" "text",
     "postal" "text",
-    "country" "text"
+    "country" "text",
+    "metadata" "jsonb"
 );
 
 
