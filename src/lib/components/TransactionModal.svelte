@@ -17,27 +17,39 @@
   let open = $state(true);
   let saving = $state(false);
   let error = $state<string | null>(null);
-  let modalTitle = $derived(existingTransaction ? "Edit Transaction" : "Add Transaction");
-  let modalDescription = $derived(existingTransaction ? "Edit transaction details for this property." : "Add a new transaction for this property.");
+  let modalTitle = $derived(
+    existingTransaction ? "Edit Transaction" : "Add Transaction",
+  );
+  let modalDescription = $derived(
+    existingTransaction
+      ? "Edit transaction details for this property."
+      : "Add a new transaction for this property.",
+  );
 
   let transaction = $state<Partial<Transaction>>(
-    existingTransaction 
+    existingTransaction
       ? {
           ...existingTransaction,
-          start_date: existingTransaction.start_date ? new Date(existingTransaction.start_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          end_date: existingTransaction.end_date ? new Date(existingTransaction.end_date).toISOString().split('T')[0] : null,
+          start_date: existingTransaction.start_date
+            ? new Date(existingTransaction.start_date)
+                .toISOString()
+                .split("T")[0]
+            : new Date().toISOString().split("T")[0],
+          end_date: existingTransaction.end_date
+            ? new Date(existingTransaction.end_date).toISOString().split("T")[0]
+            : null,
         }
       : {
           propertyid: propertyId,
           type: "",
           amount: 0,
           balance: 0,
-          start_date: new Date().toISOString().split('T')[0],
+          start_date: new Date().toISOString().split("T")[0],
           end_date: null,
           description: "",
           notes: "",
           status: "active",
-        }
+        },
   );
 
   async function handleSave() {
@@ -74,11 +86,11 @@
     </Dialog.Header>
 
     <div class="grid gap-4 py-4">
-      <form 
+      <form
         on:submit={(e) => {
           e.preventDefault();
           handleSave();
-        }} 
+        }}
       >
         <div class="grid gap-2">
           <Label for="type">Type</Label>
@@ -131,11 +143,7 @@
 
         <div class="grid gap-2">
           <Label for="end_date">End Date</Label>
-          <Input
-            id="end_date"
-            type="date"
-            bind:value={transaction.end_date}
-          />
+          <Input id="end_date" type="date" bind:value={transaction.end_date} />
         </div>
 
         <div class="grid gap-2">
@@ -181,7 +189,12 @@
       <Button type="button" variant="outline" onclick={() => (open = false)}>
         Cancel
       </Button>
-      <Button type="submit" disabled={saving} onclick={handleSave}>
+      <Button
+        variant="secondary"
+        type="submit"
+        disabled={saving}
+        onclick={handleSave}
+      >
         {saving ? "Saving..." : "Save"}
       </Button>
     </Dialog.Footer>

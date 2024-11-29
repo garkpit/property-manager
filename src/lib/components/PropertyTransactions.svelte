@@ -58,64 +58,64 @@
 <div class="w-full p-4 md:p-6 lg:p-8 space-y-8" transition:fade>
   {#if loading}
     <div class="flex items-center justify-center h-32">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
     </div>
   {:else if error}
-    <div class="bg-red-50 text-red-500 p-4 rounded-lg">{error}</div>
+    <div class="bg-destructive/10 text-destructive p-4 rounded-lg">{error}</div>
   {:else}
-    <div class="bg-white rounded-xl shadow-sm p-6">
+    <div class="bg-card rounded-xl shadow-sm p-6">
       <div class="overflow-x-auto -mx-6">
         <div class="inline-block min-w-full align-middle">
           <div class="overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-border">
               <thead>
-                <tr class="border-b">
-                  <th class="text-left p-4 font-semibold text-gray-900">Type</th>
-                  <th class="text-left p-4 font-semibold text-gray-900">Start Date</th>
-                  <th class="text-left p-4 font-semibold text-gray-900 hidden md:table-cell">End Date</th>
-                  <th class="text-right p-4 font-semibold text-gray-900 hidden md:table-cell">Amount</th>
-                  <th class="text-right p-4 font-semibold text-gray-900 hidden md:table-cell">Balance</th>
-                  <th class="text-left p-4 font-semibold text-gray-900">Status</th>
+                <tr class="border-b border-border">
+                  <th class="text-left p-4 font-semibold text-foreground">Type</th>
+                  <th class="text-left p-4 font-semibold text-foreground">Start Date</th>
+                  <th class="text-left p-4 font-semibold text-foreground hidden md:table-cell">End Date</th>
+                  <th class="text-right p-4 font-semibold text-foreground hidden md:table-cell">Amount</th>
+                  <th class="text-right p-4 font-semibold text-foreground hidden md:table-cell">Balance</th>
+                  <th class="text-left p-4 font-semibold text-foreground">Status</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200">
+              <tbody class="divide-y divide-border">
                 {#if transactions.length === 0}
                   <tr>
-                    <td colspan="6" class="text-center p-8 text-gray-500">
+                    <td colspan="6" class="text-center p-8 text-muted-foreground">
                       No transactions found for this property.
                     </td>
                   </tr>
                 {:else}
                   {#each transactions as transaction}
                     {#if transaction.description}
-                      <tr class="border-b bg-gray-50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
-                        <td colspan="6" class="p-4 text-sm text-gray-600">
+                      <tr class="border-b bg-muted/50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
+                        <td colspan="6" class="p-4 text-sm text-muted-foreground">
                           {transaction.description}
                         </td>
                       </tr>
                     {/if}
-                    <tr class="border-b hover:bg-gray-50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
-                      <td class="p-4 capitalize whitespace-nowrap">{transaction.type}</td>
-                      <td class="p-4 whitespace-nowrap">{formatDate(transaction.start_date)}</td>
-                      <td class="p-4 whitespace-nowrap hidden md:table-cell">
+                    <tr class="border-b hover:bg-muted/50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
+                      <td class="p-4 capitalize whitespace-nowrap text-foreground">{transaction.type}</td>
+                      <td class="p-4 whitespace-nowrap text-foreground">{formatDate(transaction.start_date)}</td>
+                      <td class="p-4 whitespace-nowrap hidden md:table-cell text-foreground">
                         {transaction.end_date ? formatDate(transaction.end_date) : "-"}
                       </td>
-                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell">
+                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell text-foreground">
                         {formatCurrency(transaction.amount)}
                       </td>
-                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell">
+                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell text-foreground">
                         {formatCurrency(transaction.balance)}
                       </td>
                       <td class="p-4 whitespace-nowrap">
                         <span class={`px-2 py-1 rounded-full text-xs font-medium
                           ${
                             transaction.status === "active"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200"
                               : transaction.status === "pending"
-                              ? "bg-yellow-100 text-yellow-800"
+                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200"
                               : transaction.status === "completed"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-gray-100 text-gray-800"
+                              ? "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200"
+                              : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
                           }`}>
                           {transaction.status}
                         </span>
