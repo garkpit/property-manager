@@ -283,73 +283,107 @@
               </div>
             </form>
           {:else}
-            <div class="space-y-6">
-              <div class="grid gap-4">
-                {#if contact.firstname || contact.lastname}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Name</div>
-                    <div class="col-span-2">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100">
+              <!-- Contact Header -->
+              <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center space-x-4">
+                  <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span class="text-lg font-semibold text-primary">
+                      {(contact.firstname?.[0] ?? "") + (contact.lastname?.[0] ?? "")}
+                    </span>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-semibold text-gray-900">
                       {[contact.firstname, contact.lastname].filter(Boolean).join(" ")}
+                    </h2>
+                    {#if contact.contact_type}
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
+                        {contact.contact_type === 'owner' ? 'bg-blue-100 text-blue-800' :
+                         contact.contact_type === 'renter' ? 'bg-green-100 text-green-800' :
+                         contact.contact_type === 'provider' ? 'bg-purple-100 text-purple-800' :
+                         'bg-gray-100 text-gray-800'}">
+                        {contact.contact_type}
+                      </span>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact Details -->
+              <div class="px-6 py-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Contact Information -->
+                  <div class="space-y-4">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Contact Information</h3>
+                    {#if contact.email}
+                      <div class="flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        <a href="mailto:{contact.email}" class="text-sm text-primary hover:underline">{contact.email}</a>
+                      </div>
+                    {/if}
+                    {#if contact.phone}
+                      <div class="flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                        </svg>
+                        <a href="tel:{contact.phone}" class="text-sm text-primary hover:underline">{contact.phone}</a>
+                      </div>
+                    {/if}
+                  </div>
+
+                  <!-- Address Information -->
+                  {#if contact.address}
+                    <div class="space-y-4">
+                      <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Address</h3>
+                      <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                        </svg>
+                        <div class="text-sm text-gray-600">
+                          <div>{contact.address}</div>
+                          {#if contact.address2}
+                            <div>{contact.address2}</div>
+                          {/if}
+                          <div>
+                            {[contact.city, contact.region, contact.postal].filter(Boolean).join(", ")}
+                          </div>
+                          {#if contact.country}
+                            <div>{contact.country}</div>
+                          {/if}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                {/if}
-                {#if contact.contact_type}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Contact Type</div>
-                    <div class="col-span-2">
-                      {contact.contact_type.charAt(0).toUpperCase() + contact.contact_type.slice(1)}
-                    </div>
-                  </div>
-                {/if}
-                {#if contact.email}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Email</div>
-                    <div class="col-span-2">{contact.email}</div>
-                  </div>
-                {/if}
-                {#if contact.phone}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Phone</div>
-                    <div class="col-span-2">{contact.phone}</div>
-                  </div>
-                {/if}
-                {#if contact.address}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Address</div>
-                    <div class="col-span-2">
-                      {contact.address}
-                      {#if contact.address2}
-                        <br />{contact.address2}
-                      {/if}
-                      <br />{[contact.city, contact.region, contact.postal].filter(Boolean).join(", ")}
-                      {#if contact.country}
-                        <br />{contact.country}
-                      {/if}
-                    </div>
-                  </div>
-                {/if}
+                  {/if}
+                </div>
+
+                <!-- Notes -->
                 {#if contact.notes}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Notes</div>
-                    <div class="col-span-2">{contact.notes}</div>
-                  </div>
-                {/if}
-                {#if contact.created_at}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Created</div>
-                    <div class="col-span-2">
-                      {new Date(contact.created_at).toLocaleDateString()}
+                  <div class="mt-6 space-y-4">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Notes</h3>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                      <p class="text-sm text-gray-600 whitespace-pre-wrap">{contact.notes}</p>
                     </div>
                   </div>
                 {/if}
-                {#if contact.updated_at}
-                  <div class="grid grid-cols-3 items-center gap-4">
-                    <div class="font-medium">Updated</div>
-                    <div class="col-span-2">
-                      {new Date(contact.updated_at).toLocaleDateString()}
-                    </div>
+
+                <!-- System Information -->
+                <div class="mt-6 pt-6 border-t border-gray-100">
+                  <div class="grid grid-cols-2 gap-4 text-xs text-gray-500">
+                    {#if contact.created_at}
+                      <div>
+                        Created: {new Date(contact.created_at).toLocaleDateString()}
+                      </div>
+                    {/if}
+                    {#if contact.updated_at}
+                      <div class="text-right">
+                        Updated: {new Date(contact.updated_at).toLocaleDateString()}
+                      </div>
+                    {/if}
                   </div>
-                {/if}
+                </div>
               </div>
             </div>
           {/if}
