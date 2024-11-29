@@ -24,7 +24,9 @@
     loading = true;
     error = null;
 
-    const { data, error: loadError } = await getPropertyTransactions(property.id);
+    const { data, error: loadError } = await getPropertyTransactions(
+      property.id,
+    );
 
     if (loadError) {
       error = loadError.message;
@@ -58,7 +60,9 @@
 <div class="w-full p-4 md:p-6 lg:p-8 space-y-8" transition:fade>
   {#if loading}
     <div class="flex items-center justify-center h-32">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
+      <div
+        class="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"
+      ></div>
     </div>
   {:else if error}
     <div class="bg-destructive/10 text-destructive p-4 rounded-lg">{error}</div>
@@ -70,53 +74,95 @@
             <table class="min-w-full divide-y divide-border">
               <thead>
                 <tr class="border-b border-border">
-                  <th class="text-left p-4 font-semibold text-foreground">Type</th>
-                  <th class="text-left p-4 font-semibold text-foreground">Start Date</th>
-                  <th class="text-left p-4 font-semibold text-foreground hidden md:table-cell">End Date</th>
-                  <th class="text-right p-4 font-semibold text-foreground hidden md:table-cell">Amount</th>
-                  <th class="text-right p-4 font-semibold text-foreground hidden md:table-cell">Balance</th>
-                  <th class="text-left p-4 font-semibold text-foreground">Status</th>
+                  <th class="text-left p-4 font-semibold text-foreground"
+                    >Type</th
+                  >
+                  <th class="text-left p-4 font-semibold text-foreground"
+                    >Start Date</th
+                  >
+                  <th
+                    class="text-left p-4 font-semibold text-foreground hidden md:table-cell"
+                    >End Date</th
+                  >
+                  <th
+                    class="text-right p-4 font-semibold text-foreground hidden md:table-cell"
+                    >Amount</th
+                  >
+                  <th
+                    class="text-right p-4 font-semibold text-foreground hidden md:table-cell"
+                    >Balance</th
+                  >
+                  <th class="text-left p-4 font-semibold text-foreground"
+                    >Status</th
+                  >
                 </tr>
               </thead>
               <tbody class="divide-y divide-border">
                 {#if transactions.length === 0}
                   <tr>
-                    <td colspan="6" class="text-center p-8 text-muted-foreground">
+                    <td
+                      colspan="6"
+                      class="text-center p-8 text-muted-foreground"
+                    >
                       No transactions found for this property.
                     </td>
                   </tr>
                 {:else}
                   {#each transactions as transaction}
                     {#if transaction.description}
-                      <tr class="border-b bg-muted/50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
-                        <td colspan="6" class="p-4 text-sm text-muted-foreground">
+                      <tr
+                        class="border-b bg-muted/50 cursor-pointer"
+                        onclick={() => (selectedTransaction = transaction)}
+                      >
+                        <td
+                          colspan="6"
+                          class="p-4 text-sm text-muted-foreground"
+                        >
                           {transaction.description}
                         </td>
                       </tr>
                     {/if}
-                    <tr class="border-b hover:bg-muted/50 cursor-pointer" on:click={() => selectedTransaction = transaction}>
-                      <td class="p-4 capitalize whitespace-nowrap text-foreground">{transaction.type}</td>
-                      <td class="p-4 whitespace-nowrap text-foreground">{formatDate(transaction.start_date)}</td>
-                      <td class="p-4 whitespace-nowrap hidden md:table-cell text-foreground">
-                        {transaction.end_date ? formatDate(transaction.end_date) : "-"}
+                    <tr
+                      class="border-b hover:bg-muted/50 cursor-pointer"
+                      onclick={() => (selectedTransaction = transaction)}
+                    >
+                      <td
+                        class="p-4 capitalize whitespace-nowrap text-foreground"
+                        >{transaction.type}</td
+                      >
+                      <td class="p-4 whitespace-nowrap text-foreground"
+                        >{formatDate(transaction.start_date)}</td
+                      >
+                      <td
+                        class="p-4 whitespace-nowrap hidden md:table-cell text-foreground"
+                      >
+                        {transaction.end_date
+                          ? formatDate(transaction.end_date)
+                          : "-"}
                       </td>
-                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell text-foreground">
+                      <td
+                        class="p-4 text-right whitespace-nowrap hidden md:table-cell text-foreground"
+                      >
                         {formatCurrency(transaction.amount)}
                       </td>
-                      <td class="p-4 text-right whitespace-nowrap hidden md:table-cell text-foreground">
+                      <td
+                        class="p-4 text-right whitespace-nowrap hidden md:table-cell text-foreground"
+                      >
                         {formatCurrency(transaction.balance)}
                       </td>
                       <td class="p-4 whitespace-nowrap">
-                        <span class={`px-2 py-1 rounded-full text-xs font-medium
+                        <span
+                          class={`px-2 py-1 rounded-full text-xs font-medium
                           ${
                             transaction.status === "active"
                               ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200"
                               : transaction.status === "pending"
-                              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200"
-                              : transaction.status === "completed"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200"
-                              : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
-                          }`}>
+                                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200"
+                                : transaction.status === "completed"
+                                  ? "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200"
+                                  : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200"
+                          }`}
+                        >
                           {transaction.status}
                         </span>
                       </td>

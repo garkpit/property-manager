@@ -14,7 +14,7 @@
 
 <button
   class="px-4 py-2 bg-primary text-primary-foreground rounded-md"
-  on:click={handleLongProcess}
+  onclick={handleLongProcess}
 >
   Start Long Process
 </button>

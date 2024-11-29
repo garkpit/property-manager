@@ -136,7 +136,7 @@
       </div>
 
       <Dialog.Footer></Dialog.Footer>
-      <Dialog.Close on:click={closeModal} />
+      <Dialog.Close onclick={closeModal} />
     </Dialog.Content>
   </Dialog.Root>
 {/if}

@@ -47,7 +47,7 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
+<svelte:window onkeydown={handleKeydown} />
 
 {#if images && images.length > 0}
   <!-- Container with 4:3 aspect ratio -->

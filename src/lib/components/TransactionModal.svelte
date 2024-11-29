@@ -69,13 +69,13 @@
   );
 
   const typeContent = $derived(
-    transactionTypes.find((t) => t.value === transaction.type)?.label ?? 
-    "Select type...",
+    transactionTypes.find((t) => t.value === transaction.type)?.label ??
+      "Select type...",
   );
 
   const statusContent = $derived(
-    transactionStatuses.find((s) => s.value === transaction.status)?.label ?? 
-    "Select status",
+    transactionStatuses.find((s) => s.value === transaction.status)?.label ??
+      "Select status",
   );
 
   async function handleSave() {
@@ -107,7 +107,7 @@
 
     <div class="grid gap-6 py-4">
       <form
-        on:submit={(e) => {
+        onsubmit={(e) => {
           e.preventDefault();
           handleSave();
         }}
