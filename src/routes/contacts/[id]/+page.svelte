@@ -8,6 +8,7 @@
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import * as Select from "$lib/components/ui/select";
+  import { Textarea } from "$lib/components/ui/textarea";
   import { toast } from "svelte-sonner";
   import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
   import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
@@ -315,10 +316,11 @@
 
               <div class="space-y-2">
                 <Label for="notes">Notes</Label>
-                <Input
+                <Textarea
                   id="notes"
                   bind:value={contact.notes}
-                  placeholder="Enter any additional notes"
+                  placeholder="Enter any additional notes about the contact"
+                  rows="4"
                 />
               </div>
 
