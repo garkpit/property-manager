@@ -329,9 +329,9 @@
               </div>
             </form>
           {:else}
-            <div class="bg-white rounded-lg shadow-sm border border-gray-100">
+            <div class="bg-background rounded-lg shadow-sm border border-border">
               <!-- Contact Header -->
-              <div class="px-6 py-4 border-b border-gray-100">
+              <div class="px-6 py-4 border-b border-border">
                 <div class="flex items-center space-x-4">
                   <div
                     class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center"
@@ -342,7 +342,7 @@
                     </span>
                   </div>
                   <div>
-                    <h2 class="text-xl font-semibold text-gray-900">
+                    <h2 class="text-xl font-semibold text-foreground">
                       {[contact.firstname, contact.lastname]
                         .filter(Boolean)
                         .join(" ")}
@@ -371,7 +371,7 @@
                   <!-- Contact Information -->
                   <div class="space-y-4">
                     <h3
-                      class="text-sm font-medium text-gray-500 uppercase tracking-wider"
+                      class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                     >
                       Contact Information
                     </h3>
@@ -379,7 +379,7 @@
                       <div class="flex items-center space-x-2">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          class="h-5 w-5 text-gray-400"
+                          class="h-5 w-5 text-muted-foreground"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -392,7 +392,7 @@
                         </svg>
                         <a
                           href="mailto:{contact.email}"
-                          class="text-sm text-primary hover:underline"
+                          class="text-sm text-foreground hover:underline"
                           >{contact.email}</a
                         >
                       </div>
@@ -401,7 +401,7 @@
                       <div class="flex items-center space-x-2">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          class="h-5 w-5 text-gray-400"
+                          class="h-5 w-5 text-muted-foreground"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -411,7 +411,7 @@
                         </svg>
                         <a
                           href="tel:{contact.phone}"
-                          class="text-sm text-primary hover:underline"
+                          class="text-sm text-foreground hover:underline"
                           >{contact.phone}</a
                         >
                       </div>
@@ -422,14 +422,14 @@
                   {#if contact.address}
                     <div class="space-y-4">
                       <h3
-                        class="text-sm font-medium text-gray-500 uppercase tracking-wider"
+                        class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                       >
                         Address
                       </h3>
                       <div class="flex items-start space-x-2">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          class="h-5 w-5 text-gray-400 mt-0.5"
+                          class="h-5 w-5 text-muted-foreground mt-0.5"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -439,7 +439,7 @@
                             clip-rule="evenodd"
                           />
                         </svg>
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-foreground">
                           <div>{contact.address}</div>
                           {#if contact.address2}
                             <div>{contact.address2}</div>
@@ -462,12 +462,12 @@
                 {#if contact.notes}
                   <div class="mt-6 space-y-4">
                     <h3
-                      class="text-sm font-medium text-gray-500 uppercase tracking-wider"
+                      class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                     >
                       Notes
                     </h3>
-                    <div class="bg-gray-50 rounded-lg p-4">
-                      <p class="text-sm text-gray-600 whitespace-pre-wrap">
+                    <div class="bg-muted/50 dark:bg-muted/900 rounded-lg p-4">
+                      <p class="text-sm text-foreground whitespace-pre-wrap">
                         {contact.notes}
                       </p>
                     </div>
@@ -475,8 +475,8 @@
                 {/if}
 
                 <!-- System Information -->
-                <div class="mt-6 pt-6 border-t border-gray-100">
-                  <div class="grid grid-cols-2 gap-4 text-xs text-gray-500">
+                <div class="mt-6 pt-6 border-t border-border">
+                  <div class="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
                     {#if contact.created_at}
                       <div>
                         Created: {new Date(
