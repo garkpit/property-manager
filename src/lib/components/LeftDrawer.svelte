@@ -17,6 +17,7 @@
     SwatchBook,
     Sparkles,
     Mail,
+    Users,
   } from "lucide-svelte";
   import NavUser from "$lib/components/nav-user.svelte";
   import type { ComponentProps } from "svelte";
@@ -57,6 +58,18 @@
           {
             title: "Inbox",
             url: "/messages",
+          },
+        ],
+      },
+      {
+        title: "People",
+        url: "#",
+        icon: Users,
+        isActive: false,
+        items: [
+          {
+            title: "Contacts",
+            url: "/contacts",
           },
         ],
       },
