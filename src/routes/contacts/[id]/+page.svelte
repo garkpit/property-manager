@@ -7,6 +7,7 @@
   import { goto } from "$app/navigation";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
+  import * as Select from "$lib/components/ui/select";
   import {
     upsertContact,
     getContactById,
@@ -31,6 +32,14 @@
           lastname: "",
           email: "",
           phone: "",
+          address: "",
+          address2: "",
+          city: "",
+          region: "",
+          postal: "",
+          country: "",
+          notes: "",
+          contact_type: "other",
         }
       : {};
   });
@@ -105,6 +114,18 @@
       show: isEditing || isNew,
     },
   ];
+
+  const contactTypes = [
+    { value: "owner", label: "Owner" },
+    { value: "renter", label: "Renter" },
+    { value: "provider", label: "Provider" },
+    { value: "other", label: "Other" },
+  ];
+
+  const contactTypeContent = $derived(
+    contactTypes.find((t) => t.value === contact.contact_type)?.label ??
+      "Select contact type"
+  );
 </script>
 
 <PageTemplate {actionItems}>
@@ -159,23 +180,101 @@
                 </div>
               </div>
 
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <Label for="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    bind:value={contact.email}
+                    placeholder="Enter email address"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <Label for="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    bind:value={contact.phone}
+                    placeholder="Enter phone number"
+                  />
+                </div>
+              </div>
+
               <div class="space-y-2">
-                <Label for="email">Email</Label>
+                <Label for="contact_type">Contact Type</Label>
+                <Select.Root type="single" bind:value={contact.contact_type}>
+                  <Select.Trigger class="w-full">
+                    {contactTypeContent}
+                  </Select.Trigger>
+                  <Select.Content>
+                    {#each contactTypes as type}
+                      <Select.Item value={type.value}>{type.label}</Select.Item>
+                    {/each}
+                  </Select.Content>
+                </Select.Root>
+              </div>
+
+              <div class="space-y-2">
+                <Label for="address">Address</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  bind:value={contact.email}
-                  placeholder="Enter email address"
+                  id="address"
+                  bind:value={contact.address}
+                  placeholder="Enter street address"
                 />
               </div>
 
               <div class="space-y-2">
-                <Label for="phone">Phone</Label>
+                <Label for="address2">Address Line 2</Label>
                 <Input
-                  id="phone"
-                  type="tel"
-                  bind:value={contact.phone}
-                  placeholder="Enter phone number"
+                  id="address2"
+                  bind:value={contact.address2}
+                  placeholder="Enter apartment, suite, etc."
+                />
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-2">
+                  <Label for="city">City</Label>
+                  <Input
+                    id="city"
+                    bind:value={contact.city}
+                    placeholder="Enter city"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <Label for="region">State/Region</Label>
+                  <Input
+                    id="region"
+                    bind:value={contact.region}
+                    placeholder="Enter state or region"
+                  />
+                </div>
+                <div class="space-y-2">
+                  <Label for="postal">Postal Code</Label>
+                  <Input
+                    id="postal"
+                    bind:value={contact.postal}
+                    placeholder="Enter postal code"
+                  />
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <Label for="country">Country</Label>
+                <Input
+                  id="country"
+                  bind:value={contact.country}
+                  placeholder="Enter country"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <Label for="notes">Notes</Label>
+                <Input
+                  id="notes"
+                  bind:value={contact.notes}
+                  placeholder="Enter any additional notes"
                 />
               </div>
 
@@ -194,6 +293,14 @@
                     </div>
                   </div>
                 {/if}
+                {#if contact.contact_type}
+                  <div class="grid grid-cols-3 items-center gap-4">
+                    <div class="font-medium">Contact Type</div>
+                    <div class="col-span-2">
+                      {contact.contact_type.charAt(0).toUpperCase() + contact.contact_type.slice(1)}
+                    </div>
+                  </div>
+                {/if}
                 {#if contact.email}
                   <div class="grid grid-cols-3 items-center gap-4">
                     <div class="font-medium">Email</div>
@@ -206,11 +313,40 @@
                     <div class="col-span-2">{contact.phone}</div>
                   </div>
                 {/if}
+                {#if contact.address}
+                  <div class="grid grid-cols-3 items-center gap-4">
+                    <div class="font-medium">Address</div>
+                    <div class="col-span-2">
+                      {contact.address}
+                      {#if contact.address2}
+                        <br />{contact.address2}
+                      {/if}
+                      <br />{[contact.city, contact.region, contact.postal].filter(Boolean).join(", ")}
+                      {#if contact.country}
+                        <br />{contact.country}
+                      {/if}
+                    </div>
+                  </div>
+                {/if}
+                {#if contact.notes}
+                  <div class="grid grid-cols-3 items-center gap-4">
+                    <div class="font-medium">Notes</div>
+                    <div class="col-span-2">{contact.notes}</div>
+                  </div>
+                {/if}
                 {#if contact.created_at}
                   <div class="grid grid-cols-3 items-center gap-4">
                     <div class="font-medium">Created</div>
                     <div class="col-span-2">
                       {new Date(contact.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                {/if}
+                {#if contact.updated_at}
+                  <div class="grid grid-cols-3 items-center gap-4">
+                    <div class="font-medium">Updated</div>
+                    <div class="col-span-2">
+                      {new Date(contact.updated_at).toLocaleDateString()}
                     </div>
                   </div>
                 {/if}
