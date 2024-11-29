@@ -8,14 +8,14 @@
   import type { Transaction } from "$lib/services/transactionService.svelte";
   import { upsertTransaction } from "$lib/services/transactionService.svelte";
 
-  let { propertyId, onClose, onSave, existingTransaction } = $props<{
+  let { propertyId, onClose, onSave, existingTransaction, open = true } = $props<{
     propertyId: string;
     onClose: () => void;
     onSave: () => void;
     existingTransaction?: Transaction;
+    open?: boolean;
   }>();
 
-  let open = $state(true);
   let saving = $state(false);
   let error = $state<string | null>(null);
   let modalTitle = $derived(
@@ -92,11 +92,14 @@
 
     saving = false;
     onSave();
-    open = false;
+  }
+
+  function handleClose() {
+    onClose();
   }
 </script>
 
-<Dialog.Root bind:open>
+<Dialog.Root {open} onOpenChange={(isOpen) => !isOpen && onClose()}>
   <Dialog.Content class="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
     <Dialog.Header class="pb-4">
       <Dialog.Title>{modalTitle}</Dialog.Title>
@@ -203,7 +206,7 @@
       </form>
     </div>
     <Dialog.Footer class="pt-4">
-      <Button type="button" variant="outline" onclick={() => (open = false)}>
+      <Button type="button" variant="outline" onclick={handleClose}>
         Cancel
       </Button>
       <Button

@@ -1,15 +1,16 @@
 <script lang="ts">
-  import type { Property } from "$lib/services/propertyService.svelte";
+  import { fade } from "svelte/transition";
   import type { Transaction } from "$lib/services/transactionService.svelte";
   import { getPropertyTransactions } from "$lib/services/transactionService.svelte";
-  import TransactionModal from "./TransactionModal.svelte";
+  import { formatDate } from "$lib/utils/date";
+  import { formatCurrency } from "$lib/utils/currency";
+  import TransactionModal from "$lib/components/TransactionModal.svelte";
   import { createEventDispatcher } from "svelte";
-  import { fade } from "svelte/transition";
 
   const dispatch = createEventDispatcher();
 
   let { property, showModal } = $props<{
-    property: Partial<Property>;
+    property: any;
     showModal: boolean;
   }>();
 
@@ -17,6 +18,22 @@
   let loading = $state(true);
   let error = $state<string | null>(null);
   let selectedTransaction = $state<Transaction | null>(null);
+
+  function handleTransactionClick(transaction: Transaction) {
+    selectedTransaction = transaction;
+    dispatch("openModal");
+  }
+
+  function handleModalClose() {
+    selectedTransaction = null;
+    dispatch("modalClose");
+  }
+
+  function handleModalSave() {
+    selectedTransaction = null;
+    dispatch("modalClose");
+    loadTransactions();
+  }
 
   async function loadTransactions() {
     if (!property.id) return;
@@ -34,27 +51,13 @@
       return;
     }
 
-    transactions = data || [];
+    transactions = data;
     loading = false;
   }
 
   $effect(() => {
     loadTransactions();
   });
-
-  function formatCurrency(amount: number) {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  }
-
-  function formatDate(date: string | null) {
-    if (!date) return "";
-    return new Date(date).toLocaleDateString();
-  }
 </script>
 
 <div class="w-full p-4 md:p-6 lg:p-8 space-y-8" transition:fade>
@@ -112,7 +115,7 @@
                     {#if transaction.description}
                       <tr
                         class="border-b bg-muted/50 cursor-pointer"
-                        onclick={() => (selectedTransaction = transaction)}
+                        onclick={() => handleTransactionClick(transaction)}
                       >
                         <td
                           colspan="6"
@@ -124,7 +127,7 @@
                     {/if}
                     <tr
                       class="border-b hover:bg-muted/50 cursor-pointer"
-                      onclick={() => (selectedTransaction = transaction)}
+                      onclick={() => handleTransactionClick(transaction)}
                     >
                       <td
                         class="p-4 capitalize whitespace-nowrap text-foreground"
@@ -178,18 +181,12 @@
   {/if}
 </div>
 
-{#if showModal || selectedTransaction}
+{#if showModal}
   <TransactionModal
     propertyId={property.id || ""}
     existingTransaction={selectedTransaction}
-    onClose={() => {
-      dispatch("modalClose");
-      selectedTransaction = null;
-    }}
-    onSave={() => {
-      dispatch("modalClose");
-      selectedTransaction = null;
-      loadTransactions();
-    }}
+    onClose={handleModalClose}
+    onSave={handleModalSave}
+    open={showModal}
   />
 {/if}

@@ -202,6 +202,10 @@
           ? transactionActionItems
           : [],
   );
+
+  function handleTransactionModal(event: CustomEvent) {
+    showTransactionModal = true;
+  }
 </script>
 
 <PageTemplate {actionItems}>
@@ -244,10 +248,11 @@
           <Tabs.Content value="images">
             <PropertyImages {property} onReload={loadProperty} />
           </Tabs.Content>
-          <Tabs.Content value="transactions">
+          <Tabs.Content value="transactions" class="w-full">
             <PropertyTransactions 
               {property} 
               showModal={showTransactionModal}
+              on:openModal={() => showTransactionModal = true}
               on:modalClose={() => showTransactionModal = false}
             />
           </Tabs.Content>
