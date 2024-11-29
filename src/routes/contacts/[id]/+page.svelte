@@ -351,12 +351,12 @@
                       <span
                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize
                         {contact.contact_type === 'owner'
-                          ? 'bg-blue-100 text-blue-800'
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
                           : contact.contact_type === 'renter'
-                            ? 'bg-green-100 text-green-800'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200'
                             : contact.contact_type === 'provider'
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-gray-100 text-gray-800'}"
+                              ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-200'
+                              : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}"
                       >
                         {contact.contact_type}
                       </span>
