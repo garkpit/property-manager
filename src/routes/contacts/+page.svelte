@@ -64,7 +64,6 @@
         contact.firstname,
         contact.lastname,
         contact.email,
-        contact.phone,
       ];
       return searchFields.some((field) => field?.toLowerCase().includes(query));
     });
@@ -132,8 +131,6 @@
           <TableHeader>
             <TableRow>
               <TableHead class="w-full">Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead class="w-[100px]">Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -145,15 +142,17 @@
                 <TableCell>
                   <div class="space-y-1">
                     <div class="font-medium">
-                      {[contact.firstname, contact.lastname].filter(Boolean).join(" ") || "Unnamed Contact"}
+                      <a
+                        href="/contacts/{contact.id}"
+                        class="hover:underline"
+                      >
+                        {[contact.firstname, contact.lastname].filter(Boolean).join(" ")}
+                      </a>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      {contact.email || "—"}
                     </div>
                   </div>
-                </TableCell>
-                <TableCell>{contact.email || "-"}</TableCell>
-                <TableCell class="whitespace-nowrap">
-                  {contact.created_at
-                    ? new Date(contact.created_at).toLocaleDateString()
-                    : "-"}
                 </TableCell>
               </TableRow>
             {/each}
