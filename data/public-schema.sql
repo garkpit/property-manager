@@ -268,10 +268,17 @@ CREATE TABLE IF NOT EXISTS "public"."contacts" (
     "lastname" "text",
     "email" "text",
     "phone" "text",
-    "authid" "uuid",
     "contact_type" "text",
     "notes" "text",
-    "orgid" "uuid" NOT NULL
+    "orgid" "uuid" NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "userid" "uuid" NOT NULL,
+    "address" "text",
+    "address2" "text",
+    "city" "text",
+    "region" "text",
+    "postal" "text",
+    "country" "text"
 );
 
 
@@ -545,12 +552,12 @@ CREATE INDEX "orgs_users_userid_idx" ON "public"."orgs_users" USING "btree" ("us
 
 
 ALTER TABLE ONLY "public"."contacts"
-    ADD CONSTRAINT "contacts_authid_fkey" FOREIGN KEY ("authid") REFERENCES "auth"."users"("id");
+    ADD CONSTRAINT "contacts_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id") ON DELETE CASCADE;
 
 
 
 ALTER TABLE ONLY "public"."contacts"
-    ADD CONSTRAINT "contacts_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id") ON DELETE CASCADE;
+    ADD CONSTRAINT "contacts_userid_fkey" FOREIGN KEY ("userid") REFERENCES "auth"."users"("id");
 
 
 
