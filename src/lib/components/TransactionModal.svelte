@@ -1,9 +1,10 @@
 <script lang="ts">
-  import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import * as Dialog from "$lib/components/ui/dialog";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
   import { Textarea } from "$lib/components/ui/textarea";
+  import * as Select from "$lib/components/ui/select";
   import type { Transaction } from "$lib/services/transactionService.svelte";
   import { upsertTransaction } from "$lib/services/transactionService.svelte";
 
@@ -25,6 +26,21 @@
       ? "Edit transaction details for this property."
       : "Add a new transaction for this property.",
   );
+
+  const transactionTypes = [
+    { value: "sale", label: "Sale" },
+    { value: "purchase", label: "Purchase" },
+    { value: "rental", label: "Rental" },
+    { value: "expense", label: "Expense" },
+    { value: "income", label: "Income" },
+  ];
+
+  const transactionStatuses = [
+    { value: "active", label: "Active" },
+    { value: "pending", label: "Pending" },
+    { value: "completed", label: "Completed" },
+    { value: "cancelled", label: "Cancelled" },
+  ];
 
   let transaction = $state<Partial<Transaction>>(
     existingTransaction
@@ -52,11 +68,21 @@
         },
   );
 
+  const typeContent = $derived(
+    transactionTypes.find((t) => t.value === transaction.type)?.label ?? 
+    "Select type...",
+  );
+
+  const statusContent = $derived(
+    transactionStatuses.find((s) => s.value === transaction.status)?.label ?? 
+    "Select status",
+  );
+
   async function handleSave() {
     saving = true;
     error = null;
 
-    const { data, error: saveError } = await upsertTransaction(transaction);
+    const { error: saveError } = await upsertTransaction(transaction);
 
     if (saveError) {
       error = saveError.message;
@@ -65,15 +91,9 @@
     }
 
     saving = false;
-    open = false;
     onSave();
+    open = false;
   }
-
-  $effect(() => {
-    if (!open) {
-      onClose();
-    }
-  });
 </script>
 
 <Dialog.Root bind:open>
@@ -85,28 +105,26 @@
       </Dialog.Description>
     </Dialog.Header>
 
-    <div class="grid gap-4 py-4">
+    <div class="grid gap-6 py-4">
       <form
         on:submit={(e) => {
           e.preventDefault();
           handleSave();
         }}
+        class="space-y-6"
       >
         <div class="grid gap-2">
           <Label for="type">Type</Label>
-          <select
-            id="type"
-            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-            bind:value={transaction.type}
-            required
-          >
-            <option value="">Select type...</option>
-            <option value="sale">Sale</option>
-            <option value="purchase">Purchase</option>
-            <option value="rental">Rental</option>
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-          </select>
+          <Select.Root type="single" bind:value={transaction.type}>
+            <Select.Trigger class="w-full">
+              {typeContent}
+            </Select.Trigger>
+            <Select.Content>
+              {#each transactionTypes as type}
+                <Select.Item value={type.value}>{type.label}</Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
         </div>
 
         <div class="grid gap-2">
@@ -167,21 +185,20 @@
 
         <div class="grid gap-2">
           <Label for="status">Status</Label>
-          <select
-            id="status"
-            class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-            bind:value={transaction.status}
-            required
-          >
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+          <Select.Root type="single" bind:value={transaction.status}>
+            <Select.Trigger class="w-full">
+              {statusContent}
+            </Select.Trigger>
+            <Select.Content>
+              {#each transactionStatuses as status}
+                <Select.Item value={status.value}>{status.label}</Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
         </div>
 
         {#if error}
-          <p class="text-sm text-red-500">{error}</p>
+          <p class="text-sm text-destructive">{error}</p>
         {/if}
       </form>
     </div>
