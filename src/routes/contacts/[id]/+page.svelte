@@ -325,7 +325,7 @@
               </div>
 
               <div class="flex justify-end">
-                <Button type="submit">Save Contact</Button>
+                <Button type="submit" variant="secondary">Save Contact</Button>
               </div>
             </form>
           {:else}
