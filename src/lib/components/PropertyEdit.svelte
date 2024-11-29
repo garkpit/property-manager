@@ -339,7 +339,7 @@
   {/if}
 
   <div class="flex justify-end">
-    <Button onclick={saveProperty} disabled={loading}>
+    <Button variant="secondary" onclick={saveProperty} disabled={loading}>
       <Save class="mr-2 h-4 w-4" />
       {loading ? "Saving..." : "Save"}
     </Button>
