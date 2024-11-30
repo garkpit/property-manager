@@ -33,6 +33,10 @@
       orgs = [];
     } else {
       orgs = data;
+      // If there's no current org selected but we have orgs available, select the first one
+      if (!org && orgs.length > 0) {
+        handleSelectOrg(orgs[0].id);
+      }
     }
   };
 
