@@ -93,7 +93,7 @@
     error = null;
 
     const { error: err } = await upsertProperty(property);
-    
+
     if (err) {
       error = err.message;
       loading = false;
@@ -200,7 +200,9 @@
       icon: FileText,
       label: "Upload Images",
       onClick: () => document.getElementById("image-upload")?.click(),
-      show: !isNew,
+      get show() {
+        return !isNew;
+      },
     },
   ];
 
@@ -210,10 +212,12 @@
     {
       icon: FileText,
       label: "Add Transaction",
-      onClick: () => {
+      onClick() {
         showTransactionModal = true;
       },
-      show: !isNew,
+      get show() {
+        return !isNew;
+      }, // Use a getter to maintain reactivity
     },
   ];
 

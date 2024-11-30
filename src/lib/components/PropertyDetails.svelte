@@ -216,12 +216,6 @@
     transition-duration: 150ms;
   }
 
-  /* Hover effects */
-  .hover\:bg-gray-100:hover {
-    --tw-bg-opacity: 1;
-    background-color: rgba(243, 244, 246, var(--tw-bg-opacity));
-  }
-
   /* Typography improvements */
   .prose {
     max-width: 65ch;
