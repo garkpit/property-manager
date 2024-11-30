@@ -6,21 +6,6 @@
   const { property } = $props<{
     property: Property;
   }>();
-
-  const formatDate = (date: string | null) => {
-    if (!date) return "";
-    return new Date(date).toLocaleDateString();
-  };
-
-  const formatPrice = (price: number | null) => {
-    if (!price) return "N/A";
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 </script>
 
 <!--<div class="max-w-4xl mx-auto p-6 space-y-8" transition:fade>
@@ -164,17 +149,17 @@
       <div class="space-y-2">
         <span class="text-sm text-muted-foreground">List Price</span>
         <p class="text-2xl font-bold text-foreground">
-          {formatPrice(property.list_price)}
+          {property.list_price}
         </p>
-        <span class="text-sm text-muted-foreground">Listed on {formatDate(property.list_date)}</span>
+        <span class="text-sm text-muted-foreground">Listed on {property.list_date}</span>
       </div>
       {#if property.sale_price}
         <div class="space-y-2">
           <span class="text-sm text-muted-foreground">Sale Price</span>
           <p class="text-2xl font-bold text-foreground">
-            {formatPrice(property.sale_price)}
+            {property.sale_price}
           </p>
-          <span class="text-sm text-muted-foreground">Closed on {formatDate(property.closing_date)}</span>
+          <span class="text-sm text-muted-foreground">Closed on {property.closing_date}</span>
         </div>
       {/if}
     </div>

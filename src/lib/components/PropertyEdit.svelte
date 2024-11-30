@@ -51,46 +51,6 @@
     { value: "other", label: "Other" },
   ];
 
-  const transactionTypes = [
-    { value: "sale", label: "Sale" },
-    { value: "rental", label: "Rental" },
-    { value: "lease", label: "Lease" },
-  ];
-
-  const propertyStatuses = [
-    { value: "active", label: "Active" },
-    { value: "pending", label: "Pending" },
-    { value: "sold", label: "Sold" },
-    { value: "off_market", label: "Off Market" },
-  ];
-
-  // Format date from ISO string to YYYY-MM-DD for input[type="date"]
-  function formatDateForInput(dateStr: string | null): string {
-    if (!dateStr) return "";
-    return new Date(dateStr).toISOString().split("T")[0];
-  }
-
-  // Format date from input to ISO string for database
-  function formatDateForDb(dateStr: string | null): string | null {
-    if (!dateStr) return null;
-    return new Date(dateStr).toISOString();
-  }
-
-  let listDateInput = $state("");
-  let closingDateInput = $state("");
-
-  $effect(() => {
-    listDateInput = formatDateForInput(property.list_date);
-    closingDateInput = formatDateForInput(property.closing_date);
-  });
-
-  $effect(() => {
-    property.list_date = listDateInput ? formatDateForDb(listDateInput) : null;
-    property.closing_date = closingDateInput
-      ? formatDateForDb(closingDateInput)
-      : null;
-  });
-
   const propertyTypeContent = $derived(
     propertyTypes.find((t) => t.value === property.property_type)?.label ??
       "Select property type",
@@ -99,16 +59,6 @@
   const propertySubtypeContent = $derived(
     propertySubtypes.find((t) => t.value === property.property_subtype)
       ?.label ?? "Select property subtype",
-  );
-
-  const transactionTypeContent = $derived(
-    transactionTypes.find((t) => t.value === property.transaction_type)
-      ?.label ?? "Select transaction type",
-  );
-
-  const statusContent = $derived(
-    propertyStatuses.find((s) => s.value === property.status)?.label ??
-      "Select status",
   );
 </script>
 
@@ -248,74 +198,6 @@
           min="1800"
           max={new Date().getFullYear()}
         />
-      </div>
-    </div>
-  </div>
-
-  <!-- Price Information -->
-  <div class="space-y-4">
-    <h3 class="text-lg font-semibold">Price Information</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="space-y-2">
-        <Label for="list_price">List Price ($)</Label>
-        <Input
-          id="list_price"
-          type="number"
-          bind:value={property.list_price}
-          min="0"
-          step="1000"
-        />
-      </div>
-      <div class="space-y-2">
-        <Label for="sale_price">Sale Price ($)</Label>
-        <Input
-          id="sale_price"
-          type="number"
-          bind:value={property.sale_price}
-          min="0"
-          step="1000"
-        />
-      </div>
-    </div>
-  </div>
-
-  <!-- Transaction Details -->
-  <div class="space-y-4">
-    <h3 class="text-lg font-semibold">Transaction Details</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="space-y-2">
-        <Label for="transaction_type">Transaction Type</Label>
-        <Select.Root type="single" bind:value={property.transaction_type}>
-          <Select.Trigger class="w-full">
-            {transactionTypeContent}
-          </Select.Trigger>
-          <Select.Content>
-            {#each transactionTypes as type}
-              <Select.Item value={type.value}>{type.label}</Select.Item>
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      </div>
-      <div class="space-y-2">
-        <Label for="status">Status</Label>
-        <Select.Root type="single" bind:value={property.status}>
-          <Select.Trigger class="w-full">
-            {statusContent}
-          </Select.Trigger>
-          <Select.Content>
-            {#each propertyStatuses as status}
-              <Select.Item value={status.value}>{status.label}</Select.Item>
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      </div>
-      <div class="space-y-2">
-        <Label for="list_date">List Date</Label>
-        <Input id="list_date" type="date" bind:value={listDateInput} />
-      </div>
-      <div class="space-y-2">
-        <Label for="closing_date">Closing Date</Label>
-        <Input id="closing_date" type="date" bind:value={closingDateInput} />
       </div>
     </div>
   </div>
