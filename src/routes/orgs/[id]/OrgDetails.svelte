@@ -3,6 +3,7 @@
     saveOrg,
     deleteOrg,
     getOrgById,
+    fetchOrgs,
   } from "$lib/services/orgService.svelte";
   import type { Org } from "$lib/services/orgService.svelte";
   import { goto } from "$app/navigation";
@@ -16,9 +17,10 @@
   import CancelButton from "@/components/iconbuttons/CancelButton.svelte";
   import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
   import { page } from "$app/stores";
-  import { updateCurrentOrg } from "@/services/backend.svelte";
+  import { updateCurrentOrg, getCurrentOrg, getUser } from "@/services/backend.svelte";
 
   const id = $derived($page.params.id);
+  const user = $derived(getUser());
 
   let { org } = $props<{
     org: Org | null;
@@ -107,15 +109,31 @@
     });
 
     if (result === "delete") {
+      // Store current org before deletion
+      const currentOrg = getCurrentOrg();
+      const isCurrentOrg = currentOrg?.id === org.id;
+
       // Handle delete action
       loadingState.show("Deleting organization...");
       const {
         data: { data, error },
       } = await deleteOrg(org);
-      loadingState.hide();
+      
       if (error) {
+        loadingState.hide();
         toast.error("ERROR", { description: (error as Error).message });
       } else {
+        // Only fetch and select new org if we deleted the current org
+        if (isCurrentOrg) {
+          const { data: orgs, error: orgsError } = await fetchOrgs();
+          if (orgsError) {
+            console.error("Error fetching orgs after deletion:", orgsError);
+          } else if (orgs && orgs.length > 0) {
+            await updateCurrentOrg(orgs[0].id);
+          }
+        }
+        
+        loadingState.hide();
         setTimeout(() => {
           toast.success("SUCCESS", { description: "Organization deleted" });
         }, 500);
@@ -169,7 +187,7 @@
     </form>
   </Card.Content>
   <Card.Footer class="flex justify-between">
-    {#if id !== "new"}
+    {#if id !== "new" && org?.id !== user?.id}
       <DeleteButton onclick={handleDelete} />
     {/if}
     {#if isFormChanged}
