@@ -104,6 +104,16 @@
     isEditing = false;
   }
 
+  async function handleCancel() {
+    isEditing = false;
+    if (!isNew) {
+      loading = true;
+      error = null;
+      await loadProperty();
+      loading = false;
+    }
+  }
+
   $effect(() => {
     load();
   });
@@ -150,12 +160,18 @@
           : "Property",
   );
 
-  const detailsActionItems = [
+  const detailsActionItems = $derived([
     {
       icon: Edit,
       label: "Edit",
       onClick: () => (isEditing = true),
       show: !isEditing && !isNew,
+    },
+    {
+      icon: ArrowLeft,
+      label: "Cancel",
+      onClick: handleCancel,
+      show: isEditing && !isNew,
     },
     {
       icon: Check,
@@ -169,7 +185,7 @@
       onClick: () => (flyerMakerOpen = true),
       show: !isEditing && !isNew,
     },
-  ];
+  ]);
 
   const imageActionItems = [
     {
@@ -249,11 +265,11 @@
             <PropertyImages {property} onReload={loadProperty} />
           </Tabs.Content>
           <Tabs.Content value="transactions" class="w-full">
-            <PropertyTransactions 
-              {property} 
+            <PropertyTransactions
+              {property}
               showModal={showTransactionModal}
-              on:openModal={() => showTransactionModal = true}
-              on:modalClose={() => showTransactionModal = false}
+              on:openModal={() => (showTransactionModal = true)}
+              on:modalClose={() => (showTransactionModal = false)}
             />
           </Tabs.Content>
         </Tabs.Root>
