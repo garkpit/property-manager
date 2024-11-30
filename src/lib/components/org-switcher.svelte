@@ -29,12 +29,20 @@
   const load = async () => {
     const { data, error } = await fetchOrgs();
     if (error) {
+      console.error("Error fetching orgs:", error);
+      orgs = [];
     } else {
       orgs = data;
     }
   };
+
+  // Reload orgs when user changes
   $effect(() => {
-    load();
+    if (user) {
+      load();
+    } else {
+      orgs = [];
+    }
   });
   async function handleOrgChange(id: string) {
     return await updateCurrentOrg(id);
