@@ -11,9 +11,10 @@
 
 ## onboarding
 
-- create personal org when user is created
-  - set a default title for the org
-  - disallow deleting the personal org
+- <s>create personal org when user is created</s>
+  - <s>create org when user is created</s>
+  - <s>set a default title for the org</s>
+  - <s>disallow deleting the personal org</s>
   - offer the ability to create sample data in the personal org
 
 ## orgs_invites
