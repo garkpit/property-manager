@@ -301,16 +301,12 @@ export type Database = {
           baths: number | null
           beds: number | null
           city: string | null
-          closing_date: string | null
-          closing_price: number | null
           country: string | null
           created_at: string
           hoa_fees: number | null
           id: string
           land_area: number | null
           lat: number | null
-          list_date: string | null
-          list_price: number | null
           living_area: number | null
           lng: number | null
           metadata: Json | null
@@ -320,10 +316,8 @@ export type Database = {
           property_subtype: string | null
           property_type: string | null
           region: string | null
-          status: string | null
           subtitle: string | null
           title: string | null
-          transaction_type: string | null
           userid: string
           year_built: number | null
         }
@@ -333,16 +327,12 @@ export type Database = {
           baths?: number | null
           beds?: number | null
           city?: string | null
-          closing_date?: string | null
-          closing_price?: number | null
           country?: string | null
           created_at?: string
           hoa_fees?: number | null
           id?: string
           land_area?: number | null
           lat?: number | null
-          list_date?: string | null
-          list_price?: number | null
           living_area?: number | null
           lng?: number | null
           metadata?: Json | null
@@ -352,10 +342,8 @@ export type Database = {
           property_subtype?: string | null
           property_type?: string | null
           region?: string | null
-          status?: string | null
           subtitle?: string | null
           title?: string | null
-          transaction_type?: string | null
           userid: string
           year_built?: number | null
         }
@@ -365,16 +353,12 @@ export type Database = {
           baths?: number | null
           beds?: number | null
           city?: string | null
-          closing_date?: string | null
-          closing_price?: number | null
           country?: string | null
           created_at?: string
           hoa_fees?: number | null
           id?: string
           land_area?: number | null
           lat?: number | null
-          list_date?: string | null
-          list_price?: number | null
           living_area?: number | null
           lng?: number | null
           metadata?: Json | null
@@ -384,29 +368,12 @@ export type Database = {
           property_subtype?: string | null
           property_type?: string | null
           region?: string | null
-          status?: string | null
           subtitle?: string | null
           title?: string | null
-          transaction_type?: string | null
           userid?: string
           year_built?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "properties_orgid_fkey"
-            columns: ["orgid"]
-            isOneToOne: false
-            referencedRelation: "orgs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "properties_userid_fkey"
-            columns: ["userid"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       transactions: {
         Row: {

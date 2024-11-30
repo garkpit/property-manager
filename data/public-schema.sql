@@ -606,16 +606,6 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
-ALTER TABLE ONLY "public"."properties"
-    ADD CONSTRAINT "properties_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id");
-
-
-
-ALTER TABLE ONLY "public"."properties"
-    ADD CONSTRAINT "properties_userid_fkey" FOREIGN KEY ("userid") REFERENCES "public"."profiles"("id");
-
-
-
 ALTER TABLE ONLY "public"."transactions"
     ADD CONSTRAINT "transactions_contactid_fkey" FOREIGN KEY ("contactid") REFERENCES "public"."contacts"("id") ON DELETE CASCADE;
 
@@ -703,9 +693,7 @@ CREATE POLICY "deletion not allowed" ON "public"."transactions" FOR DELETE USING
 
 
 
-CREATE POLICY "insert: userid and orgid required" ON "public"."properties" FOR INSERT WITH CHECK ((("userid" = "auth"."uid"()) AND ("orgid" IN ( SELECT "orgs_users"."orgid"
-   FROM "public"."orgs_users"
-  WHERE ("orgs_users"."userid" = "auth"."uid"())))));
+CREATE POLICY "insert: user must be  org admin or manager" ON "public"."properties" FOR INSERT WITH CHECK (("public"."get_org_role_for_user"("orgid", "auth"."uid"()) = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
 
 
 
@@ -731,7 +719,7 @@ CREATE POLICY "org admins can updated policies they created" ON "public"."orgs_i
 
 
 
-CREATE POLICY "org role must be Admin or Manager" ON "public"."properties" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
+CREATE POLICY "org role must be Admin or Manager" ON "public"."properties" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "auth"."uid"()) = ANY (ARRAY['Admin'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "auth"."uid"()) = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
 
 
 
