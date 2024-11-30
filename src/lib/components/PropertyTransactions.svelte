@@ -55,7 +55,7 @@
       return;
     }
 
-    transactions = data;
+    transactions = data ?? [];
     loading = false;
   }
 
@@ -188,7 +188,7 @@
 {#if showTransactionModal}
   <TransactionModal
     propertyId={property.id || ""}
-    existingTransaction={selectedTransaction}
+    existingTransaction={selectedTransaction ?? undefined}
     onClose={handleModalClose}
     onSave={handleModalSave}
     open={showTransactionModal}
