@@ -15,24 +15,24 @@ export const invite_delete = async (
             return { data: null, error: "id not found" };
         }
 
-        // check to make sure the user is the owner of the orgs_invites row
-        const { data: inviteOwnerData, error: inviteOwnerError } =
+        // check to make sure the user is the creator of the orgs_invites row
+        const { data: inviteCreatedByData, error: inviteCreatedByError } =
             await supabase
                 .from("orgs_invites")
-                .select("owner")
+                .select("created_by")
                 .eq("id", id)
                 .single();
 
-        if (inviteOwnerError) {
-            return { data: null, error: inviteOwnerError.message };
+        if (inviteCreatedByError) {
+            return { data: null, error: inviteCreatedByError.message };
         }
         if (!user) {
             return { data: null, error: "User not found" };
         }
-        if (inviteOwnerData.owner !== user.id) {
+        if (inviteCreatedByData.created_by !== user.id) {
             return {
                 data: null,
-                error: "User is not the owner of this invite",
+                error: "User is not the creator of this invite",
             };
         }
         // Insert new orgs_users row

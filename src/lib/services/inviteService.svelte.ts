@@ -104,7 +104,7 @@ export const getPendingInvites = async () => {
             orgs (
                 title
             ),
-            owner:owner (
+            created_by:created_by (
                 email, firstname, lastname
             ),
             created_at

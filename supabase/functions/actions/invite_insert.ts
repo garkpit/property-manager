@@ -27,7 +27,7 @@ export const invite_insert = async (
             return { data: null, error: "user_role is required" };
         }
 
-        // check to make sure the user is an owner of the org
+        // check to make sure the user is an admin of the org
         const { data: userRole, error: userRoleError } = await getUserRole(
             orgid,
             user.id,
@@ -35,15 +35,14 @@ export const invite_insert = async (
         if (userRoleError) {
             return { data: null, error: userRoleError };
         }
-        if (userRole !== "Owner") {
+        if (userRole !== "Admin") {
             return {
                 data: null,
-                error: "User is not an owner of the organization",
+                error: "User is not an admin of the organization",
             };
         }
         // make sure user_role is a valid user role
         if (
-            user_role !== "Owner" &&
             user_role !== "Admin" &&
             user_role !== "Member" &&
             user_role !== "Manager" &&
@@ -72,7 +71,7 @@ export const invite_insert = async (
             .from("orgs_invites")
             .insert({
                 orgid: orgid,
-                owner: user.id,
+                created_by: user.id,
                 email: email,
                 user_role: user_role,
             })

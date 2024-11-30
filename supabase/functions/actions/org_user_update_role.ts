@@ -39,10 +39,10 @@ export const org_user_update_role = async (
             if (userRoleError) {
                 return { data: null, error: userRoleError };
             }
-            if (userRole !== "Owner") {
+            if (userRole !== "Admin") {
                 return {
                     data: null,
-                    error: "User is not an owner of the organization",
+                    error: "User is not an admin of the organization",
                 };
             }
         }

@@ -25,10 +25,10 @@ export const org_upsert = async (
             if (userRoleError) {
                 return { data: null, error: userRoleError };
             }
-            if (userRole !== "Owner") {
+            if (userRole !== "Admin") {
                 return {
                     data: null,
-                    error: "User is not an owner of the organization",
+                    error: "User is not an admin of the organization",
                 };
             }
         }
@@ -50,7 +50,7 @@ export const org_upsert = async (
                 .insert({
                     orgid: upsertData.id,
                     userid: user.id,
-                    user_role: "Owner",
+                    user_role: "Admin",
                 })
                 .select()
                 .single();

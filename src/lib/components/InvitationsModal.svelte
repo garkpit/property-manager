@@ -12,7 +12,7 @@
   type Invitation = {
     id: string;
     orgs: { title: string }[];
-    owner: { email: string; firstname: string; lastname: string }[];
+    created_by: { email: string; firstname: string; lastname: string }[];
     created_at: string;
   };
   let { open = $bindable() } = $props<{ open: boolean }>();
@@ -111,7 +111,7 @@
               <h3 class="font-medium">{invitation.orgs.title}</h3>
               <p class="text-sm text-muted-foreground">
                 {$t("invitationsModal.invitedBy", {
-                  email: invitation.owner.email,
+                  email: invitation.created_by.email,
                 })}
               </p>
               <div class="mt-3 flex gap-2">

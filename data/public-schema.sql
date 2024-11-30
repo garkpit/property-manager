@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS "public"."contacts" (
     "notes" "text",
     "orgid" "uuid" NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "userid" "uuid" NOT NULL,
+    "userid" "uuid",
     "address" "text",
     "address2" "text",
     "city" "text",
@@ -345,7 +345,7 @@ CREATE TABLE IF NOT EXISTS "public"."orgs_invites" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "orgid" "uuid" NOT NULL,
-    "owner" "uuid" NOT NULL,
+    "created_by" "uuid" NOT NULL,
     "email" "text" NOT NULL,
     "user_role" "text" NOT NULL,
     "expires_at" timestamp with time zone DEFAULT ("now"() + '7 days'::interval) NOT NULL,
@@ -459,7 +459,8 @@ CREATE TABLE IF NOT EXISTS "public"."transactions" (
     "notes" "text",
     "amount" numeric DEFAULT '0'::numeric NOT NULL,
     "balance" numeric DEFAULT '0'::numeric NOT NULL,
-    "metadata" "jsonb"
+    "metadata" "jsonb",
+    "contactid" "uuid"
 );
 
 
@@ -467,6 +468,10 @@ ALTER TABLE "public"."transactions" OWNER TO "postgres";
 
 
 COMMENT ON TABLE "public"."transactions" IS 'property transactions';
+
+
+
+COMMENT ON COLUMN "public"."transactions"."contactid" IS 'id of contact for the transaction, i.e. for a rental this would point to the renter';
 
 
 
@@ -583,12 +588,12 @@ ALTER TABLE ONLY "public"."messages"
 
 
 ALTER TABLE ONLY "public"."orgs_invites"
-    ADD CONSTRAINT "orgs_invites_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id");
+    ADD CONSTRAINT "orgs_invites_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
 
 
 
 ALTER TABLE ONLY "public"."orgs_invites"
-    ADD CONSTRAINT "orgs_invites_owner_fkey2" FOREIGN KEY ("owner") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+    ADD CONSTRAINT "orgs_invites_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id");
 
 
 
@@ -614,6 +619,11 @@ ALTER TABLE ONLY "public"."properties"
 
 ALTER TABLE ONLY "public"."properties"
     ADD CONSTRAINT "properties_userid_fkey" FOREIGN KEY ("userid") REFERENCES "public"."profiles"("id");
+
+
+
+ALTER TABLE ONLY "public"."transactions"
+    ADD CONSTRAINT "transactions_contactid_fkey" FOREIGN KEY ("contactid") REFERENCES "public"."contacts"("id") ON DELETE CASCADE;
 
 
 
@@ -668,6 +678,14 @@ CREATE POLICY "User must belong to org" ON "public"."contacts" TO "authenticated
 
 
 
+CREATE POLICY "admin or invitee can delete an invite" ON "public"."orgs_invites" FOR DELETE TO "authenticated" USING ((("created_by" = ( SELECT "auth"."uid"() AS "uid")) OR ("email" = ( SELECT "auth"."email"() AS "uid"))));
+
+
+
+CREATE POLICY "admin or invitee can view invite" ON "public"."orgs_invites" FOR SELECT TO "authenticated" USING ((("created_by" = ( SELECT "auth"."uid"() AS "uid")) OR ("email" = ( SELECT "auth"."email"() AS "email"))));
+
+
+
 CREATE POLICY "any org member can view transactions" ON "public"."transactions" FOR SELECT TO "authenticated" USING (("public"."get_org_role_for_user"("orgid", "userid") IS NOT NULL));
 
 
@@ -711,15 +729,15 @@ CREATE POLICY "must be sender to update" ON "public"."messages" FOR UPDATE USING
 
 
 
-CREATE POLICY "org owners can create invites" ON "public"."orgs_invites" FOR INSERT TO "authenticated" WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid"))));
+CREATE POLICY "org admins can create invites" ON "public"."orgs_invites" FOR INSERT TO "authenticated" WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Admin'::"text") AND ("created_by" = ( SELECT "auth"."uid"() AS "uid"))));
 
 
 
-CREATE POLICY "org owners can updated policies they created" ON "public"."orgs_invites" FOR UPDATE TO "authenticated" USING (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid")))) WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Owner'::"text") AND ("owner" = ( SELECT "auth"."uid"() AS "uid"))));
+CREATE POLICY "org admins can updated policies they created" ON "public"."orgs_invites" FOR UPDATE TO "authenticated" USING (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Admin'::"text") AND ("created_by" = ( SELECT "auth"."uid"() AS "uid")))) WITH CHECK (((( SELECT "public"."get_org_role"("orgs_invites"."orgid") AS "get_org_role") = 'Admin'::"text") AND ("created_by" = ( SELECT "auth"."uid"() AS "uid"))));
 
 
 
-CREATE POLICY "org role must be Owner or Manager" ON "public"."properties" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+CREATE POLICY "org role must be Admin or Manager" ON "public"."properties" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
 
 
 
@@ -730,14 +748,6 @@ ALTER TABLE "public"."orgs_invites" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."orgs_users" ENABLE ROW LEVEL SECURITY;
-
-
-CREATE POLICY "owner or invitee can delete an invite" ON "public"."orgs_invites" FOR DELETE TO "authenticated" USING ((("owner" = ( SELECT "auth"."uid"() AS "uid")) OR ("email" = ( SELECT "auth"."email"() AS "uid"))));
-
-
-
-CREATE POLICY "owner or invitee can view invite" ON "public"."orgs_invites" FOR SELECT TO "authenticated" USING ((("owner" = ( SELECT "auth"."uid"() AS "uid")) OR ("email" = ( SELECT "auth"."email"() AS "email"))));
-
 
 
 ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
@@ -786,19 +796,19 @@ CREATE POLICY "user belong to org to view" ON "public"."transactions_events" FOR
 
 
 
-CREATE POLICY "user must be an org owner or manager to insert" ON "public"."transactions" FOR INSERT TO "authenticated" WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+CREATE POLICY "user must be admin or manager of org to insert" ON "public"."transactions_events" FOR INSERT TO "authenticated" WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
 
 
 
-CREATE POLICY "user must be org owner or manager to update" ON "public"."transactions" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+CREATE POLICY "user must be admin or manager of org to update" ON "public"."transactions_events" FOR UPDATE TO "authenticated" USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
 
 
 
-CREATE POLICY "user must be owner or manager of org to insert" ON "public"."transactions_events" FOR INSERT TO "authenticated" WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+CREATE POLICY "user must be an org admin or manager to insert" ON "public"."transactions" FOR INSERT TO "authenticated" WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
 
 
 
-CREATE POLICY "user must be owner or manager of org to update" ON "public"."transactions_events" FOR UPDATE TO "authenticated" USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Owner'::"text", 'Manager'::"text"])));
+CREATE POLICY "user must be org admin or manager to update" ON "public"."transactions" FOR UPDATE USING (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"]))) WITH CHECK (("public"."get_org_role_for_user"("orgid", "userid") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
 
 
 
@@ -806,7 +816,7 @@ CREATE POLICY "users can modify their own profile" ON "public"."profiles" FOR UP
 
 
 
-CREATE POLICY "users can view profiles from invites owners" ON "public"."profiles" FOR SELECT USING ((("id" = ( SELECT "auth"."uid"() AS "uid")) OR ("id" IN ( SELECT "orgs_invites"."owner"
+CREATE POLICY "users can view profiles from invite creators" ON "public"."profiles" FOR SELECT USING ((("id" = ( SELECT "auth"."uid"() AS "uid")) OR ("id" IN ( SELECT "orgs_invites"."created_by"
    FROM "public"."orgs_invites"))));
 
 

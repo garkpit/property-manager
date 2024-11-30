@@ -255,7 +255,7 @@ export default {
     delete: "Eliminar Invitación",
     emailPlaceholder: "Ingrese dirección de correo electrónico",
     selectRole: "Seleccionar rol",
-    roleOwner: "Propietario",
+    roleAdmin: "Administrador",
     roleMember: "Miembro",
     roleReadOnly: "Solo Lectura",
     emailRequired: "El correo electrónico es obligatorio",

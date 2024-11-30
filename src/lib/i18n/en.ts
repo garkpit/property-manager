@@ -247,7 +247,7 @@ export default {
     delete: "Delete Invite",
     emailPlaceholder: "Enter email address",
     selectRole: "Select role",
-    roleOwner: "Owner",
+    roleAdmin: "Admin",
     roleMember: "Member",
     roleReadOnly: "Read Only",
     emailRequired: "Email is required",

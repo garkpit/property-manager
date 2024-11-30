@@ -83,17 +83,17 @@
           <OrgDetails {org} />
         </Tabs.Content>
         <Tabs.Content value="users">
-          {#if org?.user_role === "Owner"}
+          {#if org?.user_role === "Admin"}
             <OrgUsers {org} />
           {:else}
-            <p><br />You are not an owner of this organization</p>
+            <p><br />You are not an admin of this organization</p>
           {/if}
         </Tabs.Content>
         <Tabs.Content value="invites">
-          {#if org?.user_role === "Owner"}
+          {#if org?.user_role === "Admin"}
             <OrgsInvites {org} />
           {:else}
-            <p><br />You are not an owner of this organization</p>
+            <p><br />You are not an admin of this organization</p>
           {/if}
         </Tabs.Content>
       </Tabs.Root>

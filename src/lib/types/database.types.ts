@@ -187,47 +187,47 @@ export type Database = {
       orgs_invites: {
         Row: {
           created_at: string
+          created_by: string
           email: string
           expires_at: string
           id: string
           metadata: Json | null
           orgid: string
-          owner: string
           user_role: string
         }
         Insert: {
           created_at?: string
+          created_by: string
           email: string
           expires_at?: string
           id?: string
           metadata?: Json | null
           orgid: string
-          owner: string
           user_role: string
         }
         Update: {
           created_at?: string
+          created_by?: string
           email?: string
           expires_at?: string
           id?: string
           metadata?: Json | null
           orgid?: string
-          owner?: string
           user_role?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orgs_invites_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orgs_invites_orgid_fkey"
             columns: ["orgid"]
             isOneToOne: false
             referencedRelation: "orgs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orgs_invites_owner_fkey2"
-            columns: ["owner"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -412,6 +412,7 @@ export type Database = {
         Row: {
           amount: number
           balance: number
+          contactid: string | null
           created_at: string
           description: string | null
           end_date: string | null
@@ -430,6 +431,7 @@ export type Database = {
         Insert: {
           amount?: number
           balance?: number
+          contactid?: string | null
           created_at?: string
           description?: string | null
           end_date?: string | null
@@ -448,6 +450,7 @@ export type Database = {
         Update: {
           amount?: number
           balance?: number
+          contactid?: string | null
           created_at?: string
           description?: string | null
           end_date?: string | null
@@ -464,6 +467,13 @@ export type Database = {
           userid?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "transactions_contactid_fkey"
+            columns: ["contactid"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transactions_orgid_fkey"
             columns: ["orgid"]

@@ -2,7 +2,7 @@
   import * as Select from "$lib/components/ui/select/index.js";
 
   const roles = [
-    { value: "Owner", label: "Owner" },
+    { value: "Admin", label: "Admin" },
     { value: "Manager", label: "Manager" },
     { value: "Member", label: "Member" },
     { value: "Viewer", label: "Viewer" },
