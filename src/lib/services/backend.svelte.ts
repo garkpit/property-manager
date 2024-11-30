@@ -56,7 +56,8 @@ export function initializeUser() {
         if (!isUpdatingUserMetadata) {
           const newCurrentOrgId = user?.user_metadata?.currentOrgId;
           if (newCurrentOrgId) {
-            updateCurrentOrg(newCurrentOrgId);
+            // Skip metadata update when called from auth state change
+            updateCurrentOrg(newCurrentOrgId, true);
           }
         }
       },
@@ -67,7 +68,7 @@ export function initializeUser() {
     };
   });
 }
-export async function updateCurrentOrg(orgId: string | null): Promise<boolean> {
+export async function updateCurrentOrg(orgId: string | null, skipMetadataUpdate: boolean = false): Promise<boolean> {
   if (!orgId) {
     currentOrg = null;
     return true;
@@ -84,8 +85,8 @@ export async function updateCurrentOrg(orgId: string | null): Promise<boolean> {
     // Update the current org in state
     currentOrg = data;
 
-    // Persist the selected org ID in user metadata
-    if (user && !isUpdatingUserMetadata) {
+    // Persist the selected org ID in user metadata only if not skipped
+    if (user && !isUpdatingUserMetadata && !skipMetadataUpdate) {
       isUpdatingUserMetadata = true;
       try {
         const { error: updateError } = await supabase.auth.updateUser({
