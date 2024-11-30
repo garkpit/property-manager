@@ -21,6 +21,8 @@ export default {
     registerDescription: "Create an account",
     emailLabel: "Email",
     passwordLabel: "Password",
+    firstnameLabel: "First Name",
+    lastnameLabel: "Last Name",
     loading: "Loading...",
     loginButton: "Login",
     registerButton: "Register",
