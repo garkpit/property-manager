@@ -70,8 +70,9 @@
     <h3 class="text-xl font-semibold text-foreground border-b border-border pb-4">
       Property Details
     </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="space-y-4">
+    <div class="space-y-4">
+      <!-- First line: Property Type and Subtype -->
+      <div class="grid grid-cols-2 gap-6">
         <div class="flex justify-between items-center py-2 border-b border-border">
           <span class="text-muted-foreground">Property Type</span>
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
@@ -102,66 +103,25 @@
             {property.property_subtype}
           </span>
         </div>
+      </div>
+      
+      <!-- Second line: Living Area and Land Area -->
+      <div class="grid grid-cols-2 gap-6">
         <div class="flex justify-between items-center py-2 border-b border-border">
           <span class="text-muted-foreground">Living Area</span>
           <span class="font-medium text-foreground">{property.living_area} sq ft</span>
         </div>
-      </div>
-      <div class="space-y-4">
         <div class="flex justify-between items-center py-2 border-b border-border">
           <span class="text-muted-foreground">Land Area</span>
           <span class="font-medium text-foreground">{property.land_area} sq ft</span>
         </div>
-        <div class="flex justify-between items-center py-2 border-b border-border">
-          <span class="text-muted-foreground">Status</span>
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-            {property.status === 'Active'
-              ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200'
-              : property.status === 'Pending'
-                ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200'
-                : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}">
-            {property.status}
-          </span>
-        </div>
-        <div class="flex justify-between items-center py-2 border-b border-border">
-          <span class="text-muted-foreground">Transaction Type</span>
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-            {property.transaction_type === 'Sale'
-              ? 'bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-200'
-              : property.transaction_type === 'Rental'
-                ? 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-200'
-                : property.transaction_type === 'Lease'
-                  ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-200'
-                  : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}">
-            {property.transaction_type}
-          </span>
-        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Financial Details -->
-  <div class="bg-card rounded-xl shadow-sm p-6 space-y-6">
-    <h3 class="text-xl font-semibold text-foreground border-b border-border pb-4">
-      Financial Details
-    </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div class="space-y-2">
-        <span class="text-sm text-muted-foreground">List Price</span>
-        <p class="text-2xl font-bold text-foreground">
-          {property.list_price}
-        </p>
-        <span class="text-sm text-muted-foreground">Listed on {property.list_date}</span>
+      <!-- Third line: Year Built -->
+      <div class="flex justify-between items-center py-2 border-b border-border">
+        <span class="text-muted-foreground">Year Built</span>
+        <span class="font-medium text-foreground">{property.year_built}</span>
       </div>
-      {#if property.sale_price}
-        <div class="space-y-2">
-          <span class="text-sm text-muted-foreground">Sale Price</span>
-          <p class="text-2xl font-bold text-foreground">
-            {property.sale_price}
-          </p>
-          <span class="text-sm text-muted-foreground">Closed on {property.closing_date}</span>
-        </div>
-      {/if}
     </div>
   </div>
 
