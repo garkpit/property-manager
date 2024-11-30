@@ -92,6 +92,14 @@
     loading = true;
     error = null;
 
+    const { error: err } = await upsertProperty(property);
+    
+    if (err) {
+      error = err.message;
+      loading = false;
+      return;
+    }
+
     // If this was a new property, navigate to the property list
     if (isNew) {
       goto("/properties");
