@@ -5,13 +5,17 @@
   import { formatDate } from "$lib/utils/date";
   import { formatCurrency } from "$lib/utils/currency";
   import TransactionModal from "$lib/components/TransactionModal.svelte";
-  import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher();
-
-  let { property, showModal } = $props<{
+  let {
+    property,
+    showTransactionModal,
+    onOpenModal = () => {},
+    onModalClose = () => {},
+  } = $props<{
     property: any;
-    showModal: boolean;
+    showTransactionModal: boolean;
+    onOpenModal?: () => void;
+    onModalClose?: () => void;
   }>();
 
   let transactions = $state<Transaction[]>([]);
@@ -21,17 +25,17 @@
 
   function handleTransactionClick(transaction: Transaction) {
     selectedTransaction = transaction;
-    dispatch("openModal");
+    onOpenModal();
   }
 
   function handleModalClose() {
     selectedTransaction = null;
-    dispatch("modalClose");
+    onModalClose();
   }
 
   function handleModalSave() {
     selectedTransaction = null;
-    dispatch("modalClose");
+    onModalClose();
     loadTransactions();
   }
 
@@ -181,12 +185,12 @@
   {/if}
 </div>
 
-{#if showModal}
+{#if showTransactionModal}
   <TransactionModal
     propertyId={property.id || ""}
     existingTransaction={selectedTransaction}
     onClose={handleModalClose}
     onSave={handleModalSave}
-    open={showModal}
+    open={showTransactionModal}
   />
 {/if}

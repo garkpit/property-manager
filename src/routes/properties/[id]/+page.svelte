@@ -279,9 +279,9 @@
           <Tabs.Content value="transactions" class="w-full">
             <PropertyTransactions
               {property}
-              showModal={showTransactionModal}
-              on:openModal={() => (showTransactionModal = true)}
-              on:modalClose={() => (showTransactionModal = false)}
+              {showTransactionModal}
+              onOpenModal={() => showTransactionModal = true}
+              onModalClose={() => showTransactionModal = false}
             />
           </Tabs.Content>
         </Tabs.Root>
