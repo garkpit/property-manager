@@ -57,7 +57,10 @@
       }
     } else {
       try {
-        const signUpError = await signUp(email, password, { firstname, lastname });
+        const signUpError = await signUp(email, password, {
+          firstname,
+          lastname,
+        });
         if (signUpError && signUpError !== "null") {
           console.error("signUpError", signUpError);
           toast.error("ERROR", {
@@ -132,7 +135,9 @@
     <Dialog.Content class="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
       <Dialog.Header>
         <Dialog.Title>
-          {isLogin ? $t("loginModal.loginTitle") : $t("loginModal.registerTitle")}
+          {isLogin
+            ? $t("loginModal.loginTitle")
+            : $t("loginModal.registerTitle")}
         </Dialog.Title>
         <Dialog.Description>
           {isLogin
@@ -196,12 +201,12 @@
           {loading
             ? $t("loginModal.loading")
             : isLogin
-            ? $t("loginModal.loginButton")
-            : $t("loginModal.registerButton")}
+              ? $t("loginModal.loginButton")
+              : $t("loginModal.registerButton")}
         </Button>
         <div class="relative">
           <div class="absolute inset-0 flex items-center">
-            <span class="w-full border-t" />
+            <span class="w-full border-t"></span>
           </div>
           <div class="relative flex justify-center text-xs uppercase">
             <span class="bg-background px-2 text-muted-foreground">
