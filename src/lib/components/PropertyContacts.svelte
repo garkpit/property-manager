@@ -20,6 +20,9 @@
   } from "$lib/components/ui/table";
   import ContactPicker from "$lib/components/ContactPicker.svelte";
   import { getCurrentOrg } from "$lib/services/backend.svelte";
+  import { alertManager } from "$lib/components/ui/alert/alert.svelte.ts";
+  import { loadingState } from "$lib/components/loading/loading-state.svelte.ts";
+  import { toast } from "svelte-sonner";
 
   const { property } = $props<{ property: Property }>();
   const currentOrg = $derived(getCurrentOrg());
@@ -108,21 +111,28 @@
       return;
     }
 
-    console.log("PropertyContacts: Deleting contact with id:", id);
-    loading = true;
-    error = null;
-    
-    const { data, error: err } = await deletePropertyContact(id);
+    const result = await alertManager.show({
+      title: "Confirm Delete",
+      message: "Are you sure you want to remove this contact from the property?",
+      buttons: [
+        { label: "Cancel", value: "cancel", variant: "outline" },
+        { label: "Delete", value: "delete", variant: "destructive" },
+      ],
+    });
 
-    if (err) {
-      console.error("PropertyContacts: Error deleting contact:", err);
-      error = err.message;
-      loading = false;
-      return;
+    if (result === "delete") {
+      loadingState.show("Removing contact...");
+      const { error: err } = await deletePropertyContact(id);
+      loadingState.hide();
+
+      if (err) {
+        toast.error("ERROR", { description: err.message });
+        return;
+      }
+
+      toast.success("SUCCESS", { description: "Contact removed from property" });
+      await loadContacts();
     }
-
-    console.log("PropertyContacts: Successfully deleted contact:", data);
-    await loadContacts();
   }
 
   // Load contacts when property changes
