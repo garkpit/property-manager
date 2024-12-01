@@ -23,4 +23,4 @@
 
 ## property map
 
-- dark mode does not work on compiled version of the app (works in dev mode)
+- dark mode does not work on compiled version of the app (works in dev mode) **I can sometimes reproduce this and sometimes not**
