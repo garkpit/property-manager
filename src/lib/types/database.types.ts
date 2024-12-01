@@ -375,6 +375,61 @@ export type Database = {
         }
         Relationships: []
       }
+      properties_contacts: {
+        Row: {
+          contact_type: string
+          contactid: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          notes: string | null
+          orgid: string
+          propertyid: string
+        }
+        Insert: {
+          contact_type: string
+          contactid: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          orgid: string
+          propertyid: string
+        }
+        Update: {
+          contact_type?: string
+          contactid?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          orgid?: string
+          propertyid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_contacts_contactid_fkey"
+            columns: ["contactid"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "properties_contacts_orgid_fkey"
+            columns: ["orgid"]
+            isOneToOne: false
+            referencedRelation: "orgs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "properties_contacts_propertyid_fkey"
+            columns: ["propertyid"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number

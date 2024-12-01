@@ -9,6 +9,8 @@ import type { User } from "@supabase/supabase-js";
 import type { Org } from "./backend.svelte.ts";
 
 export type Property = Database["public"]["Tables"]["properties"]["Insert"];
+export type PropertyContact =
+    Database["public"]["Tables"]["properties_contacts"]["Insert"];
 
 export async function getOrgProperties(orgId: string): Promise<{
     data: Property[] | null;
@@ -83,6 +85,27 @@ export async function getPropertyById(
         .select("*")
         .eq("id", propertyId)
         .single();
+
+    return { data, error };
+}
+
+export async function getPropertyContactsByPropertyId(
+    propertyId: string,
+): Promise<{ data: PropertyContact[] | null; error: Error | null }> {
+    const { data, error } = await supabase
+        .from("properties_contacts")
+        .select(`
+            *,
+            contacts (
+                id,
+                email,
+                firstname,
+                lastname,
+                phone,
+                created_at
+            )
+        `)
+        .eq("propertyid", propertyId);
 
     return { data, error };
 }

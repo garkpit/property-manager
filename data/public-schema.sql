@@ -207,10 +207,39 @@ ALTER FUNCTION "public"."get_user_orgids"("p_userid" "uuid") OWNER TO "postgres"
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
+DECLARE
+    full_name text;
+    first_name text;
+    last_name text;
+    name_parts text[];
+    new_org_id uuid;
 BEGIN
-  INSERT INTO public.profiles (id, email)
-  VALUES (NEW.id, NEW.email);
-  RETURN NEW;
+    full_name := NULLIF(TRIM(COALESCE(NEW.raw_user_meta_data ->> 'full_name', '')), '');
+    IF full_name IS NOT NULL THEN
+        -- Split the full name into an array
+        name_parts := string_to_array(full_name, ' ');
+        -- Get the last name (last element of the array)
+        last_name := COALESCE(NEW.raw_user_meta_data ->> 'lastname', name_parts[array_length(name_parts, 1)], '');
+        -- Get the first name (everything except the last element)
+        first_name := COALESCE(NEW.raw_user_meta_data ->> 'firstname', NULLIF(array_to_string(name_parts[1:array_length(name_parts, 1) - 1], ' '), ''), '');
+    ELSE
+        last_name := COALESCE(NEW.raw_user_meta_data ->> 'lastname', '');
+        first_name := COALESCE(NEW.raw_user_meta_data ->> 'firstname', '');
+    END IF;
+    -- Insert into public.profiles
+    INSERT INTO public.profiles(id, email, firstname, lastname)
+        VALUES (NEW.id, NEW.email, first_name, last_name);
+    -- Create the org title
+    full_name := NULLIF(TRIM(CONCAT(first_name, ' ', last_name)), '');
+    -- Insert into public.orgs and get the new org id
+    INSERT INTO public.orgs(id, title)
+        VALUES (NEW.id, CONCAT(COALESCE(full_name, 'New User'), '''s Org'))
+    RETURNING
+        id INTO new_org_id;
+    -- Insert into public.orgs_users
+    INSERT INTO public.orgs_users(orgid, userid, user_role)
+        VALUES (new_org_id, NEW.id, 'Admin');
+    RETURN NEW;
 END;
 $$;
 
@@ -437,6 +466,25 @@ COMMENT ON COLUMN "public"."properties"."subtitle" IS 'property subtitle';
 
 
 
+CREATE TABLE IF NOT EXISTS "public"."properties_contacts" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "propertyid" "uuid" NOT NULL,
+    "contactid" "uuid" NOT NULL,
+    "contact_type" "text" NOT NULL,
+    "notes" "text",
+    "metadata" "jsonb",
+    "orgid" "uuid" NOT NULL
+);
+
+
+ALTER TABLE "public"."properties_contacts" OWNER TO "postgres";
+
+
+COMMENT ON TABLE "public"."properties_contacts" IS 'people associated with a property';
+
+
+
 CREATE TABLE IF NOT EXISTS "public"."transactions" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "parentid" "uuid",
@@ -528,6 +576,11 @@ ALTER TABLE ONLY "public"."profiles"
 
 
 
+ALTER TABLE ONLY "public"."properties_contacts"
+    ADD CONSTRAINT "properties_contacts_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."properties"
     ADD CONSTRAINT "properties_pkey" PRIMARY KEY ("id");
 
@@ -603,6 +656,21 @@ ALTER TABLE ONLY "public"."orgs_users"
 
 ALTER TABLE ONLY "public"."profiles"
     ADD CONSTRAINT "profile_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."properties_contacts"
+    ADD CONSTRAINT "properties_contacts_contactid_fkey" FOREIGN KEY ("contactid") REFERENCES "public"."contacts"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."properties_contacts"
+    ADD CONSTRAINT "properties_contacts_orgid_fkey" FOREIGN KEY ("orgid") REFERENCES "public"."orgs"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."properties_contacts"
+    ADD CONSTRAINT "properties_contacts_propertyid_fkey" FOREIGN KEY ("propertyid") REFERENCES "public"."properties"("id") ON DELETE CASCADE;
 
 
 
@@ -703,6 +771,10 @@ ALTER TABLE "public"."messages" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."messages_recipients" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "must be org admin or manager" ON "public"."properties_contacts" USING ((( SELECT "public"."get_org_role"("properties_contacts"."orgid") AS "get_org_role") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"]))) WITH CHECK ((( SELECT "public"."get_org_role"("properties_contacts"."orgid") AS "get_org_role") = ANY (ARRAY['Admin'::"text", 'Manager'::"text"])));
+
+
+
 CREATE POLICY "must be sender to delete" ON "public"."messages" FOR DELETE USING (("sender" = ( SELECT "auth"."uid"() AS "uid")));
 
 
@@ -740,6 +812,9 @@ CREATE POLICY "profiles cannot be deleted" ON "public"."profiles" FOR DELETE USI
 
 
 ALTER TABLE "public"."properties" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."properties_contacts" ENABLE ROW LEVEL SECURITY;
 
 
 CREATE POLICY "recipient can update" ON "public"."messages_recipients" FOR UPDATE USING (("recipient" = ( SELECT "auth"."uid"() AS "uid"))) WITH CHECK (("recipient" = ( SELECT "auth"."uid"() AS "uid")));
@@ -918,6 +993,12 @@ GRANT ALL ON TABLE "public"."profiles" TO "service_role";
 GRANT ALL ON TABLE "public"."properties" TO "anon";
 GRANT ALL ON TABLE "public"."properties" TO "authenticated";
 GRANT ALL ON TABLE "public"."properties" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."properties_contacts" TO "anon";
+GRANT ALL ON TABLE "public"."properties_contacts" TO "authenticated";
+GRANT ALL ON TABLE "public"."properties_contacts" TO "service_role";
 
 
 
