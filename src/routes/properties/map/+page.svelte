@@ -9,6 +9,8 @@
     getOrgProperties,
     type Property,
   } from "@/services/propertyService.svelte";
+  import { getCurrentOrg } from "@/services/backend.svelte";
+
   interface MapLocation {
     lat: number;
     lng: number;
@@ -25,6 +27,7 @@
     property: Property;
   }
 
+  const currentOrg = $derived(getCurrentOrg());
   let map = $state<maplibregl.Map>();
   let notification = $state<string | null>(null);
 
@@ -49,11 +52,15 @@
 
   async function loadProperties() {
     if (!map) return;
+    if (!currentOrg?.id) {
+      error = "No organization selected";
+      return;
+    }
 
     error = null;
     notification = null;
 
-    const { data, error: err } = await getOrgProperties();
+    const { data, error: err } = await getOrgProperties(currentOrg.id);
     console.log("data", data);
     console.log("err", err);
     if (err) {
