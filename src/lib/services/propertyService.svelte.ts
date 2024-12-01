@@ -7,6 +7,9 @@ import {
 } from "@supabase/supabase-js";
 import type { User } from "@supabase/supabase-js";
 import type { Org } from "./backend.svelte.ts";
+import { getCurrentOrg, getUser } from "./backend.svelte.ts";
+const user: User | null = $derived(getUser());
+const currentOrg: Org | null = $derived(getCurrentOrg());
 
 export type Property = Database["public"]["Tables"]["properties"]["Insert"];
 export type PropertyContact =
@@ -106,6 +109,31 @@ export async function getPropertyContactsByPropertyId(
             )
         `)
         .eq("propertyid", propertyId);
+
+    return { data, error };
+}
+
+export async function upsertPropertyContact(
+    contact: Partial<PropertyContact>,
+): Promise<{ data: PropertyContact | null; error: Error | null }> {
+    const { data, error } = await supabase
+        .from("properties_contacts")
+        .upsert(contact)
+        .select()
+        .single();
+
+    return { data, error };
+}
+
+export async function deletePropertyContact(
+    id: string,
+): Promise<{ data: PropertyContact | null; error: Error | null }> {
+    const { data, error } = await supabase
+        .from("properties_contacts")
+        .delete()
+        .eq("id", id)
+        .select()
+        .single();
 
     return { data, error };
 }
