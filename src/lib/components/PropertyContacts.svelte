@@ -103,13 +103,25 @@
   }
 
   async function handleDeleteContact(id: string) {
-    const { error: err } = await deletePropertyContact(id);
-
-    if (err) {
-      error = err.message;
+    if (!id) {
+      console.error("PropertyContacts: No contact id provided");
       return;
     }
 
+    console.log("PropertyContacts: Deleting contact with id:", id);
+    loading = true;
+    error = null;
+    
+    const { data, error: err } = await deletePropertyContact(id);
+
+    if (err) {
+      console.error("PropertyContacts: Error deleting contact:", err);
+      error = err.message;
+      loading = false;
+      return;
+    }
+
+    console.log("PropertyContacts: Successfully deleted contact:", data);
     await loadContacts();
   }
 
@@ -168,7 +180,11 @@
               <Button
                 variant="ghost"
                 size="icon"
-                on:click={() => handleDeleteContact(contact.id)}
+                onclick={(e) => {
+                  e.preventDefault();
+                  console.log("Delete button clicked for contact:", contact.id);
+                  handleDeleteContact(contact.id);
+                }}
               >
                 <Trash2 class="h-4 w-4" />
               </Button>

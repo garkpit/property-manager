@@ -131,7 +131,9 @@ export async function deletePropertyContact(
     const { data, error } = await supabase
         .from("properties_contacts")
         .delete()
-        .eq("id", id);
+        .eq("id", id)
+        .select()
+        .single();
 
     return { data, error };
 }
