@@ -45,9 +45,18 @@ export const upsertContact = async (contact: Partial<Contact>) => {
         ...contact,
         orgid: currentOrg.id,
     };
-    const { data, error } = await supabase.from("contacts").upsert(
-        contactWithOrg,
-    );
+    const { data, error } = await supabase
+        .from("contacts")
+        .upsert(contactWithOrg)
+        .select()
+        .single();
+    
+    if (error) {
+        console.error("Failed to upsert contact:", error);
+    } else {
+        console.log("Successfully upserted contact:", data);
+    }
+    
     return { data, error };
 };
 
