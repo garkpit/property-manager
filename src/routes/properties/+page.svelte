@@ -17,6 +17,7 @@
     TableRow,
   } from "$lib/components/ui/table";
   import { Input } from "$lib/components/ui/input";
+  import { getCurrentOrg } from "$lib/services/backend.svelte";
 
   const actionItems = [
     {
@@ -33,6 +34,8 @@
     },
   ];
 
+  const currentOrg = $derived(getCurrentOrg());
+
   let properties = $state<Property[]>([]);
   let filteredProperties = $state<Property[]>([]);
   let searchQuery = $state("");
@@ -41,11 +44,15 @@
   let error = $state<string | null>(null);
 
   async function loadProperties() {
+    if (!currentOrg?.id) {
+      error = "No organization selected";
+      return;
+    }
+
     loading = true;
     error = null;
 
-    const { data, error: err } = await getOrgProperties();
-    console.log("getOrgProperties", data);
+    const { data, error: err } = await getOrgProperties(currentOrg.id);
     if (err) {
       error = err.message;
       loading = false;
@@ -53,16 +60,17 @@
     }
 
     properties = data || [];
+    filterProperties();
     loading = false;
   }
 
   function filterProperties() {
-    if (!searchQuery.trim()) {
+    if (!searchQuery?.trim()) {
       filteredProperties = properties;
       return;
     }
 
-    const query = searchQuery?.toLowerCase() ?? "";
+    const query = searchQuery.toLowerCase();
     filteredProperties = properties.filter((property) => {
       const searchFields = [
         property.title,
@@ -78,21 +86,19 @@
     });
   }
 
+  // Handle search input with debounce
   $effect(() => {
     if (searchTimeout) {
       clearTimeout(searchTimeout);
     }
-    if (searchQuery !== undefined) {
-      searchTimeout = setTimeout(filterProperties, 500);
+    searchTimeout = setTimeout(filterProperties, 500);
+  });
+
+  // Load properties when org changes
+  $effect(() => {
+    if (currentOrg?.id) {
+      loadProperties();
     }
-  });
-
-  $effect(() => {
-    filteredProperties = properties;
-  });
-
-  $effect(() => {
-    loadProperties();
   });
 </script>
 
