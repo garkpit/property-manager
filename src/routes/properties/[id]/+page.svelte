@@ -14,6 +14,7 @@
   import PropertyEdit from "$lib/components/PropertyEdit.svelte";
   import PropertyImages from "$lib/components/PropertyImages.svelte";
   import PropertyTransactions from "@/components/PropertyTransactions.svelte";
+  import PropertyContacts from "$lib/components/PropertyContacts.svelte";
   import { Button } from "$lib/components/ui/button";
   import { goto } from "$app/navigation";
   import * as Tabs from "$lib/components/ui/tabs/index.js";
@@ -23,11 +24,15 @@
     getPropertyById,
   } from "$lib/services/propertyService.svelte";
   import { getPDF } from "$lib/services/export.service.svelte";
+  import { getCurrentOrg, getUser } from "$lib/services/backend.svelte";
 
+  const user = $derived(getUser());
+  const currentOrg = $derived(getCurrentOrg());
   const isNew = $derived($page.params.id === "new");
   const propertyId = $derived($page.params.id);
   let isEditing = $state(false);
   let flyerMakerOpen = $state(false);
+  let showTransactionModal = $state(false);
 
   $effect(() => {
     // Set initial editing state based on isNew
@@ -61,6 +66,10 @@
   let loading = $state(false);
   let error = $state<string | null>(null);
 
+  $effect(() => {
+    load();
+  });
+
   const loadProperty = async () => {
     const { data, error: err } = await getPropertyById(propertyId);
 
@@ -92,7 +101,19 @@
     loading = true;
     error = null;
 
-    const { error: err } = await upsertProperty(property);
+    if (!user) {
+      error = "You need to be logged in to save properties";
+      loading = false;
+      return;
+    }
+
+    if (!currentOrg) {
+      error = "No organization selected";
+      loading = false;
+      return;
+    }
+
+    const { error: err } = await upsertProperty(user, currentOrg.id, property);
 
     if (err) {
       error = err.message;
@@ -100,16 +121,9 @@
       return;
     }
 
-    // If this was a new property, navigate to the property list
-    if (isNew) {
-      goto("/properties");
-      return;
-    }
-
-    // For existing properties, reload the data and exit edit mode
-    await loadProperty();
-    loading = false;
     isEditing = false;
+    loading = false;
+    await load();
   }
 
   async function handleCancel() {
@@ -163,9 +177,11 @@
       ? "Property Details"
       : currentTab === "images"
         ? "Property Images"
-        : currentTab === "transactions"
-          ? "Property Transactions"
-          : "Property",
+        : currentTab === "contacts"
+          ? "Property Contacts"
+          : currentTab === "transactions"
+            ? "Property Transactions"
+            : "Property",
   );
 
   const detailsActionItems = $derived([
@@ -206,33 +222,37 @@
     },
   ];
 
-  let showTransactionModal = $state(false);
-
   const transactionActionItems = [
     {
       icon: FileText,
       label: "Add Transaction",
-      onClick() {
-        showTransactionModal = true;
-      },
+      onClick: handleTransactionModalOpen,
       get show() {
         return !isNew;
       }, // Use a getter to maintain reactivity
     },
   ];
 
+  const contactsActionItems = [];
+
   const actionItems = $derived(
     currentTab === "details"
       ? detailsActionItems
       : currentTab === "images"
         ? imageActionItems
-        : currentTab === "transactions"
-          ? transactionActionItems
-          : [],
+        : currentTab === "contacts"
+          ? contactsActionItems
+          : currentTab === "transactions"
+            ? transactionActionItems
+            : [],
   );
 
-  function handleTransactionModal(event: CustomEvent) {
+  function handleTransactionModalOpen() {
     showTransactionModal = true;
+  }
+
+  function handleTransactionModalClose() {
+    showTransactionModal = false;
   }
 </script>
 
@@ -256,8 +276,6 @@
       </div>
     {:else if error}
       <div class="text-red-500 p-4">{error}</div>
-    {:else if isEditing}
-      <PropertyEdit bind:property onSave={handleSave} />
     {:else}
       <div class="flex items-center justify-center">
         <Tabs.Root
@@ -265,23 +283,54 @@
           class="w-[350px] md:w-full"
           onValueChange={(value) => (currentTab = value)}
         >
-          <Tabs.List>
-            <Tabs.Trigger value="details">Details</Tabs.Trigger>
-            <Tabs.Trigger value="images">Images</Tabs.Trigger>
-            <Tabs.Trigger value="transactions">Transactions</Tabs.Trigger>
+          <Tabs.List class="grid w-full grid-cols-4 rounded-none border-b bg-transparent p-0">
+            <Tabs.Trigger
+              value="details"
+              class="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              Details
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              value="images"
+              class="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              Images
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              value="contacts"
+              class="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              Contacts
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              value="transactions"
+              class="relative h-9 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
+            >
+              Transactions
+            </Tabs.Trigger>
           </Tabs.List>
-          <Tabs.Content value="details">
-            <PropertyDetails {property} />
+          <Tabs.Content value="details" class="mt-0 border-0 p-0">
+            {#if isEditing}
+              <PropertyEdit bind:property onSave={handleSave} />
+            {:else}
+              <PropertyDetails {property} />
+            {/if}
           </Tabs.Content>
-          <Tabs.Content value="images">
-            <PropertyImages {property} onReload={loadProperty} />
+
+          <Tabs.Content value="images" class="mt-0 border-0 p-0">
+            <PropertyImages {property} onReload={load} />
           </Tabs.Content>
-          <Tabs.Content value="transactions" class="w-full">
-            <PropertyTransactions
-              {property}
-              {showTransactionModal}
-              onOpenModal={() => showTransactionModal = true}
-              onModalClose={() => showTransactionModal = false}
+
+          <Tabs.Content value="contacts" class="mt-0 border-0 p-0">
+            <PropertyContacts {property} />
+          </Tabs.Content>
+
+          <Tabs.Content value="transactions" class="mt-0 border-0 p-0">
+            <PropertyTransactions 
+              {property} 
+              {showTransactionModal} 
+              onOpenModal={handleTransactionModalOpen}
+              onModalClose={handleTransactionModalClose} 
             />
           </Tabs.Content>
         </Tabs.Root>
