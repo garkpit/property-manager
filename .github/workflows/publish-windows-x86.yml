@@ -97,6 +97,43 @@ jobs:
           # Create Windows icon with multiple sizes
           magick convert static/favicon.png -define icon:auto-resize=256,128,64,48,32,16 src-tauri/icons/icon.ico
 
+          # Create tauri.conf.json with correct build path
+          $TauriConfig = @{
+            build = @{
+              distDir = "../build"
+              devPath = "http://localhost:5173"
+              beforeDevCommand = "npm run dev"
+              beforeBuildCommand = "npm run build"
+            }
+            package = @{
+              productName = "${{ env.NAME }}"
+              version = "${{ env.VERSION }}"
+            }
+            tauri = @{
+              bundle = @{
+                active = $true
+                targets = "all"
+                identifier = "${{ env.IDENTIFIER }}"
+                icon = @(
+                  "icons/32x32.png"
+                  "icons/128x128.png"
+                  "icons/128x128@2x.png"
+                  "icons/icon.ico"
+                )
+              }
+              windows = @(@{
+                title = "${{ env.NAME }}"
+                width = 800
+                height = 600
+                resizable = $true
+                fullscreen = $false
+              })
+            }
+          }
+
+          $TauriConfigJson = $TauriConfig | ConvertTo-Json -Depth 10
+          Set-Content -Path "src-tauri/tauri.conf.json" -Value $TauriConfigJson
+
           $CargoTomlContent = @"
           [package]
           name = "${{ env.NAME }}"
@@ -120,7 +157,6 @@ jobs:
           custom-protocol = [ "tauri/custom-protocol" ]
           default = [ "custom-protocol" ]
           "@
-
           Set-Content -Path src-tauri/Cargo.toml -Value $CargoTomlContent
 
           # Create build.rs
@@ -148,65 +184,6 @@ jobs:
           $CurrentDirForwardSlash = $CurrentDir -replace '\\','/'
           $DevPath = "$CurrentDirForwardSlash/build"
           $DistDir = $DevPath
-
-          # Create tauri.conf.json
-          $TauriConfJsonContent = @"
-          {
-            "build": {
-              "beforeDevCommand": "",
-              "beforeBuildCommand": "",
-              "devPath": "../build",
-              "distDir": "../build",
-              "withGlobalTauri": true
-            },
-            "package": {
-              "productName": "${{ env.NAME }}_windows",
-              "version": "${{ env.VERSION }}"
-            },
-            "tauri": {
-              "bundle": {
-                "active": true,
-                "category": "DeveloperTool",
-                "copyright": "",
-                "identifier": "$($env:IDENTIFIER)",
-                "icon": [
-                  "icons/32x32.png",
-                  "icons/128x128.png",
-                  "icons/128x128@2x.png",
-                  "icons/icon.icns",
-                  "icons/icon.ico"
-                ],
-                "resources": [],
-                "shortDescription": "",
-                "targets": [
-                  "msi",
-                  "nsis"
-                ],
-                "windows": {
-                  "certificateThumbprint": null,
-                  "digestAlgorithm": "sha256",
-                  "timestampUrl": "",
-                  "webviewInstallMode": {
-                    "type": "downloadBootstrapper"
-                  }
-                }
-              },
-              "security": {
-                "csp": null
-              },
-              "windows": [
-                {
-                  "fullscreen": false,
-                  "height": 600,
-                  "resizable": true,
-                  "title": "$($env:NAME)",
-                  "width": 800
-                }
-              ]
-            }
-          }
-          "@
-          Set-Content -Path src-tauri/tauri.conf.json -Value $TauriConfJsonContent
 
           # Verify the directory structure
           Write-Host "Tauri directory contents:"

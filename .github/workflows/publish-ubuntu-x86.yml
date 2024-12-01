@@ -83,6 +83,9 @@ jobs:
 
       - name: Create and initialize Tauri project
         run: |
+          # Clean install to avoid optional dependency issues
+          rm -rf node_modules package-lock.json
+          npm install @rollup/rollup-linux-x64-gnu
           npm install
           npm run build
 
