@@ -24,6 +24,7 @@
 
   let orgs = $state([] as Org[]);
   let showLoginModal = $state(false);
+  let isInitialized = $state(false);
 
   const sidebar = useSidebar();
   const load = async () => {
@@ -33,12 +34,19 @@
       orgs = [];
     } else {
       orgs = data;
-      // If there's no current org selected but we have orgs available, select the first one
-      if (!org && orgs.length > 0) {
+      // Only try to select first org if we've confirmed there's no current org after initialization
+      if (isInitialized && !org && orgs.length > 0) {
         handleSelectOrg(orgs[0].id);
       }
     }
   };
+
+  // Track when org state is initialized
+  $effect(() => {
+    if (org !== undefined) {
+      isInitialized = true;
+    }
+  });
 
   // Reload orgs when user changes
   $effect(() => {
@@ -46,6 +54,7 @@
       load();
     } else {
       orgs = [];
+      isInitialized = false;
     }
   });
   async function handleOrgChange(id: string) {
