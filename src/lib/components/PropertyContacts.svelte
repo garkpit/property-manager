@@ -19,13 +19,18 @@
     TableRow,
   } from "$lib/components/ui/table";
   import ContactPicker from "$lib/components/ContactPicker.svelte";
+  import { getCurrentOrg } from "$lib/services/backend.svelte";
 
   const { property } = $props<{ property: Property }>();
+  const currentOrg = $derived(getCurrentOrg());
 
   let contacts = $state<PropertyContact[]>([]);
   let loading = $state(false);
   let error = $state<string | null>(null);
-  let showContactPicker = $state(false);
+
+  $effect(() => {
+    console.log("PropertyContacts");
+  });
 
   async function loadContacts() {
     if (!property.id) return;
@@ -47,24 +52,53 @@
     loading = false;
   }
 
-  async function handleContactSelect(event: CustomEvent<{ id: string }>) {
-    if (!property.id) return;
+  async function handleContactSelect(
+    event: CustomEvent<{ id: string; contact_type: string }>,
+  ) {
+    console.log(
+      "PropertyContacts: handleContactSelect called with event",
+      event,
+    );
+    console.log("PropertyContacts: event detail", event.detail);
 
-    const contactId = event.detail.id;
-    showContactPicker = false;
+    if (!property.id) {
+      console.error("PropertyContacts: No property.id");
+      return;
+    }
+    if (!currentOrg) {
+      console.error("PropertyContacts: No organization selected");
+      error = "No organization selected";
+      return;
+    }
+
+    const { id: contactId, contact_type } = event.detail;
+    console.log("PropertyContacts: extracted contactId and contact_type", {
+      contactId,
+      contact_type,
+    });
 
     const newPropertyContact = {
       propertyid: property.id,
       contactid: contactId,
+      orgid: currentOrg.id,
+      contact_type,
     };
 
+    console.log(
+      "PropertyContacts: upserting property contact",
+      newPropertyContact,
+    );
     const { error: err } = await upsertPropertyContact(newPropertyContact);
 
     if (err) {
+      console.error("PropertyContacts: Error upserting property contact:", err);
       error = err.message;
       return;
     }
 
+    console.log(
+      "PropertyContacts: Successfully added contact, reloading contacts...",
+    );
     await loadContacts();
   }
 
@@ -90,14 +124,12 @@
 <div class="space-y-4">
   <div class="flex justify-between items-center">
     <h3 class="text-lg font-medium">Property Contacts</h3>
-    <Button
-      variant="outline"
-      size="sm"
-      onclick={() => (showContactPicker = true)}
-    >
-      <Plus class="h-4 w-4 mr-2" />
-      Add Contact
-    </Button>
+    <ContactPicker on:select={handleContactSelect}>
+      <Button variant="outline" size="sm">
+        <Plus class="h-4 w-4 mr-2" />
+        Add Contact
+      </Button>
+    </ContactPicker>
   </div>
 
   {#if loading}
@@ -136,7 +168,7 @@
               <Button
                 variant="ghost"
                 size="icon"
-                onclick={() => handleDeleteContact(contact.id)}
+                on:click={() => handleDeleteContact(contact.id)}
               >
                 <Trash2 class="h-4 w-4" />
               </Button>
@@ -147,10 +179,3 @@
     </Table>
   {/if}
 </div>
-
-{#if showContactPicker}
-  <ContactPicker
-    on:select={handleContactSelect}
-    on:close={() => (showContactPicker = false)}
-  />
-{/if}
