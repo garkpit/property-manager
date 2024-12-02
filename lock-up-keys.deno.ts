@@ -4,13 +4,18 @@
  * Run:
  * deno run --allow-read --allow-write lock-up-keys.deno.ts
  */
-import forge from 'npm:node-forge';
+import forge from "npm:node-forge";
 
 function deriveKey(password: string, salt: string): string {
     const numIterations = 100000;
     const keySize = 32; // 256 bits
 
-    const derivedKey = forge.pkcs5.pbkdf2(password, salt, numIterations, keySize);
+    const derivedKey = forge.pkcs5.pbkdf2(
+        password,
+        salt,
+        numIterations,
+        keySize,
+    );
     return forge.util.bytesToHex(derivedKey); // Convert to hex string before returning
 }
 
@@ -20,9 +25,12 @@ function encryptData(data: string, hexKey: string): string {
 
     const iv = forge.random.getBytesSync(12); // 96 bits for AES-GCM
 
-    const cipher = forge.cipher.createCipher('AES-GCM', forge.util.createBuffer(key));
+    const cipher = forge.cipher.createCipher(
+        "AES-GCM",
+        forge.util.createBuffer(key),
+    );
     cipher.start({ iv: iv });
-    cipher.update(forge.util.createBuffer(data, 'utf8'));
+    cipher.update(forge.util.createBuffer(data, "utf8"));
     cipher.finish();
 
     const encrypted = cipher.output.getBytes(); // Encrypted binary data
@@ -44,10 +52,13 @@ function decryptData(encryptedData: string, hexKey: string): string {
     const encrypted = payload.slice(ivLength, -tagLength);
     const tag = payload.slice(-tagLength);
 
-    const decipher = forge.cipher.createDecipher('AES-GCM', forge.util.createBuffer(key));
+    const decipher = forge.cipher.createDecipher(
+        "AES-GCM",
+        forge.util.createBuffer(key),
+    );
     decipher.start({
         iv: forge.util.createBuffer(iv),
-        tag: forge.util.createBuffer(tag)
+        tag: forge.util.createBuffer(tag),
     });
     decipher.update(forge.util.createBuffer(encrypted));
     const success = decipher.finish();
@@ -55,22 +66,21 @@ function decryptData(encryptedData: string, hexKey: string): string {
     if (success) {
         return decipher.output.toString();
     } else {
-        throw new Error('Decryption failed');
+        throw new Error("Decryption failed");
     }
 }
 
-
 // generate a random password
-const password_1 = forge.random.getBytesSync(16).toString('hex');
-const password_2 = forge.random.getBytesSync(16).toString('hex');
+const password_1 = forge.random.getBytesSync(16).toString("hex");
+const password_2 = forge.random.getBytesSync(16).toString("hex");
 // generate a random salt
-const salt_1 = forge.random.getBytesSync(16).toString('hex');
-const salt_2 = forge.random.getBytesSync(16).toString('hex');
+const salt_1 = forge.random.getBytesSync(16).toString("hex");
+const salt_2 = forge.random.getBytesSync(16).toString("hex");
 // generate a key
 const key_1 = deriveKey(password_1, salt_1);
 const key_2 = deriveKey(password_2, salt_2);
 // open the keys.json file
-const keysFile = Deno.readTextFileSync('.keys.json');
+const keysFile = Deno.readTextFileSync(".keys.json");
 // convert the keysFile to a json object
 const keys = JSON.parse(keysFile);
 
@@ -81,14 +91,23 @@ keys.SUPABASE_ANON_KEY_ENCRYPTED = encryptData(keys.SUPABASE_ANON_KEY, key_2);
 keys.SUPABASE_URL_ENCRYPTION_KEY = key_1;
 keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY = key_2;
 
-// create a file: .env and write the encrypted keys to it
-Deno.writeTextFileSync('.env',
-    `SUPABASE_URL_ENCRYPTED=${keys.SUPABASE_URL_ENCRYPTED}\n` +
+const envContent = `SUPABASE_URL_ENCRYPTED=${keys.SUPABASE_URL_ENCRYPTED}\n` +
     `SUPABASE_ANON_KEY_ENCRYPTED=${keys.SUPABASE_ANON_KEY_ENCRYPTED}\n` +
     `SUPABASE_URL_ENCRYPTION_KEY=${keys.SUPABASE_URL_ENCRYPTION_KEY}\n` +
-    `SUPABASE_ANON_KEY_ENCRYPTION_KEY=${keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY}`);
+    `SUPABASE_ANON_KEY_ENCRYPTION_KEY=${keys.SUPABASE_ANON_KEY_ENCRYPTION_KEY}`;
+
+try {
+    const existingContent = Deno.readTextFileSync(".env");
+    Deno.writeTextFileSync(".env", existingContent + "\n" + envContent);
+} catch {
+    // If file doesn't exist, create it
+    Deno.writeTextFileSync(".env", envContent);
+}
+
 console.log(".env file was created");
 console.log("");
-console.log("If you plan to use github actions to create desktop builds with Tauri, you will need to set the secrets in github:");
+console.log(
+    "If you plan to use github actions to create desktop builds with Tauri, you will need to set the secrets in github:",
+);
 console.log("");
 console.log("run: gh secret set -f .env");
