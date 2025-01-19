@@ -5,7 +5,7 @@
   import { Button } from "$lib/components/ui/button";
   import { Badge } from "$lib/components/ui/badge";
   import * as Popover from "$lib/components/ui/popover";
-  import { t } from "$lib/i18n";
+  import { t } from "$lib/i18n/index.svelte.ts";
   import AnimatedBell from "$lib/components/iconbuttons/AnimatedBell.svelte";
   import InvitationsModal from "$lib/components/InvitationsModal.svelte";
   import { getNewInboxMessageCount } from "$lib/services/messageService.svelte";

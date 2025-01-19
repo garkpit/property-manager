@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
-  import { t } from "$lib/i18n";
+  import { t } from "$lib/i18n/index.svelte.ts";
   import { toast } from "svelte-sonner";
   import {
     acceptInvite,

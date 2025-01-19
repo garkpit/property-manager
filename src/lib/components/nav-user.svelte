@@ -15,7 +15,7 @@
     UserPlus,
   } from "lucide-svelte";
   import { goto } from "$app/navigation";
-  import { t } from "$lib/i18n/index";
+  import { t } from "$lib/i18n/index.svelte.ts";
 
   const user = $derived(getUser());
   const avatarUrl = $derived(getAvatarUrl(user));

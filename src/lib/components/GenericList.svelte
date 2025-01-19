@@ -11,7 +11,7 @@
     TableRow,
   } from "$lib/components/ui/table";
   import { Checkbox } from "$lib/components/ui/checkbox";
-  import { t } from "$lib/i18n";
+  import { t } from "$lib/i18n/index.svelte.ts";
 
   interface Header {
     key: string;

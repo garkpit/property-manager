@@ -213,7 +213,7 @@ Internationalization (i18n)
 
   ```svelte
   <script>
-    import { t } from "$lib/i18n";
+    import { t } from "$lib/i18n/index.svelte.ts";
   </script>
 
   <h1>{t("welcome_message")}</h1>

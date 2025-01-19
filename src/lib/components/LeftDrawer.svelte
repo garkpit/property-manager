@@ -22,7 +22,7 @@
   import type { ComponentProps } from "svelte";
   import { sidebarState } from "./LeftDrawer.svelte.ts";
   import { getUser } from "@/services/backend.svelte.ts";
-  import { t } from "$lib/i18n";
+  import { t } from "$lib/i18n/index.svelte.ts";
 
   const user = $derived(getUser());
 

@@ -1,11 +1,10 @@
 // SUPABASE BACKEND
-// import { writable } from 'svelte/store';
 import type { User } from "@supabase/supabase-js";
 // import type { Contact } from '$lib/types/contact.ts';
 
 import { supabase } from "$lib/services/supabase.ts";
 export { supabase }; // Add this line to export the supabase object
-import { locale } from "$lib/i18n/index.ts";
+import { setLocale } from "$lib/i18n/index.svelte.ts";
 import type { Database } from "$lib/types/database.types";
 import { getOrgById } from "./orgService.svelte";
 export type Profile = Database["public"]["Tables"]["profiles"]["Insert"];
@@ -49,7 +48,7 @@ export function initializeUser() {
         if (user) loadProfile();
         const userLocale = user?.user_metadata?.i18n;
         if (userLocale) {
-          locale.set(userLocale);
+          setLocale(userLocale);
           localStorage.setItem("locale", userLocale);
         }
         // Only update current org if we're not in the middle of updating metadata
@@ -68,7 +67,10 @@ export function initializeUser() {
     };
   });
 }
-export async function updateCurrentOrg(orgId: string | null, skipMetadataUpdate: boolean = false): Promise<boolean> {
+export async function updateCurrentOrg(
+  orgId: string | null,
+  skipMetadataUpdate: boolean = false,
+): Promise<boolean> {
   if (!orgId) {
     currentOrg = null;
     return true;

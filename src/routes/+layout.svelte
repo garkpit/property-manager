@@ -2,7 +2,7 @@
   import "../app.css";
   import { ModeWatcher } from "mode-watcher";
   import { SafeArea } from "@capacitor-community/safe-area";
-  import { setLocale } from "$lib/i18n";
+  import { setLocale } from "$lib/i18n/index.svelte.ts";
   import { initializeUser } from "$lib/services/backend.svelte";
   import Alert from "$lib/components/ui/alert/alert.svelte";
   import Loading from "$lib/components/loading/loading.svelte";

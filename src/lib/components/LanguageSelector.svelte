@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
-  import { setLocale, locale, t } from "$lib/i18n";
+  import { setLocale, locale, t } from "$lib/i18n/index.svelte.ts";
   import { getUser, updateUser } from "$lib/services/backend.svelte.ts";
   const user = $derived(getUser());
   const supportedLanguages = [

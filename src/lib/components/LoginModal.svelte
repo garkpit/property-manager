@@ -12,7 +12,7 @@
     signInWithOAuth,
   } from "$lib/services/backend.svelte";
   import { browser } from "$app/environment";
-  import { t } from "$lib/i18n";
+  import { t } from "$lib/i18n/index.svelte.ts";
   import { toast } from "svelte-sonner";
 
   const user = $derived(getUser());

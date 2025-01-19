@@ -7,7 +7,7 @@
     updateCurrentOrg,
     getUser,
   } from "$lib/services/backend.svelte";
-  import { t } from "$lib/i18n/index";
+  import { t } from "$lib/i18n/index.svelte.ts";
   import { toast } from "svelte-sonner";
   import { Plus, CircleCheckBig, Circle } from "lucide-svelte";
   import { fetchOrgs } from "$lib/services/orgService.svelte";
