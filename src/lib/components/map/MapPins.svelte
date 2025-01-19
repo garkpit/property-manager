@@ -3,32 +3,34 @@
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
   import PropertyDetailsModal from "../PropertyDetailsModal.svelte";
-  import { writable } from "svelte/store";
+  import type { Property } from "$lib/services/propertyService.svelte";
 
-  interface Props {
-    locations: Array<{
-      lat: number;
-      lng: number;
-      title?: string;
-      property?: any; // This will be the full property object
-    }>;
-    map?: maplibregl.Map;
+  interface LocationType {
+    lat: number;
+    lng: number;
+    title?: string;
+    property?: Property;
   }
-  const { locations = [], map } = $props<Props>();
+
+  const { locations = [], map } = $props<{
+    locations: LocationType[];
+    map?: maplibregl.Map;
+  }>();
+
   const currentMarkers: maplibregl.Marker[] = [];
 
-  const modalState = writable({
-    selectedProperty: null as any,
-    isOpen: false,
-  });
+  let selectedProperty = $state(null as Property | null);
+  let isOpen = $state(false);
 
-  function createPopupHTML(location: Props["locations"][0]) {
+  function createPopupHTML(location: LocationType) {
     if (!location.property) {
       return `<h3>${location.title || "Unnamed Location"}</h3>`;
     }
 
-    const { address, city, status, list_price, beds, baths } =
-      location.property;
+    const { address, city, beds, baths } = location.property;
+    const metadata = (location.property.metadata as any) || {};
+    const status = metadata.status || "Unknown";
+    const list_price = metadata.list_price || 0;
 
     // Base64 encode the property data to avoid any escaping issues
     const propertyData = btoa(JSON.stringify(location.property));
@@ -37,8 +39,8 @@
       <div class="popup-content">
         <h3>${address || "No Address"}</h3>
         <p class="city">${city || ""}</p>
-        <p class="status">${status || ""}</p>
-        <p class="price">$${(list_price || 0).toLocaleString()}</p>
+        <p class="status">${status}</p>
+        <p class="price">$${list_price.toLocaleString()}</p>
         <div class="specs">
           <span>${beds || 0} beds</span>
           <span>${baths || 0} baths</span>
@@ -70,7 +72,7 @@
 
     // Add new markers only if we have locations
     if (locations.length > 0) {
-      locations.forEach((location) => {
+      locations.forEach((location: LocationType) => {
         const marker = new maplibregl.Marker({ className: "map-marker" })
           .setLngLat([location.lng, location.lat])
           .addTo(map);
@@ -90,12 +92,10 @@
 
   // Add the function to window object for the popup to access
   $effect(() => {
-    (window as any).__openPropertyModal = (property: any) => {
+    (window as any).__openPropertyModal = (property: Property) => {
       console.log("Opening modal with property:", property);
-      modalState.set({
-        selectedProperty: property,
-        isOpen: true,
-      });
+      selectedProperty = property;
+      isOpen = true;
     };
 
     return () => {
@@ -105,21 +105,15 @@
 
   // Debug effect to log state changes
   $effect(() => {
-    const unsubscribe = modalState.subscribe((state) => {
-      console.log("Modal state updated:", state);
-    });
-
-    return unsubscribe;
+    console.log("Modal state updated:", { selectedProperty, isOpen });
   });
 </script>
 
 <!-- Mount the modal in a portal to ensure it's at the root level -->
 <div class="modal-container">
   <PropertyDetailsModal
-    property={$modalState.selectedProperty}
-    isOpen={$modalState.isOpen}
-    on:update:isOpen={(e) =>
-      modalState.update((state) => ({ ...state, isOpen: e.detail }))}
+    property={selectedProperty ?? ({} as Property)}
+    {isOpen}
   />
 </div>
 
