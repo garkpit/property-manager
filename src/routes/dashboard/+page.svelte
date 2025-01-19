@@ -1,5 +1,8 @@
 <script lang="ts">
   import PageTemplate from "$lib/components/PageTemplate.svelte";
+  import { getUser } from "$lib/services/backend.svelte";
+  const user = $derived(getUser());
+  console.log("user", user);
   /*
   const actionItems: any[] = [
     {
