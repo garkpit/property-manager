@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { Org } from "./../services/orgService.svelte.ts";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import SearchForm from "$lib/components/search-form.svelte";
   import * as Collapsible from "$lib/components/ui/collapsible/index.js";
@@ -24,122 +23,104 @@
   import { sidebarState } from "./LeftDrawer.svelte.ts";
   import { getUser } from "@/services/backend.svelte.ts";
   import { t } from "$lib/i18n";
+
   const user = $derived(getUser());
 
   let {
     ref = $bindable(null),
     ...restProps
   }: ComponentProps<typeof Sidebar.Root> = $props();
-  const data = {
-    teams: [
-      {
-        name: "Acme Inc",
-        logo: GalleryVerticalEnd,
-        plan: "Enterprise",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
-    ],
-    versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
-    navMain: [
-      {
-        title: $t("menu.messages.title"),
-        url: "#",
-        icon: Mail,
-        isActive: false,
-        items: [
-          {
-            title: $t("menu.messages.inbox"),
-            url: "/messages",
-          },
-        ],
-      },
-      {
-        title: $t("menu.people.title"),
-        url: "#",
-        icon: Users,
-        isActive: false,
-        items: [
-          {
-            title: $t("menu.people.contacts"),
-            url: "/contacts",
-          },
-        ],
-      },
-      {
-        title: $t("menu.properties.title"),
-        url: "#",
-        icon: Sparkles,
-        isActive: false,
-        items: [
-          {
-            title: $t("menu.properties.list"),
-            url: "/properties",
-          },
-          {
-            title: $t("menu.properties.map"),
-            url: "/properties/map",
-          },
-          {
-            title: $t("menu.properties.simpleMap"),
-            url: "/map",
-          },
-          {
-            title: $t("menu.properties.organizations"),
-            url: "/orgs",
-          },
-        ],
-      },
-      {
-        title: $t("menu.information.title"),
-        url: "#",
-        icon: BookOpen,
-        isOpen: false,
-        items: [
-          {
-            title: $t("menu.information.about"),
-            url: "/about",
-          },
-          {
-            title: $t("menu.information.terms"),
-            url: "/terms",
-          },
-          {
-            title: $t("menu.information.privacy"),
-            url: "/privacy",
-          },
-        ],
-      },
-      {
-        title: $t("menu.samples.title"),
-        url: "#",
-        icon: Sparkles,
-        isActive: false,
-        items: [
-          {
-            title: $t("menu.samples.alert"),
-            url: "/samples/alert",
-          },
-          {
-            title: $t("menu.samples.loading"),
-            url: "/samples/loading",
-          },
-        ],
-      },
-    ],
-  };
+
+  const navMain = $derived([
+    {
+      title: $t("menu.messages.title"),
+      url: "#",
+      icon: Mail,
+      isActive: false,
+      items: [
+        {
+          title: $t("menu.messages.inbox"),
+          url: "/messages",
+        },
+      ],
+    },
+    {
+      title: $t("menu.people.title"),
+      url: "#",
+      icon: Users,
+      isActive: false,
+      items: [
+        {
+          title: $t("menu.people.contacts"),
+          url: "/contacts",
+        },
+      ],
+    },
+    {
+      title: $t("menu.properties.title"),
+      url: "#",
+      icon: Sparkles,
+      isActive: false,
+      items: [
+        {
+          title: $t("menu.properties.list"),
+          url: "/properties",
+        },
+        {
+          title: $t("menu.properties.map"),
+          url: "/properties/map",
+        },
+        {
+          title: $t("menu.properties.simpleMap"),
+          url: "/map",
+        },
+        {
+          title: $t("menu.properties.organizations"),
+          url: "/orgs",
+        },
+      ],
+    },
+    {
+      title: $t("menu.information.title"),
+      url: "#",
+      icon: BookOpen,
+      isOpen: false,
+      items: [
+        {
+          title: $t("menu.information.about"),
+          url: "/about",
+        },
+        {
+          title: $t("menu.information.terms"),
+          url: "/terms",
+        },
+        {
+          title: $t("menu.information.privacy"),
+          url: "/privacy",
+        },
+      ],
+    },
+    {
+      title: $t("menu.samples.title"),
+      url: "#",
+      icon: Sparkles,
+      isActive: false,
+      items: [
+        {
+          title: $t("menu.samples.alert"),
+          url: "/samples/alert",
+        },
+        {
+          title: $t("menu.samples.loading"),
+          url: "/samples/loading",
+        },
+      ],
+    },
+  ]);
 
   $effect(() => {
     // Set initial open state based on stored state
-    data.navMain.forEach((item) => {
+    navMain.forEach((item) => {
       if (sidebarState.openMenus.includes(item.title)) {
         item.isOpen = true;
       }
@@ -157,7 +138,7 @@
     <Sidebar.Group>
       <Sidebar.Menu>
         <SearchForm />
-        {#each data.navMain as mainItem, index (mainItem.title)}
+        {#each navMain as mainItem, index (mainItem.title)}
           <Collapsible.Root
             open={sidebarState.openMenus.includes(mainItem.title)}
             class="group/collapsible"
