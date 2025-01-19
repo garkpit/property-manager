@@ -7,6 +7,34 @@ export default {
       es: "Español",
     },
   },
+  menu: {
+    messages: {
+      title: "Mensajes",
+      inbox: "Bandeja de entrada",
+    },
+    people: {
+      title: "Personas",
+      contacts: "Contactos",
+    },
+    properties: {
+      title: "Propiedades",
+      list: "Lista de Propiedades",
+      map: "Mapa de Propiedades",
+      simpleMap: "Mapa",
+      organizations: "Organizaciones",
+    },
+    information: {
+      title: "Información",
+      about: "Acerca de esta aplicación",
+      terms: "Términos de Servicio",
+      privacy: "Política de Privacidad",
+    },
+    samples: {
+      title: "Ejemplos",
+      alert: "Alerta",
+      loading: "Cargando",
+    },
+  },
   dashboard: {
     title: "Bienvenido a tu Panel de Control",
     description:
@@ -88,7 +116,7 @@ export default {
     email: "Correo Electrónico",
     firstName: "Nombre",
     lastName: "Apellido",
-    bio: "Biografía", // Add this line
+    bio: "Biografía",
     updateProfile: "Actualizar Perfil",
     updating: "Actualizando...",
   },

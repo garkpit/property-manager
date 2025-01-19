@@ -23,6 +23,7 @@
   import type { ComponentProps } from "svelte";
   import { sidebarState } from "./LeftDrawer.svelte.ts";
   import { getUser } from "@/services/backend.svelte.ts";
+  import { t } from "$lib/i18n";
   const user = $derived(getUser());
 
   let {
@@ -50,85 +51,85 @@
     versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
     navMain: [
       {
-        title: "Messages",
+        title: $t("menu.messages.title"),
         url: "#",
         icon: Mail,
         isActive: false,
         items: [
           {
-            title: "Inbox",
+            title: $t("menu.messages.inbox"),
             url: "/messages",
           },
         ],
       },
       {
-        title: "People",
+        title: $t("menu.people.title"),
         url: "#",
         icon: Users,
         isActive: false,
         items: [
           {
-            title: "Contacts",
+            title: $t("menu.people.contacts"),
             url: "/contacts",
           },
         ],
       },
       {
-        title: "Properties",
+        title: $t("menu.properties.title"),
         url: "#",
         icon: Sparkles,
         isActive: false,
         items: [
           {
-            title: "Properties List",
+            title: $t("menu.properties.list"),
             url: "/properties",
           },
           {
-            title: "Properties Map",
+            title: $t("menu.properties.map"),
             url: "/properties/map",
           },
           {
-            title: "Map",
+            title: $t("menu.properties.simpleMap"),
             url: "/map",
           },
           {
-            title: "Organizations",
+            title: $t("menu.properties.organizations"),
             url: "/orgs",
           },
         ],
       },
       {
-        title: "Information",
+        title: $t("menu.information.title"),
         url: "#",
         icon: BookOpen,
         isOpen: false,
         items: [
           {
-            title: "About this app",
+            title: $t("menu.information.about"),
             url: "/about",
           },
           {
-            title: "Terms of Service",
+            title: $t("menu.information.terms"),
             url: "/terms",
           },
           {
-            title: "Privacy Policy",
+            title: $t("menu.information.privacy"),
             url: "/privacy",
           },
         ],
       },
       {
-        title: "Samples",
+        title: $t("menu.samples.title"),
         url: "#",
         icon: Sparkles,
         isActive: false,
         items: [
           {
-            title: "Alert",
+            title: $t("menu.samples.alert"),
             url: "/samples/alert",
           },
           {
-            title: "Loading",
+            title: $t("menu.samples.loading"),
             url: "/samples/loading",
           },
         ],

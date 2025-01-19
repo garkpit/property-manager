@@ -14,6 +14,34 @@ export default {
     darkMode: "Dark mode",
     systemSetting: "Use system setting",
   },
+  menu: {
+    messages: {
+      title: "Messages",
+      inbox: "Inbox",
+    },
+    people: {
+      title: "People",
+      contacts: "Contacts",
+    },
+    properties: {
+      title: "Properties",
+      list: "Properties List",
+      map: "Properties Map",
+      simpleMap: "Map",
+      organizations: "Organizations",
+    },
+    information: {
+      title: "Information",
+      about: "About this app",
+      terms: "Terms of Service",
+      privacy: "Privacy Policy",
+    },
+    samples: {
+      title: "Samples",
+      alert: "Alert",
+      loading: "Loading",
+    },
+  },
   loginModal: {
     loginTitle: "Login",
     registerTitle: "Register",
