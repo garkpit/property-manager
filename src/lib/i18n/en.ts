@@ -312,4 +312,10 @@ export default {
     rejectSuccess: "Invitation rejected successfully",
     rejectError: "Failed to reject invitation",
   },
+  navUser: {
+    upgradeProText: "Upgrade to Pro",
+    billing: "Billing",
+    signIn: "Sign In or",
+    createAccount: "Create an account",
+  },
 };

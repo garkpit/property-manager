@@ -15,6 +15,7 @@
     UserPlus,
   } from "lucide-svelte";
   import { goto } from "$app/navigation";
+  import { t } from "$lib/i18n/index";
 
   const user = $derived(getUser());
   const avatarUrl = $derived(getAvatarUrl(user));
@@ -79,28 +80,28 @@
           <DropdownMenu.Group>
             <DropdownMenu.Item>
               <Sparkles />
-              Upgrade to Pro
+              {$t("navUser.upgradeProText")}
             </DropdownMenu.Item>
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Group>
             <DropdownMenu.Item onclick={navigateToAccount}>
               <BadgeCheck />
-              Account
+              {$t("sidebar.account")}
             </DropdownMenu.Item>
             <DropdownMenu.Item>
               <CreditCard />
-              Billing
+              {$t("navUser.billing")}
             </DropdownMenu.Item>
             <DropdownMenu.Item>
               <Bell />
-              Notifications
+              {$t("notifications.title")}
             </DropdownMenu.Item>
           </DropdownMenu.Group>
           <DropdownMenu.Separator />
           <DropdownMenu.Item onclick={signOut}>
             <LogOut />
-            Log out
+            {$t("sidebar.logOut")}
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
@@ -116,8 +117,8 @@
           </Avatar.Fallback>
         </Avatar.Root>
         <div class="grid flex-1 text-left text-sm leading-tight">
-          <span class="truncate font-semibold">Sign In or</span>
-          <span class="truncate text-xs">Create an account</span>
+          <span class="truncate font-semibold">{$t("navUser.signIn")}</span>
+          <span class="truncate text-xs">{$t("navUser.createAccount")}</span>
         </div>
       </Sidebar.MenuButton>
     {/if}
