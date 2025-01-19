@@ -4,13 +4,14 @@
   import { fade, scale } from "svelte/transition";
   import { X } from "lucide-svelte";
 
-  let { property, isOpen } = $props<{
+  const { property, isOpen, onClose } = $props<{
     property: Property;
     isOpen: boolean;
+    onClose: () => void;
   }>();
 
   function handleClose() {
-    isOpen = false;
+    onClose();
   }
 
   function handleKeydown(event: KeyboardEvent) {

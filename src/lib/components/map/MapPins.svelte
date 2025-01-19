@@ -22,6 +22,33 @@
   let selectedProperty = $state(null as Property | null);
   let isOpen = $state(false);
 
+  // Function to show property details modal
+  function showPropertyDetails(property: Property) {
+    selectedProperty = property;
+    isOpen = true;
+  }
+
+  // Function to close modal
+  function closeModal() {
+    isOpen = false;
+  }
+
+  // Create a global handler for the view details button
+  $effect(() => {
+    (window as any).__handleViewDetailsClick = (encodedData: string) => {
+      try {
+        const data = JSON.parse(atob(encodedData));
+        showPropertyDetails(data);
+      } catch (error) {
+        console.error("Error parsing property data:", error);
+      }
+    };
+
+    return () => {
+      delete (window as any).__handleViewDetailsClick;
+    };
+  });
+
   function createPopupHTML(location: LocationType) {
     if (!location.property) {
       return `<h3>${location.title || "Unnamed Location"}</h3>`;
@@ -32,7 +59,6 @@
     const status = metadata.status || "Unknown";
     const list_price = metadata.list_price || 0;
 
-    // Base64 encode the property data to avoid any escaping issues
     const propertyData = btoa(JSON.stringify(location.property));
 
     return `
@@ -45,15 +71,10 @@
           <span>${beds || 0} beds</span>
           <span>${baths || 0} baths</span>
         </div>
-        <button 
+        <button
           class="view-details-btn"
-          data-property="${propertyData}"
-          onclick="(function(btn) {
-            console.log('Button clicked');
-            const data = JSON.parse(atob(btn.dataset.property));
-            console.log('Property data:', data);
-            window.__openPropertyModal(data);
-          })(this)">
+          onclick="window.__handleViewDetailsClick('${propertyData}')"
+          type="button">
           View Details
         </button>
       </div>
@@ -90,19 +111,6 @@
     }
   });
 
-  // Add the function to window object for the popup to access
-  $effect(() => {
-    (window as any).__openPropertyModal = (property: Property) => {
-      console.log("Opening modal with property:", property);
-      selectedProperty = property;
-      isOpen = true;
-    };
-
-    return () => {
-      delete (window as any).__openPropertyModal;
-    };
-  });
-
   // Debug effect to log state changes
   $effect(() => {
     console.log("Modal state updated:", { selectedProperty, isOpen });
@@ -114,6 +122,7 @@
   <PropertyDetailsModal
     property={selectedProperty ?? ({} as Property)}
     {isOpen}
+    onClose={closeModal}
   />
 </div>
 
