@@ -1,64 +1,86 @@
-import { writable, derived, get } from 'svelte/store';
-import en from './en';
-import es from './es';
+import en from "./en";
+import es from "./es";
 
 // Define your translations
 const translations: any = { en, es };
 
-// Function to get the initial locale from localStorage or default to 'en'
-function getInitialLocale(): string {
-  if (typeof window !== 'undefined') {
-    const storedLocale = localStorage.getItem('locale');
-    if (storedLocale && (storedLocale === 'en' || storedLocale === 'es')) {
-      return storedLocale;
-    }
-  }
-  return 'en';
-}
+class I18nService {
+  // State for the current locale
+  locale = $state(this.getInitialLocale());
 
-// Create a writable store for the active locale
-export const locale = writable(getInitialLocale());
-
-// Effect to update localStorage when locale changes
-locale.subscribe((value) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('locale', value);
-  }
-});
-
-// Create a derived store for the active translation
-export const t = derived(locale, ($locale) => 
-  (key: string, params?: Record<string, any>) => {
-    const keys = key.split('.');
-    let value = translations[$locale];
+  // Create translation function using $derived
+  translate = $derived((key: string, params?: Record<string, any>) => {
+    const keys = key.split(".");
+    let value = translations[this.locale];
     for (const k of keys) {
       value = value[k];
       if (!value) break;
     }
 
-    if (typeof value === 'string' && params) {
+    if (typeof value === "string" && params) {
       return Object.entries(params).reduce((acc, [k, v]) => {
-        return acc.replace(new RegExp(`{${k}}`, 'g'), v.toString());
+        return acc.replace(new RegExp(`{${k}}`, "g"), v.toString());
       }, value);
     }
 
     return value || key;
+  });
+
+  constructor() {
+    // Effect to update localStorage when locale changes
+    $effect(() => {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("locale", this.locale);
+      }
+    });
   }
-);
 
-// Function to change the locale
-export function setLocale(newLocale: string) {
-  if (newLocale === 'en' || newLocale === 'es') {
-    locale.set(newLocale);
-  } else {
-    console.error('Invalid locale. Supported locales are "en" and "es".');
+  private getInitialLocale(): string {
+    if (typeof window !== "undefined") {
+      const storedLocale = localStorage.getItem("locale");
+      if (storedLocale && (storedLocale === "en" || storedLocale === "es")) {
+        return storedLocale;
+      }
+    }
+    return "en";
+  }
+
+  setLocale(newLocale: string) {
+    if (newLocale === "en" || newLocale === "es") {
+      this.locale = newLocale;
+    } else {
+      console.error('Invalid locale. Supported locales are "en" and "es".');
+    }
+  }
+
+  getLocale(): string {
+    return this.locale;
   }
 }
 
-export function translate(key: string, params?: Record<string, any>): string {
-  return get(t)(key, params);
-}
+// Create singleton instance
+const i18n = new I18nService();
 
-export function getLocale(): string {
-  return get(locale);
-}
+// Create a store-compatible interface for the translation function
+export const t = {
+  subscribe: (
+    fn: (val: (key: string, params?: Record<string, any>) => string) => void,
+  ) => {
+    let stop = false;
+    fn(i18n.translate);
+
+    $effect(() => {
+      if (!stop) {
+        fn(i18n.translate);
+      }
+    });
+
+    return () => {
+      stop = true;
+    };
+  },
+};
+
+// Export other functions
+export const setLocale = (locale: string) => i18n.setLocale(locale);
+export const getLocale = () => i18n.getLocale();
