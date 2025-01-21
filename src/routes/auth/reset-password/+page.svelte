@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { t } from "$lib/i18n/index.ts/index.svelte.ts";
+  import { t } from "$lib/i18n/index.svelte.ts";
   import { Button } from "$lib/components/ui/button";
   import { Input } from "$lib/components/ui/input";
   import { Label } from "$lib/components/ui/label";
